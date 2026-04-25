@@ -1,0 +1,100 @@
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+
+      <div class="card mt-4">
+
+        <div class="card-header bg-primary text-white">
+          Create Receptionist
+        </div>
+
+        <div class="card-body">
+
+          <form [formGroup]="form" (ngSubmit)="submit()" autocomplete="off">
+
+            <!-- FIRST NAME -->
+            <div class="mb-3">
+              <label class="form-label">First Name</label>
+              <input type="text" formControlName="firstName" class="form-control" />
+
+              @if (submitted() && f.firstName.errors) {
+                <p class="text-danger">
+                  First name is required
+                </p>
+              }
+            </div>
+
+            <!-- LAST NAME -->
+            <div class="mb-3">
+              <label class="form-label">Last Name</label>
+              <input type="text" formControlName="lastName" class="form-control" />
+
+              @if (submitted() && f.lastName.errors) {
+                <div class="text-danger">
+                  Last name is required
+                </div>
+              }
+            </div>
+
+            <!-- EMAIL -->
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" formControlName="email" class="form-control" />
+
+              @if (submitted() && f.email.errors) {
+                <div class="text-danger">
+                  @if (f.email.errors['required']) {
+                    <div>Email is required</div>
+                  }
+                  @if (f.email.errors['email']) {
+                    <div>Invalid email format</div>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- PASSWORD -->
+            <div class="mb-3">
+              <label class="form-label">Password</label>
+              <input type="password" formControlName="password" autocomplete="new-password" class="form-control" />
+
+              @if (submitted() && f.password.errors) {
+                <div class="text-danger">
+                  @if (f.password.errors['required']) {
+                    <div>Password is required</div>
+                  }
+                  @if (f.password.errors['minlength']) {
+                    <div>Password must be at least 6 characters</div>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- PHONE -->
+            <div class="mb-3">
+              <label class="form-label">Mobile No</label>
+              <input type="text" formControlName="phone" class="form-control" />
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="d-flex justify-content-end">
+              <a routerLink="/receptionists" class="btn btn-secondary me-2">
+                Cancel
+              </a>
+
+              <button type="submit" class="btn btn-primary" [disabled]="loading()">
+                @if (loading()) {
+                  <span class="spinner-border spinner-border-sm me-1"></span>
+                }
+                Create
+              </button>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

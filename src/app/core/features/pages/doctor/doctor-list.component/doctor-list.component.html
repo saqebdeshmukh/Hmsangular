@@ -1,0 +1,23 @@
+<div class="card shadow-sm">
+  <div class="card-header d-flex justify-content-between">
+    <h5>Doctor List</h5>
+
+    <button class="btn btn-success" routerLink="/doctor/create">
+      + Add Doctor
+    </button>
+  </div>
+
+  <div class="card-body">
+   
+      <ag-grid-angular
+        class="ag-theme-alpine"
+        style="width: 100%; height: 500px;"
+        [rowData]="rowData()"
+        [columnDefs]="columnDefs"
+        [pagination]="true"
+        [paginationPageSize]="10"
+      >
+      </ag-grid-angular>
+    
+  </div>
+</div>

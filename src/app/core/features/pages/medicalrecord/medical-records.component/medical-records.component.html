@@ -1,0 +1,67 @@
+<div class="container-fluid">
+
+  <!-- HEADER -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="text-success mb-0">Medical Records</h2>
+      <p class="text-muted mb-0">View all medical records</p>
+    </div>
+
+    @if (isDoctor()) {
+      <button class="btn btn-success" routerLink="/medical-records/create">
+        + New Record
+      </button>
+    }
+  </div>
+
+  <!-- FILTERS -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="row">
+
+        <div class="col-md-4">
+          <input type="text"
+                 [(ngModel)]="searchText"
+                 class="form-control"
+                 placeholder="Search...">
+        </div>
+
+        <div class="col-md-3">
+          <input type="date"
+                 [(ngModel)]="dateFilter"
+                 class="form-control">
+        </div>
+
+        <div class="col-md-2">
+          <button class="btn btn-outline-secondary w-100"
+                  (click)="clearFilters()">
+            Clear
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- GRID -->
+  <div class="card">
+    <div class="card-body">
+
+      
+        <ag-grid-angular
+          class="ag-theme-alpine"
+          style="width:100%; height:500px"
+          [rowData]="filteredRecords"
+          [columnDefs]="columnDefs">
+        </ag-grid-angular>
+
+        <p class="text-muted mt-3">
+          Showing {{ filteredRecords.length }} records
+        </p>
+
+      
+
+    </div>
+  </div>
+
+</div>

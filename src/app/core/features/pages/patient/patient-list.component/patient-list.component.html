@@ -1,0 +1,32 @@
+<div class="card shadow-sm">
+  <div class="card-header d-flex justify-content-between">
+    <h5>Patient List</h5>
+
+    <button class="btn btn-success" routerLink="/patients/create">
+      + Add Patient
+    </button>
+  </div>
+
+  <div class="card-body">
+   
+      <ag-grid-angular
+        class="ag-theme-alpine"
+        style="width: 100%; height: 500px;"
+        [rowData]="rowData()"
+        [columnDefs]="columnDefs"
+        [pagination]="true"
+        [paginationPageSize]="10"
+        (cellClicked)="onCellClicked($event)"
+      >
+      </ag-grid-angular>
+    
+  </div>
+ <app-appointment-modal
+  [show]="showModal()"
+  [doctors]="doctors()"
+  [patientId]="selectedPatientId()"
+  (close)="closeModal()"
+  (book)="handleBooking($event)"
+>
+</app-appointment-modal>
+</div>

@@ -1,0 +1,96 @@
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card shadow-sm">
+
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-file-medical me-2"></i>
+                    {{ isEdit ? 'Edit Medical Record' : 'Create Medical Record' }}
+                </h4>
+            </div>
+
+            <div class="card-body p-4">
+
+                <div class="alert alert-info mb-4">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="mb-1"><i class="bi bi-person me-2"></i>Patient</h6>
+                            <strong>{{ initialData?.patientName }}</strong>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="mb-1"><i class="bi bi-calendar me-2"></i>Appointment Date</h6>
+                            <strong>{{ initialData?.appointmentDate | date:'medium' }}</strong>
+                        </div>
+                    </div>
+
+                </div>
+                <h5 class="text-muted mb-3 border-bottom pb-2">
+                    <i class="bi bi-clipboard2-pulse me-2"></i>Medical Examination
+                </h5>
+                <form [formGroup]="form" (ngSubmit)="submit()">
+
+                    <!-- VISIT DATE -->
+                    <div class="mb-3">
+                        <label class="form-label">Visit Date *</label>
+                        <input type="datetime-local" formControlName="visitDate" class="form-control">
+
+                        @if (f.visitDate.touched && f.visitDate.invalid) {
+                        <small class="text-danger">Visit date required</small>
+                        }
+                    </div>
+
+                    <!-- SYMPTOMS -->
+                    <div class="mb-3">
+                        <label class="form-label"><i class="bi bi-activity me-1"></i>Symptoms *</label>
+                        <textarea formControlName="symptoms" class="form-control"
+                            placeholder="Fever, headache, fatigue, etc."></textarea>
+
+                        @if (f.symptoms.touched && f.symptoms.invalid) {
+                        <small class="text-danger">Required</small>
+                        }
+                    </div>
+
+                    <!-- DIAGNOSIS -->
+                    <div class="mb-3">
+                        <label class="form-label"><i class="bi bi-stethoscope me-1"></i>Diagnosis *</label>
+                        <textarea formControlName="diagnosis" class="form-control"
+                            placeholder="Enter the diagnosis based on examination"></textarea>
+
+                        @if (f.diagnosis.touched && f.diagnosis.invalid) {
+                        <small class="text-danger">Required</small>
+                        }
+                    </div>
+
+                    <!-- TREATMENT -->
+                    <div class="mb-3">
+                        <label class="form-label"><i class="bi bi-capsule me-1"></i>Treatment *</label>
+                        <textarea formControlName="treatment" class="form-control"
+                            placeholder="Describe the treatment plan and recommendations"></textarea>
+
+                        @if (f.treatment.touched && f.treatment.invalid) {
+                        <small class="text-danger">Required</small>
+                        }
+                    </div>
+
+                    <!-- NOTES -->
+                    <div class="mb-4">
+                        <label class="form-label"><i class="bi bi-pencil me-1"></i>Notes</label>
+                        <textarea formControlName="notes" class="form-control"
+                            placeholder="Any additional notes or follow-up instructions"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-secondary" routerLink="/appointments">
+                            Back
+                        </button>
+
+                        <button type="submit" class="btn btn-success">
+                            {{ isEdit ? 'Update Record' : 'Create Record' }}
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

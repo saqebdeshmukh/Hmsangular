@@ -1,0 +1,166 @@
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card shadow-sm">
+
+      <div class="card-header bg-info text-white">
+        <h4 class="mb-0">
+          {{ isEdit ? 'Edit Prescription' : 'Create Prescription' }}
+        </h4>
+      </div>
+
+      <div class="card-body p-4">
+
+        <!-- RECORD INFO -->
+        @if (record) {
+          <div class="alert alert-info mb-4">
+    <div class="row">
+        <div class="col-md-6">
+            <h6 class="mb-1"><i class="bi bi-person me-2"></i>Patient</h6>
+            <strong>{{ record.patientName }}</strong>
+        </div>
+        <div class="col-md-6">
+            <h6 class="mb-1"><i class="bi bi-clipboard2-pulse me-2"></i>Diagnosis</h6>
+            <strong>{{ record.diagnosis ?? "N/A" }}</strong>
+        </div>
+    </div>
+    <div class="mt-2">
+        <h6 class="mb-1"><i class="bi bi-calendar me-2"></i>Visit Date</h6>
+        <strong>{{ record.visitDate | date:'MMMM dd, yyyy' }}</strong>
+    </div>
+</div>
+        <!-- <div class="alert alert-info mb-4">
+          <strong>
+            {{ record.patientName }}
+          </strong>
+          <div>{{ record.diagnosis }}</div>
+        </div> -->
+        }
+
+        <form [formGroup]="form" (ngSubmit)="submit()">
+<h5 class="text-muted mb-3 border-bottom pb-2">
+    <i class="bi bi-capsule me-2"></i>Medication Details
+</h5>
+          @if (isReceptionist) {
+          <div class="row mb-3">
+
+            <div class="col-md-6">
+              <label class="form-label">Prescription Type</label>
+              <select formControlName="patientId" class="form-select">
+                <option value="">Select Patient</option>
+                @for (p of patients; track p.id) {
+                <option [value]="p.id">
+                  {{ p.firstName }} {{ p.lastName }}
+                </option>
+                }
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Doctor</label>
+              <select formControlName="doctorId" class="form-select">
+                <option value="">Select Doctor</option>
+                @for (d of doctors; track d.id) {
+                <option [value]="d.id">
+                  Dr. {{ d.firstName }} {{ d.lastName }}
+                </option>
+                }
+              </select>
+            </div>
+
+          </div>
+          }
+
+          <!-- TYPE -->
+          <div class="mb-3">
+            <label class="form-label">Prescription Type</label>
+            <select formControlName="type" class="form-select">
+              <option value="MedicalStore">Medical Store</option>
+              <option value="Internal">Internal</option>
+            </select>
+          </div>
+
+          <!-- ITEMS -->
+          <div formArrayName="items">
+
+            @for (item of items.controls; track $index; let i = $index) {
+            <div [formGroupName]="i" class="row mb-3">
+
+              <div class="col-md-3">
+                <label class="form-label">Medicine Name</label>
+                <input formControlName="medicineName" class="form-control" placeholder="Medicine">
+              </div>
+
+              <div class="col-md-2">
+                <label class="form-label">Dosage</label>
+                <input formControlName="dosage" class="form-control" placeholder="Dosage">
+              </div>
+
+              <div class="col-md-2">
+                <label class="form-label">Frequency</label>
+                <select formControlName="frequency" class="form-select">
+                  <option [value]="1">1</option>
+                  <option [value]="2">2</option>
+                  <option [value]="3">3</option>
+                  <option [value]="4">4</option>
+                </select>
+              </div>
+
+              <div class="col-md-2">
+                <label class="form-label">Duration</label>
+                <input type="text" formControlName="duration" class="form-control" placeholder="Days">
+              </div>
+
+              <div class="col-md-2">
+                <label class="form-label">Meal Timing</label>
+                <select formControlName="mealTiming" class="form-select">
+                  <option>After Meal</option>
+                  <option>Before Meal</option>
+                  <option>Anytime</option>
+                </select>
+              </div>
+
+              <div class="col-md-1">
+                <label class="form-label">Remove</label>
+                <button type="button" class="btn btn-danger" (click)="removeItem(i)">
+                  ×
+                </button>
+              </div>
+
+            </div>
+            }
+
+          </div>
+
+          <button type="button" class="btn btn-outline-primary mb-3" (click)="addItem()">
+            Add Medicine
+          </button>
+
+          <!-- QUICK ADD -->
+          <div class="mb-3">
+            <button type="button" class="btn btn-outline-secondary me-2"
+              (click)="quickAdd({ medicineName:'Paracetamol', dosage:'1 tablet', frequency:3, duration:'5', mealTiming:'After Meal' })">
+              Paracetamol
+            </button>
+
+            <button type="button" class="btn btn-outline-secondary"
+              (click)="quickAdd({ medicineName:'Ibuprofen', dosage:'1 tablet', frequency:3, duration:'5', mealTiming:'After Meal' })">
+              Ibuprofen
+            </button>
+          </div>
+
+          <!-- INSTRUCTIONS -->
+          <h5 class="text-muted mb-3 border-bottom pb-2">
+            <i class="bi bi-list me-2"></i>Instructions
+          </h5>
+          <textarea formControlName="instructions" class="form-control mb-3" placeholder="Instructions"></textarea>
+
+          <button class="btn btn-info">
+            {{ isEdit ? 'Update' : 'Create' }}
+          </button>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>

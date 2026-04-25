@@ -1,0 +1,65 @@
+<div class="container-fluid">
+
+  <!-- HEADER -->
+
+     <div class="d-flex justify-content-between align-items-center mb-4">
+       <div>
+           <h2 class="text-info mb-0"><i class="bi bi-prescription me-2"></i>Prescriptions</h2>
+       </div>
+       @if (role() == "Doctor")
+       {
+           <a routerLink="/prescription/create" class="btn btn-info mt-2">
+               <i class="bi bi-plus-circle me-2"></i>New Prescription
+           </a>
+       }
+   </div>
+
+  <!-- FILTERS -->
+  <div class="row mb-3">
+
+    <div class="col-md-3">
+      <input type="text" class="form-control"
+             placeholder="Search..."
+             (input)="search.set($any($event.target).value)">
+    </div>
+
+    <div class="col-md-2">
+      <input type="date" class="form-control"
+             (change)="dateFilter.set($any($event.target).value)">
+    </div>
+
+    @if (role() === 'Receptionist') {
+
+      <div class="col-md-2">
+        <select class="form-select"
+                (change)="patientFilter.set($any($event.target).value)">
+          <option value="">All Patients</option>
+        </select>
+      </div>
+
+      <div class="col-md-2">
+        <select class="form-select"
+                (change)="doctorFilter.set($any($event.target).value)">
+          <option value="">All Doctors</option>
+        </select>
+      </div>
+    }
+
+    <div class="col-md-2">
+      <button class="btn btn-outline-secondary w-100"
+              (click)="search.set(''); dateFilter.set('')">
+        Clear
+      </button>
+    </div>
+
+  </div>
+
+  <!-- GRID -->
+  <ag-grid-angular
+    class="ag-theme-alpine"
+    style="height: 500px"
+    [rowData]="filteredData()"
+    [columnDefs]="columnDefs">
+  </ag-grid-angular>
+
+</div>

@@ -1,0 +1,228 @@
+<div class="container-fluid">
+
+  @if (patient()) {
+
+  <!-- Breadcrumb -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a routerLink="/patients">Patients</a>
+        </li>
+        <li class="breadcrumb-item active">
+          {{ patient().firstName }} {{ patient().lastName }}
+        </li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="row">
+
+    <!-- LEFT CARD -->
+    <div class="col-lg-4 mb-4">
+      <div class="card h-100">
+
+        <div class="card-header bg-primary text-white">
+          Patient Information
+        </div>
+
+        <div class="card-body text-center">
+
+          <div class="avatar-large bg-primary text-white mx-auto mb-3">
+            {{ patient().firstName[0] }}{{ patient().lastName[0] }}
+          </div>
+
+          <h4>{{ patient().firstName }} {{ patient().lastName }}</h4>
+          <p class="text-muted">{{ patient().user?.email }}</p>
+
+          <hr />
+
+          <div class="text-start">
+
+            <p><small>DOB</small><br>
+              <strong>{{ patient().dateOfBirth | date:'MMM dd, yyyy' }}</strong>
+            </p>
+
+            <p><small>Age</small><br>
+              <strong>{{ age }} years</strong>
+            </p>
+
+            <p><small>Gender</small><br>
+              <strong>{{ patient().gender || 'N/A' }}</strong>
+            </p>
+
+            <p><small>Blood Group</small><br>
+              @if (patient().bloodGroup) {
+                <span class="badge bg-danger">{{ patient().bloodGroup }}</span>
+              } @else {
+                <strong>N/A</strong>
+              }
+            </p>
+
+            <p><small>Phone</small><br>
+              <strong>{{ patient().phone || 'N/A' }}</strong>
+            </p>
+
+            <p><small>Address</small><br>
+              <strong>{{ patient().address || 'N/A' }}</strong>
+            </p>
+
+            <p><small>Doctor</small><br>
+              <strong>
+                @if (patient().doctor) {
+                  Dr. {{ patient().doctor.firstName }} {{ patient().doctor.lastName }}
+                } @else { — }
+              </strong>
+            </p>
+
+          </div>
+
+        </div>
+
+        <!-- BOOK BUTTON -->
+        @if (role() === 'Admin' || role() === 'Receptionist') {
+          <div class="card-footer">
+            <button class="btn btn-primary w-100" (click)="openModal()">
+              Book Appointment
+            </button>
+          </div>
+        }
+
+      </div>
+    </div>
+
+    <!-- RIGHT SECTION -->
+    <div class="col-lg-8">
+      <div class="card">
+
+        <div class="card-header">
+          <ul class="nav nav-tabs">
+
+            <li class="nav-item">
+              <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#appointments">
+                Appointments ({{ patient().appointments?.length || 0 }})
+              </button>
+            </li>
+
+            <li class="nav-item">
+              <button class="nav-link" data-bs-toggle="tab" data-bs-target="#records">
+                Records ({{ patient().medicalRecords?.length || 0 }})
+              </button>
+            </li>
+
+            <li class="nav-item">
+              <button class="nav-link" data-bs-toggle="tab" data-bs-target="#prescriptions">
+                Prescriptions ({{ patient().prescriptions?.length || 0 }})
+              </button>
+            </li>
+
+          </ul>
+        </div>
+
+        <div class="card-body tab-content">
+
+          <!-- APPOINTMENTS -->
+          <div class="tab-pane fade show active" id="appointments">
+
+            @if (patient().appointments?.length > 0) {
+
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Doctor</th>
+                    <th>Status</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (a of patient().appointments; track a.id) {
+                    <tr>
+                      <td>{{ a.appointmentDate | date:'MMM dd, yyyy HH:mm' }}</td>
+                      <td>Dr. {{ a.doctor?.firstName }} {{ a.doctor?.lastName }}</td>
+                      <td>
+                        <span class="badge" [ngClass]="getStatusClass(a.status)">
+                          {{ a.status }}
+                        </span>
+                      </td>
+                      <td>
+                        <button class="btn btn-sm btn-outline-primary"
+                                (click)="viewAppointment(a.id)">
+                          <i class="fa fa-eye"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+
+            } @else {
+              <div class="text-center text-muted">No appointments</div>
+            }
+
+          </div>
+
+          <!-- RECORDS -->
+          <div class="tab-pane fade" id="records">
+
+            @if (patient().medicalRecords?.length > 0) {
+
+              @for (r of patient().medicalRecords; track r.id) {
+                <div class="list-group-item">
+                  <h6>{{ r.visitDate | date }}</h6>
+                  <small>Dr. {{ r.doctor?.firstName }}</small>
+                  <button class="btn btn-sm btn-link"
+                          (click)="viewRecord(r.id)">View</button>
+                </div>
+              }
+
+            } @else {
+              <div class="text-center text-muted">No records</div>
+            }
+
+          </div>
+
+          <!-- PRESCRIPTIONS -->
+          <div class="tab-pane fade" id="prescriptions">
+
+            @if (patient().prescriptions?.length > 0) {
+
+              <table class="table">
+                <tbody>
+                  @for (p of patient().prescriptions; track p.id) {
+                    <tr>
+                      <td>{{ p.medicineName }}</td>
+                      <td>
+                        <button (click)="viewPrescription(p.id)">
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+
+            }
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  }
+
+</div>
+
+<!-- MODAL -->
+<app-appointment-modal
+  [show]="showModal()"
+  [doctors]="doctors()"
+  [patientId]="patient()?.id"
+  (close)="closeModal()"
+  (book)="handleBooking($event)"
+>
+</app-appointment-modal>

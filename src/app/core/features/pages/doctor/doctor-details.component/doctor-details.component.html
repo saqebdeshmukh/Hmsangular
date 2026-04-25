@@ -1,0 +1,169 @@
+<div class="container-fluid">
+
+  <!-- @if (loading()) {
+    <div class="text-center py-5">Loading...</div>
+  } -->
+   @if (doctor()) {
+
+    <!-- Breadcrumb -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <nav>
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a routerLink="/doctors">Doctors</a>
+            </li>
+            <li class="breadcrumb-item active">
+              Dr. {{ doctor().firstName }} {{ doctor().lastName }}
+            </li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+
+    <div class="row">
+
+      <!-- Profile Card -->
+      <div class="col-lg-4 mb-4">
+        <div class="card h-100">
+
+          <div class="card-header bg-success text-white">
+            <h5><i class="bi bi-person-badge me-2"></i>Doctor Profile</h5>
+          </div>
+
+          <div class="card-body text-center">
+
+            <!-- Avatar -->
+            <div class="avatar-large bg-success text-white mx-auto mb-3">
+              {{ doctor().firstName[0] }}{{ doctor().lastName[0] }}
+            </div>
+
+            <h4>Dr. {{ doctor().firstName }} {{ doctor().lastName }}</h4>
+
+            <span class="badge bg-info fs-6">
+              {{ doctor().specialization }}
+            </span>
+
+            <hr />
+
+            <div class="text-start">
+              <p><small>Email:</small><br><strong>{{ doctor().email }}</strong></p>
+              <p><small>Phone:</small><br><strong>{{ doctor().phone || 'N/A' }}</strong></p>
+              <p>
+                <small>Consultation Fee:</small><br>
+                <strong class="text-success">
+                  ₹{{ doctor().consultationFee }}
+                </strong>
+              </p>
+              <p>
+                <small>Joined:</small><br>
+                <strong>{{ doctor().createdAt | date:'MMMM dd, yyyy' }}</strong>
+              </p>
+            </div>
+
+          </div>
+
+          @if (role() === 'Patient') {
+            <div class="card-footer">
+              <button class="btn btn-primary w-100"
+                      (click)="bookAppointment()">
+                Book Appointment
+              </button>
+            </div>
+          }
+
+        </div>
+      </div>
+
+      <!-- Appointments -->
+      <div class="col-lg-8">
+        <div class="card">
+
+          <div class="card-header d-flex justify-content-between">
+            <h5>Appointments</h5>
+            <span class="badge bg-primary">
+              {{ doctor().appointments?.length || 0 }} total
+            </span>
+          </div>
+
+          <div class="card-body">
+
+            @if (doctor().appointments?.length > 0) {
+
+              <!-- Tabs -->
+              <ul class="nav nav-pills mb-3">
+                <li class="nav-item">
+                  <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#upcoming">
+                    Today ({{ rowDataForToday().length }})
+                  </button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link" data-bs-toggle="pill" data-bs-target="#recent">
+                    Completed ({{ rowDataForCompleted().length }})
+                  </button>
+                </li>
+              </ul>
+
+              <div class="tab-content">
+
+                <!-- Upcoming -->
+                <div class="tab-pane fade show active" id="upcoming">
+
+                  @if (rowDataForToday().length > 0) {
+
+                   <ag-grid-angular
+        class="ag-theme-alpine"
+        style="width: 100%; height: 500px;"
+        [rowData]="rowDataForToday()"
+        [columnDefs]="columnDefs"
+        [pagination]="true"
+        [paginationPageSize]="10"
+      >
+      </ag-grid-angular>
+
+                  } @else {
+                    <div class="text-center text-muted py-4">
+                      No upcoming appointments
+                    </div>
+                  }
+
+                </div>
+
+                <!-- Recent -->
+                <div class="tab-pane fade" id="recent">
+
+                  @if (rowDataForCompleted.length > 0) {
+
+                    <ag-grid-angular
+        class="ag-theme-alpine"
+        style="width: 100%; height: 500px;"
+        [rowData]="rowDataForCompleted()"
+        [columnDefs]="columnDefs"
+        [pagination]="true"
+        [paginationPageSize]="10"
+      >
+      </ag-grid-angular>
+
+                  } @else {
+                    <div class="text-center text-muted py-4">
+                      No completed appointments
+                    </div>
+                  }
+
+                </div>
+
+              </div>
+
+            } @else {
+              <div class="text-center py-5 text-muted">
+                No appointments found
+              </div>
+            }
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  }
+</div>

@@ -1,0 +1,134 @@
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid px-4">
+
+        <!-- Logo -->
+        <a class="navbar-brand d-flex align-items-center gap-2" routerLink="/">
+            <img src="assets/healthcare-logo.svg" style="height:35px;width:35px;">
+            <span>Healthcare</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarMain">
+
+            <!-- LEFT MENU -->
+            <ul class="navbar-nav me-auto">
+
+                <!-- ADMIN -->
+                @if(role() == 'Admin'){
+                <ng-container>
+                    <li class="nav-item"><a class="nav-link" routerLink="/admin"><i class="fas fa-th-large me-1"></i>Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" routerLink="/patients"><i class="fas fa-users me-1"></i>Patients</a></li>
+                    <li class="nav-item"><a class="nav-link" routerLink="/doctors"><i class="fas fa-user-md me-1"></i>Doctors</a></li>
+                    <li class="nav-item"><a class="nav-link" routerLink="/receptionists"><i class="fas fa-user-tie me-1"></i>Receptionists</a></li>
+                    <li class="nav-item"><a class="nav-link" routerLink="/appointments"><i class="fas fa-calendar-alt me-1"></i>Appointments</a></li>
+                    <li class="nav-item"><a class="nav-link" routerLink="/records"><i class="fas fa-file-medical me-1"></i>Records</a></li>
+                    <li class="nav-item"><a class="nav-link" routerLink="/prescriptions"><i class="fas fa-prescription me-1"></i>Prescriptions</a></li>
+                    <li class="nav-item"><a class="nav-link" routerLink="/receptionists"><i class="fas fa-user-tie me-1"></i>Receptionists</a></li>
+                </ng-container>
+                }
+
+
+                <!-- DOCTOR -->
+                @if(role() == 'Doctor'){
+                <ng-container>
+                    <li class="nav-item"><a class="nav-link" routerLink="/doctordashboard"><i class="fas fa-home me-1"></i>Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" routerLink="/appointments"><i class="fas fa-calendar-alt me-1"></i>My Appointments</a></li>
+                    <li class="nav-item"><a class="nav-link" routerLink="/patients"><i class="fas fa-users me-1"></i>Patients</a></li>
+                    <li class="nav-item"><a class="nav-link" routerLink="/medical-records"><i class="fas fa-file-medical me-1"></i>Medical Records</a></li>
+                    <li class="nav-item"><a class="nav-link" routerLink="/prescriptions"><i class="fas fa-prescription me-1"></i>Prescriptions</a></li>
+                    <li class="nav-item"><a class="nav-link" routerLink="/receptionists"><i class="fas fa-user-tie me-1"></i>Receptionists</a></li>
+                </ng-container>
+                }
+
+                <!-- PATIENT -->
+                @if(role() == 'Patient'){
+                <ng-container>
+                    <li class="nav-item"><a class="nav-link" routerLink="/patient"><i class="fas fa-home me-1"></i>Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" routerLink="/doctors"><i class="fas fa-user-md me-1"></i>Find Doctors</a></li>
+                    <li class="nav-item"><a class="nav-link" routerLink="/book"><i class="fas fa-calendar-plus me-1"></i>Book Appointment</a></li>
+                    <li class="nav-item"><a class="nav-link" routerLink="/my-records"><i class="fas fa-file-medical me-1"></i>My Records</a></li>
+                    <li class="nav-item"><a class="nav-link" routerLink="/my-prescriptions"><i class="fas fa-prescription me-1"></i>My Prescriptions</a></li>
+                </ng-container>
+                }
+
+                <!-- RECEPTIONIST -->
+                @if(role() == 'Receptionist'){
+                <ng-container>
+                    <li class="nav-item"><a class="nav-link" routerLink="/receptionistdashboard"><i class="fas fa-home me-1"></i>Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" routerLink="/appointments"><i class="fas fa-calendar-alt me-1"></i>Appointments</a></li>
+                    <li class="nav-item"><a class="nav-link" routerLink="/patients"><i class="fas fa-users me-1"></i>Patients</a></li>
+                    <li class="nav-item"><a class="nav-link" routerLink="/prescriptions"><i class="fas fa-prescription me-1"></i>Prescriptions</a></li>
+                </ng-container>
+                }
+                <!-- PUBLIC -->
+                @if(!role()){
+                <ng-container>
+                    <li class="nav-item"><a class="nav-link" routerLink="/"><i class="fas fa-home me-1"></i>Home</a></li>
+                    <li class="nav-item"><a class="nav-link" routerLink="/doctors"><i class="fas fa-user-md me-1"></i>Doctors</a></li>
+                </ng-container>
+                }
+            </ul>
+
+            <!-- RIGHT MENU -->
+            <!-- RIGHT MENU -->
+<ul class="navbar-nav">
+
+    @if (role()) {
+
+        <!-- LOGGED IN -->
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="fas fa-user-circle me-1"></i> {{ role() ?? 'No Role' }}
+            </a>
+
+            <ul class="dropdown-menu dropdown-menu-end">
+
+                @if (role() === 'Patient') {
+                <li>
+                    <a class="dropdown-item" routerLink="/patient-profile">My Profile</a>
+                </li>
+                }
+
+                @if (role() === 'Doctor') {
+                <li>
+                    <a class="dropdown-item" routerLink="/doctor-profile">My Profile</a>
+                </li>
+                }
+
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+
+                <li>
+                    <button class="dropdown-item text-danger" (click)="logout()">
+                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                    </button>
+                </li>
+            </ul>
+        </li>
+
+    } @else {
+
+        <!-- GUEST -->
+        <li class="nav-item">
+            <a class="nav-link" routerLink="/login">
+                <i class="fas fa-sign-in-alt me-1"></i>Login
+            </a>
+        </li>
+
+        <li class="nav-item ms-2">
+            <a class="btn btn-primary px-3" routerLink="/register">
+                Register
+            </a>
+        </li>
+
+    }
+
+</ul>
+
+        </div>
+    </div>
+</nav>

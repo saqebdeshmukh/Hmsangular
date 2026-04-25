@@ -1,0 +1,152 @@
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+
+        <div class="card shadow-sm">
+
+            <!-- HEADER -->
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-person-plus-fill me-2"></i>
+                    {{ isEdit ? 'Edit Doctor' : 'Add New Doctor' }}
+                </h4>
+            </div>
+
+            <div class="card-body p-4">
+
+                <form [formGroup]="form" (ngSubmit)="submit()">
+
+                    <!-- ACCOUNT -->
+                    <h5 class="text-muted mb-3 border-bottom pb-2">
+                        Account Information
+                    </h5>
+
+                    <div class="row mb-3">
+
+                        <div class="col-md-6">
+                            <label>Email *</label>
+                            <input formControlName="userEmail" class="form-control">
+
+                            @if (f.userEmail.touched && f.userEmail.invalid) {
+                            <small class="text-danger">Valid email required</small>
+                            }
+                        </div>
+
+                        @if (!isEdit) {
+                        <div class="col-md-6">
+                            <label>Password *</label>
+                            <input type="password" formControlName="userPassword" class="form-control">
+
+                            @if (f.userPassword.touched && f.userPassword.invalid) {
+                            <small class="text-danger">Min 6 characters</small>
+                            }
+                        </div>
+                        }
+
+                    </div>
+
+                    <hr>
+
+                    <!-- PERSONAL -->
+                    <h5 class="text-muted mb-3 border-bottom pb-2">
+                        Personal Information
+                    </h5>
+
+                    <div class="row mb-3">
+
+                        <div class="col-md-6">
+                            <input formControlName="firstName" class="form-control" placeholder="First Name">
+
+                            @if (f.firstName.touched && f.firstName.invalid) {
+                            <small class="text-danger">First name required</small>
+                            }
+                        </div>
+
+                        <div class="col-md-6">
+                            <input formControlName="lastName" class="form-control" placeholder="Last Name">
+
+                            @if (f.lastName.touched && f.lastName.invalid) {
+                            <small class="text-danger">Last name required</small>
+                            }
+                        </div>
+
+                    </div>
+
+                    <hr>
+
+                    <!-- PROFESSIONAL -->
+                    <h5 class="text-muted mb-3 border-bottom pb-2">
+                        Professional Information
+                    </h5>
+
+                    <div class="row mb-3">
+
+                        <div class="col-md-6">
+                            <select formControlName="specialization" class="form-select">
+                                <option value="">Select Specialization</option>
+
+                                @for (s of specializations; track s) {
+                                <option [value]="s">{{ s }}</option>
+                                }
+                            </select>
+
+                            @if (f.specialization.touched && f.specialization.invalid) {
+                            <small class="text-danger">Select specialization</small>
+                            }
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" formControlName="consultationFee" class="form-control">
+                            </div>
+
+                            @if (f.consultationFee.touched && f.consultationFee.invalid) {
+                            <small class="text-danger">Valid fee required</small>
+                            }
+                        </div>
+
+                    </div>
+
+                    <hr>
+
+                    <!-- CONTACT -->
+                    <h5 class="text-muted mb-3 border-bottom pb-2">
+                        Contact Information
+                    </h5>
+
+                    <div class="row mb-4">
+
+                        <div class="col-md-6">
+                            <input formControlName="phone" class="form-control" placeholder="Phone">
+                        </div>
+
+                        <div class="col-md-6">
+                            <input formControlName="email" class="form-control" placeholder="Professional Email">
+
+                            @if (f.email.touched && f.email.invalid) {
+                            <small class="text-danger">Invalid email</small>
+                            }
+                        </div>
+
+                    </div>
+
+                    <!-- ACTIONS -->
+                    <div class="d-flex justify-content-between">
+
+                        <button type="button" class="btn btn-outline-secondary" routerLink="/doctors">
+                            Back
+                        </button>
+
+                        <button type="submit" class="btn btn-success">
+                            {{ isEdit ? 'Update Doctor' : 'Create Doctor' }}
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>

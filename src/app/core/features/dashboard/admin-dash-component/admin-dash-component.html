@@ -1,0 +1,203 @@
+<div class="container-fluid px-4 py-4">
+
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+        <div>
+            <h1 class="page-title mb-1">Admin Dashboard</h1>
+            <p class="page-subtitle mb-0">System overview and management controls.</p>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+            <a routerLink="/patients/create" class="btn btn-outline-primary">
+                <i class="fas fa-user-plus me-1"></i> Add Patient
+            </a>
+
+            <a routerLink="/doctor/create" class="btn btn-primary">
+                <i class="fas fa-user-md me-1"></i> Add Doctor
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+
+  @if (stats()) {
+
+    @for (item of statsConfig; track item.key) {
+
+      <div class="col-6 col-xl-2 col-lg-4">
+        <div class="stat-card">
+
+          <div class="d-flex justify-content-between align-items-start">
+
+            <!-- TEXT -->
+            <div>
+              <p class="stat-label mb-1">{{ item.label }}</p>
+              <h3 class="stat-value mb-0">
+                {{ stats()[item.key] }}
+              </h3>
+            </div>
+
+            <!-- ICON -->
+            <div class="stat-icon"
+                 [ngStyle]="{ background: item.bg, color: item.color }">
+              <i [class]="item.icon"></i>
+            </div>
+
+          </div>
+
+          <!-- FOOTER -->
+          <div class="mt-3 pt-3 border-top">
+
+            @if (item.route) {
+              <a [routerLink]="item.route"
+                 class="text-decoration-none small">
+                View <i class="fas fa-arrow-right ms-1"></i>
+              </a>
+            } @else {
+              <span class="small text-muted">
+                {{ item.label === 'Pending' ? 'Scheduled visits' : 'Finished visits' }}
+              </span>
+            }
+
+          </div>
+
+        </div>
+      </div>
+
+    }
+
+  }
+
+</div>
+
+    <!-- Quick Actions -->
+    <div class="card mb-4">
+        <div class="card-header">Quick Actions</div>
+
+        <div class="card-body">
+            <div class="row g-2">
+
+                <!-- Add Patient -->
+      <div class="col-6 col-md-3 col-lg-2">
+        <a routerLink="/patients/create"
+           class="btn btn-outline-primary w-100 h-100 py-3 d-flex flex-column align-items-center">
+          <i class="fas fa-user-plus mb-2"></i>
+          <span class="small">Add Patient</span>
+        </a>
+      </div>
+
+      <!-- Add Doctor -->
+      <div class="col-6 col-md-3 col-lg-2">
+        <a routerLink="/doctor/create"
+           class="btn btn-outline-success w-100 h-100 py-3 d-flex flex-column align-items-center">
+          <i class="fas fa-user-md mb-2"></i>
+          <span class="small">Add Doctor</span>
+        </a>
+      </div>
+
+      <!-- New Appointment -->
+      <div class="col-6 col-md-3 col-lg-2">
+        <a routerLink="/appointments/create"
+           class="btn btn-outline-info w-100 h-100 py-3 d-flex flex-column align-items-center">
+          <i class="fas fa-calendar-plus mb-2"></i>
+          <span class="small">New Appointment</span>
+        </a>
+      </div>
+
+      <!-- Calendar -->
+      <div class="col-6 col-md-3 col-lg-2">
+        <a routerLink="/appointments/calendar"
+           class="btn btn-outline-warning w-100 h-100 py-3 d-flex flex-column align-items-center">
+          <i class="fas fa-calendar-alt mb-2"></i>
+          <span class="small">Calendar</span>
+        </a>
+      </div>
+
+      <!-- Records -->
+      <div class="col-6 col-md-3 col-lg-2">
+        <a routerLink="/records"
+           class="btn btn-outline-secondary w-100 h-100 py-3 d-flex flex-column align-items-center">
+          <i class="fas fa-file-medical mb-2"></i>
+          <span class="small">Records</span>
+        </a>
+      </div>
+
+      <!-- Prescriptions -->
+      <div class="col-6 col-md-3 col-lg-2">
+        <a routerLink="/prescriptions"
+           class="btn btn-outline-secondary w-100 h-100 py-3 d-flex flex-column align-items-center">
+          <i class="fas fa-prescription mb-2"></i>
+          <span class="small">Prescriptions</span>
+        </a>
+      </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Appointments -->
+    <div class="card">
+
+        <div class="card-header d-flex justify-content-between">
+            <span>Recent Appointments</span>
+            <a routerLink="/appointments" class="btn btn-sm btn-primary">View All</a>
+        </div>
+
+        <div class="card-body p-0">
+
+            @if (recentAppointments().length > 0) {
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @for (appt of recentAppointments(); track appt.id) {
+                    <tr>
+                        <td>
+                            {{ appt.appointmentDate | date:'MMM dd, yyyy' }} <br>
+                            <small>{{ appt.appointmentDate | date:'hh:mm a' }}</small>
+                        </td>
+
+                        <td>
+                            {{ appt.patient?.firstName }} {{ appt.patient?.lastName }}
+                        </td>
+
+                        <td>
+                            Dr. {{ appt.doctor?.firstName }} {{ appt.doctor?.lastName }}
+                        </td>
+
+                        <td>
+                            {{ appt.reason }}
+                        </td>
+
+                        <td>
+                            <span class="badge"
+                                  [ngClass]="{
+                                    'bg-warning': appt.status === 'Scheduled',
+                                    'bg-success': appt.status === 'Completed',
+                                    'bg-danger': appt.status === 'Cancelled'
+                                  }">
+                                {{ appt.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+            } @else {
+            <div class="text-center p-4">
+                No Appointments Found
+            </div>
+            }
+
+        </div>
+    </div>
+
+</div>
