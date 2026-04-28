@@ -11,7 +11,7 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class MedicalRecordFormComponent implements OnChanges {
   private fb = inject(FormBuilder);
- private route = inject(ActivatedRoute);
+  private route = inject(ActivatedRoute);
   @Input() initialData: any = null;
   @Input() appointment: any = null;
   @Input() isEdit = false;
@@ -23,12 +23,18 @@ export class MedicalRecordFormComponent implements OnChanges {
     appointmentId: ['', Validators.required],
     patientId: ['', Validators.required],
     doctorId: ['', Validators.required],
-
     visitDate: ['', Validators.required],
     symptoms: ['', Validators.required],
     diagnosis: ['', Validators.required],
     treatment: ['', Validators.required],
-    notes: ['']
+    notes: [''],
+    weight: [''],
+    height: [''],
+    diastolicBp: [''],
+    systolicBp: [''],
+    sugarBeforeMeal: [''],
+    sugarAfterMeal: [''],
+    reason: ['']
   });
 
   ngOnChanges(changes: SimpleChanges) {
@@ -46,6 +52,12 @@ export class MedicalRecordFormComponent implements OnChanges {
         symptoms: data.symptoms,
         diagnosis: data.diagnosis,
         treatment: data.treatment,
+        weight: data.weight,
+        height: data.height,
+        diastolicBp: data.diastolicBp,
+        systolicBp: data.systolicBp,
+        sugarBeforeMeal: data.sugarBeforeMeal,
+        sugarAfterMeal: data.sugarAfterMeal,
         notes: data.notes
       });
 
@@ -59,16 +71,23 @@ export class MedicalRecordFormComponent implements OnChanges {
         appointmentId: a.id,
         patientId: a.patientId,
         doctorId: a.doctorId,
+        weight: a.weight,
+        height: a.height,
+        diastolicBp: a.diastolicBp,
+        systolicBp: a.systolicBp,
+        sugarBeforeMeal: a.sugarBeforeMeal,
+        sugarAfterMeal: a.sugarAfterMeal,
+
         visitDate: this.formatDate(new Date().toISOString()) // ✅ FIX
       });
     }
   }
 
   formatDate(date: string) {
-  if (!date) return '';
-  const d = new Date(date);
-  return d.toISOString().slice(0, 16);
-}
+    if (!date) return '';
+    const d = new Date(date);
+    return d.toISOString().slice(0, 16);
+  }
 
   get f() {
     return this.form.controls;
@@ -77,12 +96,10 @@ export class MedicalRecordFormComponent implements OnChanges {
   submit() {
     console.log('Submit clicked');
     if (this.form.invalid) {
-      console.log(this.form.value);
-      console.log(this.form.errors);
       this.form.markAllAsTouched();
       return;
     }
-console.log('Form valid'); // 👈 confirm
+    console.log('Form valid'); // 👈 confirm
     this.formSubmit.emit(this.form.getRawValue());
   }
 }

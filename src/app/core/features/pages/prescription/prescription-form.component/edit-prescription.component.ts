@@ -48,7 +48,18 @@ export class EditPrescriptionComponent {
   }
 
   update(data: any) {
-    this.service.updatePrescription(data.id, data).subscribe({
+     const payload = {
+    ...data,
+    prescriptionItemRequests: data.items.map((item: any) => ({
+      ...item,
+      duration: item.duration?.toString() // optional safety
+    }))
+  };
+
+  delete payload.items;
+
+  console.log('Final payload:', payload);
+    this.service.updatePrescription(data.id, payload).subscribe({
       next: (res: any) => {
         this.toastr.success(res.message || 'Prescription updated successfully');
         this.router.navigate(['/prescriptions']);

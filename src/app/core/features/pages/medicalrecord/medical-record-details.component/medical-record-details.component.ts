@@ -1,7 +1,8 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MedicalRecordService } from '../../../../services/medicarecord.service';
+import { AuthService } from '../../../../services/auth.services';
 
 @Component({
   selector: 'app-medical-record-details',
@@ -15,9 +16,10 @@ export class MedicalRecordDetailsComponent {
   private service = inject(MedicalRecordService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private auth = inject(AuthService);
   successMessage: string | null = null;
   record = signal<any>(null);
-  role = 'Doctor'; // 👉 replace with your auth service
+  role = computed(() => this.auth.user()?.role);
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');

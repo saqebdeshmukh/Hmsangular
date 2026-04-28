@@ -61,7 +61,7 @@
                 </div>
 
                 <!-- ACTIONS -->
-                @if (isAdmin() || (isDoctor() && a.status === 'Scheduled')) {
+                <!-- @if (isAdmin() || (isDoctor())) { -->
                 <div class="card-footer">
 
                     @if (isAdmin()) {
@@ -76,9 +76,10 @@
                     </div>
                     }
 
-                    @if (isDoctor() && a.status === 'Scheduled') {
+                    @if (isDoctor() && a.status == "Scheduled") {
+
                     <div class="d-grid gap-2">
-                        <a [routerLink]="['/medical-record/create', a.id]" class="btn btn-success">
+                        <a [routerLink]="['/medical-records/create', a.id]" class="btn btn-success">
                             Create Medical Record
                         </a>
 
@@ -89,7 +90,7 @@
                     }
 
                 </div>
-                }
+                <!-- } -->
 
             </div>
         </div>

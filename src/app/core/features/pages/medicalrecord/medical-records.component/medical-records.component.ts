@@ -44,7 +44,7 @@ export class MedicalRecordsComponent {
       headerName: 'Doctor',
       flex: 1,
       valueGetter: (p: any) =>
-        `Dr. ${p.data.doctor?.firstName} ${p.data.doctor?.lastName}`
+        `Dr. ${p.data.doctorName}`
     }] : []),
 
     {

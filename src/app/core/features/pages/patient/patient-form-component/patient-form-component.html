@@ -1,7 +1,7 @@
 <form [formGroup]="form" (ngSubmit)="submit(false)">
 
   <!-- ADMIN DOCTOR SELECT -->
-  @if (auth.user()?.role === 'Admin') {
+  <!-- @if (auth.user()?.role === 'Admin') {
   <div class="mb-3">
     <label class="form-label">Assign Doctor</label>
     <select formControlName="doctorId" class="form-select">
@@ -14,7 +14,7 @@
       }
     </select>
   </div>
-  }
+  } -->
 
   <!-- PERSONAL -->
   <h5 class="text-muted mb-3 border-bottom pb-2">
@@ -97,16 +97,25 @@
       <input formControlName="height" class="form-control" placeholder="Height (e.g. 175cm)">
     </div>
 
+  </div>
+  <div class="row mb-3">
     <div class="col-md-3">
-      <label class="form-label">Blood Pressure</label>
-      <input formControlName="bloodPressure" class="form-control" placeholder="BP (e.g. 120/80)">
+      <label class="form-label">Diastolic BP</label>
+      <input formControlName="diastolicBp" class="form-control" placeholder="Sugar (e.g. 90 mg/dL)">
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">Systolic BP</label>
+      <input formControlName="systolicBp" class="form-control" placeholder="BP (e.g. 120/80)">
     </div>
 
     <div class="col-md-3">
-      <label class="form-label">Sugar</label>
-      <input formControlName="sugar" class="form-control" placeholder="Sugar (e.g. 90 mg/dL)">
+      <label class="form-label">Sugar (Before Meal)</label>
+      <input formControlName="sugarBeforeMeal" class="form-control" placeholder="Sugar (e.g. 90 mg/dL)">
     </div>
-
+    <div class="col-md-3">
+      <label class="form-label">Sugar (After Meal)</label>
+      <input formControlName="sugarAfterMeal" class="form-control" placeholder="BP (e.g. 120/80)">
+    </div>
   </div>
   <!-- CONTACT -->
   <h5 class="text-muted mb-3 border-bottom pb-2">
@@ -145,36 +154,35 @@
     </button>
 
   </div>
-@if (showModal()) {
-<div class="modal d-block" style="background: rgba(0,0,0,0.5)">
-  <div class="modal-dialog">
-    <div class="modal-content">
+  @if (showModal()) {
+  <div class="modal d-block" style="background: rgba(0,0,0,0.5)">
+    <div class="modal-dialog">
+      <div class="modal-content">
 
-      <div class="modal-body">
+        <div class="modal-body">
 
-        <select class="form-select mb-2"
-                  formControlName="doctorId" >
+          <select class="form-select mb-2" formControlName="doctorId">
             <option value="">Select Doctor</option>
 
             @for (d of doctors; track d.id) {
-              <option [value]="d.id">
-                Dr. {{ d.firstName }} {{ d.lastName }}
-              </option>
+            <option [value]="d.id">
+              Dr. {{ d.firstName }} {{ d.lastName }}
+            </option>
             }
           </select>
-        <input formControlName="reason" class="form-control" placeholder="Reason">
+          <input formControlName="reason" class="form-control" placeholder="Reason">
+
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+          <button class="btn btn-primary" (click)="confirmBooking()">Confirm</button>
+        </div>
 
       </div>
-
-      <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="closeModal()">Cancel</button>
-        <button class="btn btn-primary" (click)="confirmBooking()">Confirm</button>
-      </div>
-
     </div>
   </div>
-</div>
-}
+  }
 </form>
 
 <!-- MODAL -->

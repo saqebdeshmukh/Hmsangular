@@ -65,7 +65,7 @@
                     </div>
 
                     <div class="col-md-2 text-end">
-                      <a [routerLink]="['appointmentDetails', appointment.id]"
+                      <a [routerLink]="['/appointmentDetails', appointment.id]"
                          class="btn btn-sm"
                          [ngClass]="appointment.status === 'Scheduled' ? 'btn-primary' : 'btn-outline-primary'">
                         {{ appointment.status === 'Scheduled' ? 'Start' : 'View' }}

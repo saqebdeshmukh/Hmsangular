@@ -134,6 +134,11 @@ openModal() {
     this.appointmentService.createAppointment(data).subscribe({
       next: (res : any) => {
         this.selectedPatientId.set('');
+        if (!res.isSuccess) {
+        this.toastr.error(res.message || 'Something went wrong', 'Error');
+        return;
+      }
+
         this.toastr.success(res.message || 'Appointment booked successfully', 'Success');
       }
     // 🔥 optional: refresh patient data

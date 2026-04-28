@@ -1,0 +1,29 @@
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0"><i class="bi bi-prescription me-2"></i>Create Prescription</h4>
+            </div>
+            <div class="card-body">
+                <h5 class="text-muted mb-4">Select a Medical Record</h5>
+                @if(medicalRecords().length>0){
+                <div class="list-group">
+                    @for(rec of medicalRecords(); track rec.id)
+                    {
+                    <a [routerLink]="['/prescription/create', rec.id]" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">{{rec.patientName}}</h6>
+                            <small class="text-muted">
+                                {{rec.visitDate | date :"MMM dd, yyyy"}} - {{rec.diagnosis ?? "No diagnosis"}}
+                            </small>
+                        </div>
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                    }
+                </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -97,7 +97,7 @@
 
       <!-- New Appointment -->
       <div class="col-6 col-md-3 col-lg-2">
-        <a routerLink="/appointments/create"
+        <a routerLink="/patients"
            class="btn btn-outline-info w-100 h-100 py-3 d-flex flex-column align-items-center">
           <i class="fas fa-calendar-plus mb-2"></i>
           <span class="small">New Appointment</span>
@@ -115,10 +115,10 @@
 
       <!-- Records -->
       <div class="col-6 col-md-3 col-lg-2">
-        <a routerLink="/records"
+        <a routerLink="/medical-records"
            class="btn btn-outline-secondary w-100 h-100 py-3 d-flex flex-column align-items-center">
           <i class="fas fa-file-medical mb-2"></i>
-          <span class="small">Records</span>
+          <span class="small">Medical Records</span>
         </a>
       </div>
 
@@ -166,11 +166,11 @@
                         </td>
 
                         <td>
-                            {{ appt.patient?.firstName }} {{ appt.patient?.lastName }}
+                            {{ appt.patientName }}
                         </td>
 
                         <td>
-                            Dr. {{ appt.doctor?.firstName }} {{ appt.doctor?.lastName }}
+                            Dr. {{ appt.doctorName }}
                         </td>
 
                         <td>

@@ -113,6 +113,7 @@ export class PrescriptionFormComponent implements OnChanges {
 
   submit() {
     if (this.form.invalid) {
+      console.log('Form is invalid:', this.form.errors, this.form.value);
       this.form.markAllAsTouched();
       return;
     }

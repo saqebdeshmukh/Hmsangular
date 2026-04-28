@@ -1,1 +1,147 @@
-<p>prescription-print.component works!</p>
+@if (prescription()) {
+<button class="print-btn no-print" (click)="print()">
+        🖨️ Print Prescription
+    </button>
+<div class="print-wrapper">
+
+    
+
+    <div class="prescription">
+
+        <!-- HEADER -->
+        <div class="header">
+            <h1>🏥 Healthcare Medical Center</h1>
+            <p>123 Healthcare Street, Medical City | Phone: (555) 123-4567</p>
+            <p>Email: info@healthcaremedical.com | www.healthcaremedical.com</p>
+        </div>
+
+        <div class="rx-symbol">℞</div>
+
+        <!-- PATIENT INFO -->
+        <div class="info-section">
+
+            <div class="info-box">
+                <h4>Patient Information</h4>
+                <p><strong>
+                        {{ prescription().patientName }}
+                    </strong></p>
+                <p>Email: {{ prescription().patient?.user?.email }}</p>
+
+                @if (prescription().patient?.phone) {
+                <p>Phone: {{ prescription().patient.phone }}</p>
+                }
+            </div>
+
+            <div class="info-box right" style="text-align: right;">
+                <h4>Prescription Date</h4>
+                <p><strong>
+                        {{ prescription().prescriptionDate | date:'MMMM dd, yyyy' }}
+                    </strong></p>
+                @if (prescription()) {
+                <p>
+                    Rx #: {{ prescription().id?.slice(0,8)?.toUpperCase() }}
+                </p>
+                }
+            </div>
+
+        </div>
+
+        <!-- MEDICINES -->
+        <div class="medicine-section">
+
+            @if (prescription().prescriptionItemRequests?.length > 0) {
+
+            @for (item of prescription().prescriptionItemRequests; track item.id) {
+            <div class="medicine-block">
+
+                <div class="medicine-name">
+                     {{ item.medicineName }}
+                </div>
+
+                <div class="medicine-details">
+
+                    <div class="medicine-detail">
+                        <label>Dose</label>
+                        <span>{{ item.dosage }}</span>
+                    </div>
+
+                    <div class="medicine-detail">
+                        <label>Frequency</label>
+                        <span>{{ item.frequency }} time(s)/day</span>
+                    </div>
+
+                    <div class="medicine-detail">
+                        <label>Duration</label>
+                        <span>{{ item.duration }} day(s)</span>
+                    </div>
+
+                    <div class="medicine-detail">
+                        <label>Timing</label>
+                        <span>{{ item.mealTiming }}</span>
+                    </div>
+
+                </div>
+
+                <div class="auto-line">
+                    👉 {{ item.dosage }},
+                    {{ item.frequency }} time(s) daily for
+                    {{ item.duration }} day(s),
+                    {{ item.mealTiming }}
+                </div>
+
+            </div>
+            }
+
+            }
+
+            @if (prescription().instructions) {
+            <div class="instructions">
+                <h5>⚠️ Special Instructions</h5>
+                <p>{{ prescription().instructions }}</p>
+            </div>
+            }
+
+        </div>
+
+        <!-- MEDICAL RECORD -->
+        @if (prescription().medicalRecord) {
+        <div class="diagnosis-box">
+            <h5>Related Diagnosis</h5>
+            <p><strong>{{ prescription().medicalRecord.diagnosis }}</strong></p>
+        </div>
+        }
+
+        <!-- FOOTER -->
+        <div class="footer">
+
+            <div class="date-section">
+                <p>Printed on: {{ today | date:'MMMM dd, yyyy HH:mm' }}</p>
+                <p class="note">
+                    This prescription is valid for 30 days.
+                </p>
+            </div>
+
+            <div class="signature-section">
+                <div class="signature-line">
+
+                    <div class="doctor-name">
+                        Dr. {{ prescription().doctorName }}
+                    </div>
+
+                    <div class="specialization">
+                        {{ prescription().specialization }}
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="watermark">
+            Healthcare Management System
+        </div>
+
+    </div>
+</div>
+
+}

@@ -2,298 +2,322 @@
 
   @if (record(); as r) {
 
-    <!-- Breadcrumb -->
-    <div class="row mb-4">
-      <div class="col-12">
-        <nav>
-          <ol class="breadcrumb">
+  <!-- Breadcrumb -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <nav>
+        <ol class="breadcrumb">
 
-            @if (role === 'Patient') {
-              <li class="breadcrumb-item">
-                <a routerLink="/my-records">My Records</a>
-              </li>
+          @if (role() === 'Patient') {
+          <li class="breadcrumb-item">
+            <a routerLink="/my-records">My Records</a>
+          </li>
+          } @else {
+          <li class="breadcrumb-item">
+            <a routerLink="/medical-records">Medical Records</a>
+          </li>
+          }
+
+          <li class="breadcrumb-item active">Record Details</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  @if (successMessage) {
+  <div class="alert alert-success alert-dismissible fade show">
+    <i class="bi bi-check-circle me-2"></i>{{ successMessage }}
+
+    <button type="button" class="btn-close" (click)="successMessage = null">
+    </button>
+  </div>
+  }
+
+  <div class="row">
+
+    <!-- LEFT -->
+    <div class="col-lg-8 mb-4">
+
+      <div class="card">
+
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">
+            <i class="bi bi-file-medical me-2"></i>Medical Record
+          </h5>
+
+          <span class="badge bg-light text-dark">
+            {{ r.visitDate | date:'MMMM dd, yyyy' }}
+          </span>
+        </div>
+
+        <div class="card-body">
+
+          <!-- Symptoms -->
+          <div class="mb-4">
+            <h6 class="text-muted border-bottom pb-2">
+              <i class="bi bi-activity me-2"></i>Symptoms / Patient Complaints
+            </h6>
+            <p class="mb-0">{{ r.symptoms || 'Not recorded' }}</p>
+          </div>
+
+          <!-- Diagnosis -->
+          <div class="mb-4">
+            <h6 class="text-muted border-bottom pb-2">
+              <i class="bi bi-clipboard2-pulse me-2"></i>Diagnosis
+            </h6>
+            <p class="mb-0 fw-bold text-primary fs-5">
+              {{ r.diagnosis || 'Not recorded' }}
+            </p>
+          </div>
+
+          <!-- Treatment -->
+          <div class="mb-4">
+            <h6 class="text-muted border-bottom pb-2">
+              <i class="bi bi-bandaid me-2"></i>Treatment Plan
+            </h6>
+            <p class="mb-0">{{ r.treatment || 'Not recorded' }}</p>
+          </div>
+
+          <!-- Notes -->
+          @if (r.notes) {
+          <div class="mb-4">
+            <h6 class="text-muted border-bottom pb-2">
+              <i class="bi bi-journal-text me-2"></i>Additional Notes
+            </h6>
+            <p class="mb-0">{{ r.notes }}</p>
+          </div>
+          }
+
+          <!-- PRESCRIPTIONS -->
+          <div class="mb-4">
+
+            <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+              <h6 class="text-muted mb-0">
+                <i class="bi bi-prescription me-2"></i>Prescriptions
+              </h6>
+
+              @if (role() === 'Doctor') {
+              <a class="btn btn-sm btn-success" (click)="NavToPrescription(r.id)">
+                <i class="bi bi-plus-circle me-1"></i>Add Prescription
+              </a>
+              }
+            </div>
+
+            @if (r.prescriptions?.length > 0) {
+
+            <div class="table-responsive">
+              <table class="table table-hover">
+
+                <thead class="table-light">
+                  <tr>
+                    <th>Medicine</th>
+                    <th>Dosage</th>
+                    <th>Duration</th>
+                    <th>Instructions</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+
+                  @for (p of r.prescriptions; track p.id) {
+
+                  @for (item of p.prescriptionItemRequests; track item.id; let i = $index) {
+
+                  <tr>
+
+                    <!-- Show only in first row using rowspan -->
+                    @if (i === 0) {
+
+                    <td [attr.rowspan]="p.prescriptionItemRequests.length">
+                      {{ r.visitDate | date:'dd/MM/yyyy' }}
+                    </td>
+
+                    <td [attr.rowspan]="p.prescriptionItemRequests.length">
+                      {{ r.patientName }}
+                    </td>
+
+                    <td [attr.rowspan]="p.prescriptionItemRequests.length">
+                      {{ r.doctorName }}
+                    </td>
+                    }
+
+                    <!-- Medicine -->
+                    <td>
+                      <strong>{{ item.medicineName }}</strong>
+                    </td>
+
+                    <!-- Dosage -->
+                    <td>
+                      {{ item.dosage }}
+                    </td>
+
+                    <!-- Duration -->
+                    <td>
+                      {{ item.duration }}
+                    </td>
+
+                    <!-- Actions (only once) -->
+                    @if (i === 0) {
+                    <td [attr.rowspan]="p.prescriptionItemRequests.length">
+                      <a class="btn btn-sm btn-outline-primary me-1" [routerLink]="['/prescriptions/details', p.id]">
+                        <i class="bi bi-eye"></i>
+                      </a>
+
+                      <a class="btn btn-sm btn-outline-secondary" [routerLink]="['/prescriptionprint', p.id]"
+                        target="_blank">
+                        <i class="bi bi-printer"></i>
+                      </a>
+                    </td>
+                    }
+
+                  </tr>
+
+                  }
+
+                  }
+
+                </tbody>
+              </table>
+            </div>
+
             } @else {
-              <li class="breadcrumb-item">
-                <a routerLink="/medical-records">Medical Records</a>
-              </li>
+
+            <div class="text-center py-4 text-muted">
+              <i class="bi bi-capsule fs-3"></i>
+              <p class="mt-2 mb-0">No prescriptions added for this record</p>
+            </div>
+
             }
 
-            <li class="breadcrumb-item active">Record Details</li>
-          </ol>
-        </nav>
+          </div>
+
+        </div>
+
+        @if (role() === 'Doctor') {
+        <div class="card-footer">
+          <a class="btn btn-warning" [routerLink]="['/medical-records/edit', r.id]">
+            <i class="bi bi-pencil me-2"></i>Edit Record
+          </a>
+        </div>
+        }
+
       </div>
     </div>
 
-    <!-- SUCCESS -->
-    @if (successMessage) {
-      <div class="alert alert-success alert-dismissible fade show">
-        <i class="bi bi-check-circle me-2"></i>{{ successMessage }}
+    <!-- RIGHT -->
+    <div class="col-lg-4">
 
-        <button type="button"
-                class="btn-close"
-                (click)="successMessage = null">
-        </button>
-      </div>
-    }
+      <!-- Patient -->
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+          <h6 class="mb-0">
+            <i class="bi bi-person me-2"></i>Patient Information
+          </h6>
+        </div>
 
-    <div class="row">
+        <div class="card-body">
 
-      <!-- LEFT -->
-      <div class="col-lg-8 mb-4">
+          <div class="d-flex align-items-center mb-3">
+            <div class="avatar-circle bg-primary text-white me-3">
+              {{ r.patientName?.charAt(0) }}
+            </div>
 
-        <div class="card">
-
-          <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">
-              <i class="bi bi-file-medical me-2"></i>Medical Record
-            </h5>
-
-            <span class="badge bg-light text-dark">
-              {{ r.visitDate | date:'MMMM dd, yyyy' }}
-            </span>
+            <div>
+              <h6 class="mb-0">{{ r.patientName }}</h6>
+            </div>
           </div>
 
-          <div class="card-body">
+          <hr>
 
-            <!-- Symptoms -->
-            <div class="mb-4">
-              <h6 class="text-muted border-bottom pb-2">
-                <i class="bi bi-activity me-2"></i>Symptoms / Patient Complaints
-              </h6>
-              <p class="mb-0">{{ r.symptoms || 'Not recorded' }}</p>
+          <div class="row">
+            <div class="col-6 mb-2">
+              <small class="text-muted">Phone</small><br>
+              <strong>{{ r.patientPhone || 'N/A' }}</strong>
             </div>
 
-            <!-- Diagnosis -->
-            <div class="mb-4">
-              <h6 class="text-muted border-bottom pb-2">
-                <i class="bi bi-clipboard2-pulse me-2"></i>Diagnosis
-              </h6>
-              <p class="mb-0 fw-bold text-primary fs-5">
-                {{ r.diagnosis || 'Not recorded' }}
-              </p>
-            </div>
+            <div class="col-6 mb-2">
+              <small class="text-muted">Blood Group</small><br>
 
-            <!-- Treatment -->
-            <div class="mb-4">
-              <h6 class="text-muted border-bottom pb-2">
-                <i class="bi bi-bandaid me-2"></i>Treatment Plan
-              </h6>
-              <p class="mb-0">{{ r.treatment || 'Not recorded' }}</p>
-            </div>
-
-            <!-- Notes -->
-            @if (r.notes) {
-              <div class="mb-4">
-                <h6 class="text-muted border-bottom pb-2">
-                  <i class="bi bi-journal-text me-2"></i>Additional Notes
-                </h6>
-                <p class="mb-0">{{ r.notes }}</p>
-              </div>
-            }
-
-            <!-- PRESCRIPTIONS -->
-            <div class="mb-4">
-
-              <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
-                <h6 class="text-muted mb-0">
-                  <i class="bi bi-prescription me-2"></i>Prescriptions
-                </h6>
-
-                @if (role === 'Doctor') {
-                  <a class="btn btn-sm btn-success" (click)="NavToPrescription(r.id)">
-                    <i class="bi bi-plus-circle me-1"></i>Add Prescription
-                  </a>
-                }
-              </div>
-
-              @if (r.prescriptions?.length > 0) {
-
-                <div class="table-responsive">
-                  <table class="table table-hover">
-
-                    <thead class="table-light">
-                      <tr>
-                        <th>Medicine</th>
-                        <th>Dosage</th>
-                        <th>Duration</th>
-                        <th>Instructions</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-
-                    <tbody>
-
-                      @for (p of r.prescriptions; track p.id) {
-
-                        @for (item of p.prescriptionItemRequests; track item.id) {
-
-                          <tr>
-                            <td><strong>{{ item.medicineName }}</strong></td>
-                            <td>{{ item.dosage }}</td>
-                            <td>{{ item.duration }}</td>
-                            <td>{{ p.instructions || 'N/A' }}</td>
-
-                            <td>
-                              <a class="btn btn-sm btn-outline-primary me-1"
-                                 [routerLink]="['/prescriptions/details', p.id]">
-                                <i class="bi bi-eye"></i>
-                              </a>
-
-                              <a class="btn btn-sm btn-outline-secondary"
-                                 [routerLink]="['/prescriptions/print', p.id]"
-                                 target="_blank">
-                                <i class="bi bi-printer"></i>
-                              </a>
-                            </td>
-                          </tr>
-
-                        }
-
-                      }
-
-                    </tbody>
-                  </table>
-                </div>
-
+              @if (r.bloodGroup) {
+              <span class="badge bg-danger">{{ r.bloodGroup }}</span>
               } @else {
-
-                <div class="text-center py-4 text-muted">
-                  <i class="bi bi-capsule fs-3"></i>
-                  <p class="mt-2 mb-0">No prescriptions added for this record</p>
-                </div>
-
+              <strong>N/A</strong>
               }
 
             </div>
-
           </div>
 
-          @if (role === 'Doctor') {
-            <div class="card-footer">
-              <a class="btn btn-warning"
-                 [routerLink]="['/medical-records/edit', r.id]">
-                <i class="bi bi-pencil me-2"></i>Edit Record
-              </a>
-            </div>
+          @if (role() !== 'Patient') {
+          <a class="btn btn-outline-primary btn-sm w-100 mt-2" [routerLink]="['/patientdetails', r.patientId]">
+            <i class="bi bi-eye me-1"></i>View Full Profile
+          </a>
           }
 
         </div>
       </div>
 
-      <!-- RIGHT -->
-      <div class="col-lg-4">
-
-        <!-- Patient -->
-        <div class="card mb-4">
-          <div class="card-header bg-primary text-white">
-            <h6 class="mb-0">
-              <i class="bi bi-person me-2"></i>Patient Information
-            </h6>
-          </div>
-
-          <div class="card-body">
-
-            <div class="d-flex align-items-center mb-3">
-              <div class="avatar-circle bg-primary text-white me-3">
-                {{ r.patientName?.charAt(0) }}
-              </div>
-
-              <div>
-                <h6 class="mb-0">{{ r.patientName }}</h6>
-              </div>
-            </div>
-
-            <hr>
-
-            <div class="row">
-              <div class="col-6 mb-2">
-                <small class="text-muted">Phone</small><br>
-                <strong>{{ r.patientPhone || 'N/A' }}</strong>
-              </div>
-
-              <div class="col-6 mb-2">
-                <small class="text-muted">Blood Group</small><br>
-
-                @if (r.bloodGroup) {
-                  <span class="badge bg-danger">{{ r.bloodGroup }}</span>
-                } @else {
-                  <strong>N/A</strong>
-                }
-
-              </div>
-            </div>
-
-            @if (role !== 'Patient') {
-              <a class="btn btn-outline-primary btn-sm w-100 mt-2"
-                 [routerLink]="['/patients', r.patientId]">
-                <i class="bi bi-eye me-1"></i>View Full Profile
-              </a>
-            }
-
-          </div>
+      <!-- Doctor -->
+      <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+          <h6 class="mb-0">
+            <i class="bi bi-heart-pulse me-2"></i>Attending Doctor
+          </h6>
         </div>
 
-        <!-- Doctor -->
-        <div class="card mb-4">
-          <div class="card-header bg-success text-white">
-            <h6 class="mb-0">
-              <i class="bi bi-heart-pulse me-2"></i>Attending Doctor
-            </h6>
-          </div>
+        <div class="card-body">
 
-          <div class="card-body">
-
-            <div class="d-flex align-items-center mb-3">
-              <div class="avatar-circle bg-success text-white me-3">
-                {{ r.doctorName?.charAt(0) }}
-              </div>
-
-              <div>
-                <h6 class="mb-0">Dr. {{ r.doctorName }}</h6>
-                <span class="badge bg-info">{{ r.specialization }}</span>
-              </div>
+          <div class="d-flex align-items-center mb-3">
+            <div class="avatar-circle bg-success text-white me-3">
+              {{ r.doctorName?.charAt(0) }}
             </div>
 
+            <div>
+              <h6 class="mb-0">Dr. {{ r.doctorName }}</h6>
+              <span class="badge bg-info">{{ r.specialization }}</span>
+            </div>
           </div>
+
         </div>
-
-        <!-- Appointment -->
-        @if (r.appointment) {
-          <div class="card">
-            <div class="card-header bg-info text-white">
-              <h6 class="mb-0">
-                <i class="bi bi-calendar-event me-2"></i>Related Appointment
-              </h6>
-            </div>
-
-            <div class="card-body">
-
-              <p class="mb-1">
-                <strong>
-                  {{ r.appointment.appointmentDate | date:'MMMM dd, yyyy' }}
-                </strong>
-              </p>
-
-              <p class="mb-2 text-muted">
-                {{ r.appointment.appointmentDate | date:'hh:mm a' }}
-              </p>
-
-              <span class="badge bg-success">
-                {{ r.appointment.status }}
-              </span>
-
-              <a class="btn btn-outline-info btn-sm w-100 mt-3"
-                 [routerLink]="['/appointments', r.appointmentId]">
-                <i class="bi bi-eye me-1"></i>View Appointment
-              </a>
-
-            </div>
-          </div>
-        }
-
       </div>
 
+      <!-- Appointment -->
+      @if (r.appointment) {
+      <div class="card">
+        <div class="card-header bg-info text-white">
+          <h6 class="mb-0">
+            <i class="bi bi-calendar-event me-2"></i>Related Appointment
+          </h6>
+        </div>
+
+        <div class="card-body">
+
+          <p class="mb-1">
+            <strong>
+              {{ r.appointment.appointmentDate | date:'MMMM dd, yyyy' }}
+            </strong>
+          </p>
+
+          <p class="mb-2 text-muted">
+            {{ r.appointment.appointmentDate | date:'hh:mm a' }}
+          </p>
+
+          <span class="badge bg-success">
+            {{ r.appointment.status }}
+          </span>
+
+          <a class="btn btn-outline-info btn-sm w-100 mt-3" [routerLink]="['/appointments', r.appointmentId]">
+            <i class="bi bi-eye me-1"></i>View Appointment
+          </a>
+
+        </div>
+      </div>
+      }
+
     </div>
+
+  </div>
 
   }
 

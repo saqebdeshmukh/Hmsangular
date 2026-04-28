@@ -21,7 +21,7 @@ export class PatientFormComponent implements OnInit {
   @Output() formSubmit = new EventEmitter<any>();
 
   showModal = signal(false);
-  
+
 
   form = this.fb.group({
     id: [''],
@@ -35,9 +35,11 @@ export class PatientFormComponent implements OnInit {
     doctorId: [''],
     weight: [''],
     height: [''],
-    bloodPressure: [''],
-    sugar: [''],
-  reason: ['']
+    diastolicBp: [''],
+    systolicBp: [''],
+    sugarBeforeMeal: [''],
+    sugarAfterMeal: [''],
+    reason: ['']
   });
 
   ngOnInit() {
@@ -70,19 +72,19 @@ export class PatientFormComponent implements OnInit {
       return;
     }
     if (this.doctors.length === 1) {
-    this.form.patchValue({
-      doctorId: this.doctors[0].id
-    });
+      this.form.patchValue({
+        doctorId: this.doctors[0].id
+      });
 
-    this.formSubmit.emit({
-      ...this.form.value,
-      bookAppointment: true
-    });
+      this.formSubmit.emit({
+        ...this.form.value,
+        bookAppointment: true
+      });
 
-    return;
-  }
+      return;
+    }
 
-  this.showModal.set(true);
+    this.showModal.set(true);
   }
 
   closeModal() {
@@ -91,11 +93,11 @@ export class PatientFormComponent implements OnInit {
 
   confirmBooking() {
     if (this.isEdit) return;
-    
+
 
     this.formSubmit.emit({
       ...this.form.value,
-     // reason: this.reason(),
+      // reason: this.reason(),
       bookAppointment: true
     });
     this.closeModal();

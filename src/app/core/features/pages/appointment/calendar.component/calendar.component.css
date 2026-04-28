@@ -1,0 +1,71 @@
+/* Table layout */
+.calendar-table {
+    table-layout: fixed;
+}
+
+/* Each cell */
+.calendar-cell {
+    height: 120px;
+    vertical-align: top;
+    padding: 8px !important;
+    border: 1px solid #dee2e6;
+    transition: background 0.2s ease;
+}
+
+/* Hover effect */
+.calendar-cell:hover {
+    background-color: #f8f9fa;
+}
+
+/* Day container */
+.calendar-day {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Day number */
+.day-number {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+/* Today highlight */
+.today-cell {
+    background-color: rgba(13, 202, 240, 0.1);
+    border: 1px solid #0dcaf0;
+}
+
+.today-badge {
+    background-color: #0dcaf0;
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* Appointment list */
+.appointments-list {
+    font-size: 0.75rem;
+    max-height: 80px;
+    overflow-y: auto;
+}
+
+/* Appointment item */
+.appointment-item {
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.appointment-item:hover {
+    opacity: 0.8;
+}
+
+/* Scrollbar (optional styling) */
+.appointments-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.appointments-list::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 2px;
+}

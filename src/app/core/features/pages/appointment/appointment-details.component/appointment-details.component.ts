@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AppointmentService } from '../../../../services/appointment.service';
 import { ToastService } from '../../../../services/toast.service';
+import { AuthService } from '../../../../services/auth.services';
 
 @Component({
   selector: 'app-appointment-details.component',
@@ -16,16 +17,18 @@ export class AppointmentDetailsComponent {
   private route = inject(ActivatedRoute);
   private destroyRef = inject(DestroyRef);
 private toastr = inject(ToastService);
+private auth=inject(AuthService)
   appointment = signal<any>(null);
 
   // ✅ Role from localStorage (since no session in Angular)
-  role = signal<string>(localStorage.getItem('role') || '');
+role = computed(() => this.auth.user()?.role);
 
   isAdmin = computed(() => this.role() === 'Admin');
   isDoctor = computed(() => this.role() === 'Doctor');
 
   constructor() {
     const id = this.route.snapshot.paramMap.get('id');
+    console.log("Is it a doctor", this.role)
     if (id) this.loadDetails(id);
   }
 

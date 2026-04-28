@@ -24,7 +24,7 @@
                     <li class="nav-item"><a class="nav-link" routerLink="/doctors"><i class="fas fa-user-md me-1"></i>Doctors</a></li>
                     <li class="nav-item"><a class="nav-link" routerLink="/receptionists"><i class="fas fa-user-tie me-1"></i>Receptionists</a></li>
                     <li class="nav-item"><a class="nav-link" routerLink="/appointments"><i class="fas fa-calendar-alt me-1"></i>Appointments</a></li>
-                    <li class="nav-item"><a class="nav-link" routerLink="/records"><i class="fas fa-file-medical me-1"></i>Records</a></li>
+                    <li class="nav-item"><a class="nav-link" routerLink="/medical-records"><i class="fas fa-file-medical me-1"></i>Medical Records</a></li>
                     <li class="nav-item"><a class="nav-link" routerLink="/prescriptions"><i class="fas fa-prescription me-1"></i>Prescriptions</a></li>
                     <li class="nav-item"><a class="nav-link" routerLink="/receptionists"><i class="fas fa-user-tie me-1"></i>Receptionists</a></li>
                 </ng-container>
@@ -44,7 +44,7 @@
                 }
 
                 <!-- PATIENT -->
-                @if(role() == 'Patient'){
+                <!-- @if(role() == 'Patient'){
                 <ng-container>
                     <li class="nav-item"><a class="nav-link" routerLink="/patient"><i class="fas fa-home me-1"></i>Dashboard</a></li>
                     <li class="nav-item"><a class="nav-link" routerLink="/doctors"><i class="fas fa-user-md me-1"></i>Find Doctors</a></li>
@@ -52,7 +52,7 @@
                     <li class="nav-item"><a class="nav-link" routerLink="/my-records"><i class="fas fa-file-medical me-1"></i>My Records</a></li>
                     <li class="nav-item"><a class="nav-link" routerLink="/my-prescriptions"><i class="fas fa-prescription me-1"></i>My Prescriptions</a></li>
                 </ng-container>
-                }
+                } -->
 
                 <!-- RECEPTIONIST -->
                 @if(role() == 'Receptionist'){

@@ -120,6 +120,12 @@ path: 'appointments',
     import('./core/features/pages/appointment/appointment-details.component/appointment-details.component')
       .then(m => m.AppointmentDetailsComponent)
 },
+{
+  path: 'appointments/calendar',
+  loadComponent: () =>
+    import('./core/features/pages/appointment/calendar.component/calendar.component')
+      .then(m => m.AppointmentCalendarComponent)
+},
 
 // 🔒 Medical Records
 {
@@ -166,6 +172,11 @@ path: 'medical-records',
       .then(m => m.PrescriptionListComponent)
 },
 {
+  path: 'prescription/create',
+  loadComponent: () => import('./core/features/pages/prescription/select-medical-record.component/select-medical-record.component')
+  .then(m => m.SelectMedicalRecordComponent)
+},
+{
   path: 'prescription/create/:recordId',
   loadComponent: () => import('./core/features/pages/prescription/prescription-form.component/create-prescription.component')
   .then(m => m.CreatePrescriptionComponent)
@@ -185,7 +196,8 @@ path: 'medical-records',
   path: 'prescriptionprint/:id',
   loadComponent: () =>
     import('./core/features/pages/prescription/prescription-print.component/prescription-print.component')
-      .then(m => m.PrescriptionPrintComponent)
+      .then(m => m.PrescriptionPrintComponent),
+      data: { hideLayout: true }
 },
 
 //   // ❌ Unauthorized

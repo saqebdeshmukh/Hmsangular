@@ -14,7 +14,8 @@ import { CommonModule } from "@angular/common";
   @if (record()) {
 
     <app-prescription-form
-      [record]="record()"
+      [record]="record()",
+      [initialData]="record()",
       (formSubmit)="create($event)">
     </app-prescription-form>
     

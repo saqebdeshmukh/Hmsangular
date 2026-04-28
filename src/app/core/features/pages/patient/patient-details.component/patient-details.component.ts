@@ -34,8 +34,37 @@ export class PatientDetailComponent {
     this.getDoctors();
   }
 
+  truncate(text: string | null | undefined, limit: number): string {
+  if (!text) return 'N/A';
+  return text.length > limit ? text.substring(0, limit) + '...' : text;
+}
+
+calculateAge(dateOfBirth: string | Date | null | undefined): number {
+  if (!dateOfBirth) return 0;
+
+  const dob = new Date(dateOfBirth);
+  const today = new Date();
+
+  let age = today.getFullYear() - dob.getFullYear();
+
+  const monthDiff = today.getMonth() - dob.getMonth();
+
+  // If birthday hasn't occurred yet this year → subtract 1
+  if (
+    monthDiff < 0 ||
+    (monthDiff === 0 && today.getDate() < dob.getDate())
+  ) {
+    age--;
+  }
+
+  return age;
+}
+goPatients(){
+
+}
+
   getPatient(id: string) {
-    this.patientService.getPatientById(id).subscribe((res: any) => {
+    this.patientService.getPatientDetails(id).subscribe((res: any) => {
       this.patient.set(res.data);
     });
   }
@@ -76,14 +105,39 @@ export class PatientDetailComponent {
     this.getPatient(this.patient().id);
   });
 }
+activeTab = 'appointments';
 
+
+
+errorMessage = signal('');
+
+print(id:string){
+
+}
+
+onBook() {
+  if (!this.selectedDoctor()) {
+    this.errorMessage.set('Please select a doctor');
+    return;
+  }
+
+  const payload = {
+    patientId: this.patient()?.id,
+    doctorId: this.selectedDoctor(),
+    reason: this.reason()
+  };
+
+  // this.appointmentService.quickBook(payload).subscribe(() => {
+  //   this.closeModal();
+  // });
+}
 
   viewAppointment(id: string) {
-    this.router.navigate(['/appointment', id]);
+    this.router.navigate(['/appointmentDetails', id]);
   }
 
   viewRecord(id: string) {
-    this.router.navigate(['/medical-record', id]);
+    this.router.navigate(['/medical-records/details', id]);
   }
 
   viewPrescription(id: string) {
