@@ -3,6 +3,7 @@ import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterModule } from '@angular/router';
 import { AppointmentService } from '../../../../services/appointment.service';
+import { ToastService } from '../../../../services/toast.service';
 
 @Component({
   selector: 'app-appointments.component',
@@ -13,6 +14,7 @@ import { AppointmentService } from '../../../../services/appointment.service';
 export class AppointmentsComponent {
   private service = inject(AppointmentService);
   private destroyRef = inject(DestroyRef);
+  private toastr = inject(ToastService);
 
   todayAppointments = signal<any[]>([]);
   completedAppointments = signal<any[]>([]);
@@ -29,9 +31,6 @@ export class AppointmentsComponent {
     this.service.getAppointments()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((res: any) => {
-
-        console.log('API:', res);
-
         const data = res?.data;
 
         // ✅ SAFE assignment
@@ -59,5 +58,12 @@ export class AppointmentsComponent {
       case 'Cancelled': return 'bg-danger';
       default: return 'bg-secondary';
     }
+  }
+  CancelAppointment(id:string){
+    this.service.completeAppointment(id,'Canceled').subscribe((res:any)=>{
+      if(res.isSuccess){
+        this.toastr.success(res.message);
+      }
+    })
   }
 }

@@ -24,7 +24,7 @@
  <app-appointment-modal
   [show]="showModal()"
   [doctors]="doctors()"
-  [patientId]="selectedPatientId()"
+  [patientDetails]="patientDetails()"
   (close)="closeModal()"
   (book)="handleBooking($event)"
 >

@@ -5,6 +5,7 @@ import { ToastService } from "../../../../services/toast.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { MedicalRecordService } from "../../../../services/medicarecord.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { AppointmentService } from "../../../../services/appointment.service";
 
 @Component({
   selector: 'app-edit-prescription',
@@ -16,7 +17,9 @@ import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
       [initialData]="prescription()"
       [record]="prescription()?.medicalRecord"
       [isEdit]="true"
-      (formSubmit)="update($event)">
+      (formSubmit)="update($event)"
+       (markAsComplete)="markAsComplete()"
+      >
     </app-prescription-form>
   }
   `
@@ -25,10 +28,11 @@ export class EditPrescriptionComponent {
   private route = inject(ActivatedRoute);
   private toastr = inject(ToastService);
   private router = inject(Router);
-  mrecord = signal<any>(null);
   prescription = signal<any>(null);
   private service = inject(PrescriptionService);
+  private appointmentService = inject(AppointmentService);
   private destroyRef = inject(DestroyRef);
+  appointmentId = signal<string>('');
 
   ngOnInit() {
     const id = (this.route.snapshot.paramMap.get('id'));
@@ -48,40 +52,26 @@ export class EditPrescriptionComponent {
   }
 
   update(data: any) {
-     const payload = {
-    ...data,
-    prescriptionItemRequests: data.items.map((item: any) => ({
-      ...item,
-      duration: item.duration?.toString() // optional safety
-    }))
-  };
+    const payload = {
+      ...data,
+      prescriptionItemRequests: data.items.map((item: any) => ({
+        ...item,
+        duration: item.duration?.toString() // optional safety
+      }))
+    };
 
-  delete payload.items;
+    delete payload.items;
 
-  console.log('Final payload:', payload);
     this.service.updatePrescription(data.id, payload).subscribe({
       next: (res: any) => {
         this.toastr.success(res.message || 'Prescription updated successfully');
-        this.router.navigate(['/prescriptions']);
       }
     });
   }
-  //   loadMedicalRecord(recordId: string) {
-  //   this.recordService.getMedicalRecordById(recordId).subscribe({
-  //     next: (res: any) => {
-  //       if (res.isSuccess && res.data) {
-  //         const record = Array.isArray(res.data) ? res.data[0] : res.data;
-  //         this.mrecord.set(record);
-  //         console.log('Loaded medical record:', record);
-  //       } else {
-  //         this.toastr.error('Record not found');
-  //         this.router.navigate(['/medical-records']);
-  //       }
-  //     },
-  //     error: () => {
-  //       this.toastr.error('Failed to load record');
-  //       this.router.navigate(['/medical-records']);
-  //     }
-  //   });
-  // }
+  markAsComplete() {
+    this.appointmentService.completeAppointment(this.prescription().appointmentId, 'Completed').subscribe((res: any) => {
+      this.toastr.success(res.message, 'Success');
+      this.router.navigate(['/doctordashboard']);
+    })
+  }
 }

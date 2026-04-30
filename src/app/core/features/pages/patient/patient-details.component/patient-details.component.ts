@@ -1,10 +1,12 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { PatientService } from '../../../../services/patient.service';
 import { AppointmentModalComponent } from '../appointment-modal.component/appointment-modal.component';
 import { AppointmentService } from '../../../../services/appointment.service';
+import { AuthService } from '../../../../services/auth.services';
+import { ToastService } from '../../../../services/toast.service';
 
 @Component({
   selector: 'app-patient-detail',
@@ -18,9 +20,11 @@ export class PatientDetailComponent {
   private router = inject(Router);
   private patientService = inject(PatientService);
   private appointmentService = inject(AppointmentService);
+  private auth = inject(AuthService);
+  private toastr = inject(ToastService);
 
   patient = signal<any>(null);
-  role = signal(localStorage.getItem('role'));
+  role = computed(() => this.auth.user()?.role);
 
   showModal = signal(false);
   doctors = signal<any[]>([]);
@@ -35,33 +39,33 @@ export class PatientDetailComponent {
   }
 
   truncate(text: string | null | undefined, limit: number): string {
-  if (!text) return 'N/A';
-  return text.length > limit ? text.substring(0, limit) + '...' : text;
-}
-
-calculateAge(dateOfBirth: string | Date | null | undefined): number {
-  if (!dateOfBirth) return 0;
-
-  const dob = new Date(dateOfBirth);
-  const today = new Date();
-
-  let age = today.getFullYear() - dob.getFullYear();
-
-  const monthDiff = today.getMonth() - dob.getMonth();
-
-  // If birthday hasn't occurred yet this year → subtract 1
-  if (
-    monthDiff < 0 ||
-    (monthDiff === 0 && today.getDate() < dob.getDate())
-  ) {
-    age--;
+    if (!text) return 'N/A';
+    return text.length > limit ? text.substring(0, limit) + '...' : text;
   }
 
-  return age;
-}
-goPatients(){
+  calculateAge(dateOfBirth: string | Date | null | undefined): number {
+    if (!dateOfBirth) return 0;
 
-}
+    const dob = new Date(dateOfBirth);
+    const today = new Date();
+
+    let age = today.getFullYear() - dob.getFullYear();
+
+    const monthDiff = today.getMonth() - dob.getMonth();
+
+    // If birthday hasn't occurred yet this year → subtract 1
+    if (
+      monthDiff < 0 ||
+      (monthDiff === 0 && today.getDate() < dob.getDate())
+    ) {
+      age--;
+    }
+
+    return age;
+  }
+  goPatients() {
+    this.router.navigate(['/patients']);
+  }
 
   getPatient(id: string) {
     this.patientService.getPatientDetails(id).subscribe((res: any) => {
@@ -97,40 +101,33 @@ goPatients(){
     this.showModal.set(false);
   }
 
-   handleBooking(data: any) {
-  this.appointmentService.createAppointment(data).subscribe(() => {
-    this.closeModal();
+  handleBooking(data: any) {
+    this.appointmentService.createAppointment(data).subscribe({
+      next: (res: any) => {
+        //this.selectedPatientId.set('');
+        if (!res.isSuccess) {
+          this.toastr.error(res.message || 'Something went wrong', 'Error');
+          this.closeModal();
+          return;
+        }
 
-    // 🔥 optional: refresh patient data
-    this.getPatient(this.patient().id);
-  });
-}
-activeTab = 'appointments';
+        this.toastr.success(res.message || 'Appointment booked successfully', 'Success');
+        this.closeModal();
+        this.getPatient(this.patient().id);
+      }
+    });
+  }
+  activeTab = 'appointments';
 
 
 
-errorMessage = signal('');
+  errorMessage = signal('');
 
-print(id:string){
-
-}
-
-onBook() {
-  if (!this.selectedDoctor()) {
-    this.errorMessage.set('Please select a doctor');
-    return;
+  print(id: string) {
+    this.router.navigate(['/prescriptionprint', id])
   }
 
-  const payload = {
-    patientId: this.patient()?.id,
-    doctorId: this.selectedDoctor(),
-    reason: this.reason()
-  };
 
-  // this.appointmentService.quickBook(payload).subscribe(() => {
-  //   this.closeModal();
-  // });
-}
 
   viewAppointment(id: string) {
     this.router.navigate(['/appointmentDetails', id]);

@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PrescriptionService } from '../../../../services/prescription.service';
+import { AppointmentService } from '../../../../services/appointment.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-prescription-print',
@@ -14,6 +16,8 @@ export class PrescriptionPrintComponent {
 
   private route = inject(ActivatedRoute);
   private service = inject(PrescriptionService);
+  private appointmentService = inject(AppointmentService);
+  private toastr = inject(ToastrService);
 
   prescription = signal<any>(null);
 
@@ -25,8 +29,14 @@ export class PrescriptionPrintComponent {
       this.prescription.set(res.data);
     });
   }
-today = new Date();
+  today = new Date();
   print() {
     window.print();
+  }
+  
+  complete() {
+    this.appointmentService.completeAppointment(this.prescription().appointmentId, 'Completed').subscribe((res: any) => {
+      this.toastr.success(res.message, 'Success');
+    })
   }
 }

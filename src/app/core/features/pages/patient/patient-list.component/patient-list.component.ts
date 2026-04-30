@@ -9,7 +9,7 @@ import { AppointmentService } from '../../../../services/appointment.service';
 
 @Component({
   selector: 'app-patient-list.component',
-  imports: [AgGridAngular, AppointmentModalComponent,RouterModule],
+  imports: [AgGridAngular, AppointmentModalComponent, RouterModule],
   templateUrl: './patient-list.component.html',
   styleUrl: './patient-list.component.css',
 })
@@ -17,11 +17,11 @@ export class PatientListComponent {
   private patientService = inject(PatientService);
   private appointmentService = inject(AppointmentService);
   private auth = inject(AuthService);
-private router = inject(Router);
-private toastr = inject(ToastService);
-showModal = signal(false);
- doctors = signal<any[]>([]);
-selectedPatientId = signal<string>('');
+  private router = inject(Router);
+  private toastr = inject(ToastService);
+  showModal = signal(false);
+  doctors = signal<any[]>([]);
+  patientDetails = signal<any>(null);
   role = computed(() => this.auth.user()?.role);
   columnDefs = [
     {
@@ -32,21 +32,21 @@ selectedPatientId = signal<string>('');
     },
     { field: 'phone', headerName: 'Phone', flex: 1 },
     {
-  field: 'dateOfBirth',
-  headerName: 'Date of Birth',
-  flex: 1,
-  valueFormatter: (params: any) => {
-    if (!params.value) return '';
+      field: 'dateOfBirth',
+      headerName: 'Date of Birth',
+      flex: 1,
+      valueFormatter: (params: any) => {
+        if (!params.value) return '';
 
-    const date = new Date(params.value);
+        const date = new Date(params.value);
 
-    return date.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    });
-  }
-},
+        return date.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric'
+        });
+      }
+    },
     { field: 'gender', headerName: 'Gender', flex: 1 },
     {
       field: 'bloodGroup',
@@ -59,7 +59,7 @@ selectedPatientId = signal<string>('');
       }
     },
     {
-     headerName: 'Actions',
+      headerName: 'Actions',
       flex: 1.2,
       cellRenderer: () => `
       <button class="btn btn-sm btn-info me-1 action-view">
@@ -77,13 +77,13 @@ selectedPatientId = signal<string>('');
   rowData = signal<any[]>([]);
 
   onCellClicked(event: any) {
-  
+
     if (!event.event.target) return;
 
     const target = event.event.target.closest('button');
     if (!target) return;
-
     const data = event.data;
+    
 
     if (target.classList.contains('action-view')) {
       this.router.navigate(['/patientdetails', data.id]);
@@ -94,22 +94,28 @@ selectedPatientId = signal<string>('');
     }
 
     if (target.classList.contains('action-book')) {
+      this.getPatientById(data.id);
       this.getDoctors();
-      if (this.doctors().length > 1) {
+
       this.openModal();
-    }
-     this.selectedPatientId.set(data.id);
-     var obj ={ patientId: data.id, doctorId: this.doctors()[0].id }
-     this.handleBooking(obj);
+
+      
+     // var obj = { patientId: data.id, doctorId: this.doctors()[0].id }
+      //this.handleBooking(obj);
     }
   }
 
   ngOnInit() {
     this.getPatients();
   }
-openModal() {
-  if (this.doctors().length === 1) {
-    this.showModal.set(true);}
+   getPatientById(id: string) {
+    this.patientService.getPatientById(id).subscribe((res: any) => {
+      this.patientDetails.set(res.data);
+    })
+  }
+  openModal() {
+
+    this.showModal.set(true);
   }
 
   closeModal() {
@@ -118,13 +124,12 @@ openModal() {
   getPatients() {
     this.patientService.getAllPatients().subscribe({
       next: (res: any) => {
-        console.log(res.data);
         this.rowData.set(res.data);
       }
     });
   }
-
-   getDoctors() {
+ 
+  getDoctors() {
     this.patientService.doctorLookup().subscribe((res: any) => {
       this.doctors.set(res.data);
     });
@@ -132,18 +137,18 @@ openModal() {
 
   handleBooking(data: any) {
     this.appointmentService.createAppointment(data).subscribe({
-      next: (res : any) => {
-        this.selectedPatientId.set('');
+      next: (res: any) => {
+        //this.selectedPatientId.set('');
         if (!res.isSuccess) {
-        this.toastr.error(res.message || 'Something went wrong', 'Error');
-        return;
-      }
+          this.toastr.error(res.message || 'Something went wrong', 'Error');
+          return;
+        }
 
         this.toastr.success(res.message || 'Appointment booked successfully', 'Success');
+        this.closeModal();
       }
-    // 🔥 optional: refresh patient data
-    //this.getPatient(this.patient().id);
-  });
-}
+
+    });
+  }
 
 }

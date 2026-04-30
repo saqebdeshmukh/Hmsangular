@@ -45,10 +45,8 @@ constructor() {
   console.log('Component loaded');
 }
   ngOnInit() {
-    console.log('ngOnInit triggered');
     this.route.paramMap.subscribe(params => {
     const recordId = params.get('recordId');
-console.log('Received recordId:', recordId);
     
     if (!recordId) {
       this.toastr.error('Invalid record');
@@ -92,7 +90,7 @@ loadMedicalRecord(recordId: string) {
     this.service.createPrescription(payload).subscribe({
       next: (res: any) => {
         this.toastr.success(res.message || 'Prescription created successfully');
-        this.router.navigate(['/prescriptions']);
+        this.router.navigate(['/prescription/edit',res.data]);
       },
       error: () => {
         this.toastr.error('Failed to create prescription');

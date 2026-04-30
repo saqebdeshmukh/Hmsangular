@@ -41,6 +41,7 @@ export class AppointmentService {
       })
     );
   }
+
   deleteAppointment(id: string) {
     return this.http.delete<any>(`${this.apiUrl}/appointment/deleteAppointment/${id}`, {}).pipe(
       map(res => {

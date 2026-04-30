@@ -54,7 +54,7 @@ export class CreateMedicalRecordComponent {
     this.service.createMedicalRecord(data).subscribe(res => {
       if (res.isSuccess) {
         this.toast.success(res.message);
-        this.router.navigate(["/medical-records"])
+        this.router.navigate(["/prescription/create", res.data])
       }
     });
   }

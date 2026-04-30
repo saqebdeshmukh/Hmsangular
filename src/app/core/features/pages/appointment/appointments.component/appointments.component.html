@@ -42,44 +42,48 @@
         <div class="card-body">
 
           @if (todayAppointments().length > 0) {
-            <div class="list-group">
-              @for (appointment of todayAppointments(); track appointment.id) {
-                <div class="list-group-item">
-                  <div class="row align-items-center">
+          <div class="list-group">
+            @for (appointment of todayAppointments(); track appointment.id) {
+            <div class="list-group-item">
+              <div class="row align-items-center">
 
-                    <div class="col-md-2">
-                      <h5 class="text-primary">
-                        {{ appointment.appointmentDate | date:'hh:mm a' }}
-                      </h5>
-                    </div>
-
-                    <div class="col-md-4">
-                      <h6>{{ appointment.patientName }} </h6>
-                      <small class="text-muted">{{ appointment.phone }}</small>
-                    </div>
-
-                    <div class="col-md-2">
-                      <span class="badge" [ngClass]="getStatusClass(appointment.status)">
-                        {{ appointment.status }}
-                      </span>
-                    </div>
-
-                    <div class="col-md-2 text-end">
-                      <a [routerLink]="['/appointmentDetails', appointment.id]"
-                         class="btn btn-sm"
-                         [ngClass]="appointment.status === 'Scheduled' ? 'btn-primary' : 'btn-outline-primary'">
-                        {{ appointment.status === 'Scheduled' ? 'Start' : 'View' }}
-                      </a>
-                    </div>
-
-                  </div>
+                <div class="col-md-2">
+                  <h5 class="text-primary">
+                    {{ appointment.appointmentDate | date:'hh:mm a' }}
+                  </h5>
                 </div>
-              }
+
+                <div class="col-md-4">
+                  <h6>{{ appointment.patientName }} </h6>
+                  <small class="text-muted">{{ appointment.phone }}</small>
+                </div>
+
+                <div class="col-md-2">
+                  <span class="badge" [ngClass]="getStatusClass(appointment.status)">
+                    {{ appointment.status }}
+                  </span>
+                </div>
+
+                <div class="col-md-2 text-end">
+                  <a [routerLink]="['/appointmentDetails', appointment.id]" class="btn btn-sm me-1"
+                    [ngClass]="appointment.status === 'Scheduled' ? 'btn-primary' : 'btn-outline-primary'">
+                    {{ appointment.status === 'Scheduled' ? 'Start' : 'View' }}
+                  </a>
+                  @if(appointment.status == 'Scheduled'){
+                  <a onclick="CancelAppointment(a.id)" class="btn btn-sm btn-outline-danger">
+                    Cancel
+                  </a>
+                  }
+                </div>
+
+              </div>
             </div>
+            }
+          </div>
           } @else {
-            <div class="text-center py-5 text-muted">
-              No appointments today
-            </div>
+          <div class="text-center py-5 text-muted">
+            No appointments today
+          </div>
           }
 
         </div>
@@ -94,39 +98,42 @@
         <div class="card-body">
           @if (upcomingAppointments().length > 0) {
 
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Patient</th>
-                  <th>Phone</th>
-                  <th></th>
-                </tr>
-              </thead>
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Patient</th>
+                <th>Phone</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
 
-              <tbody>
-                @for (a of upcomingAppointments(); track a.id) {
-                  <tr>
-                    <td>
-                      {{ a.appointmentDate | date:'mediumDate' }} <br>
-                      <small>{{ a.appointmentDate | date:'hh:mm a' }}</small>
-                    </td>
-                    <td>{{ a.patientName }}</td>
-                    <td>{{ a.phone }}</td>
-                    <td>
-                      <a [routerLink]="['/appointmentDetails', a.id]" class="btn btn-sm btn-outline-primary">
-                        View
-                      </a>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
+            <tbody>
+              @for (a of upcomingAppointments(); track a.id) {
+              <tr>
+                <td>
+                  {{ a.appointmentDate | date:'mediumDate' }} <br>
+                  <small>{{ a.appointmentDate | date:'hh:mm a' }}</small>
+                </td>
+                <td>{{ a.patientName }}</td>
+                <td>{{ a.phone }}</td>
+                <td>
+                  <a [routerLink]="['/appointmentDetails', a.id]" class="btn btn-sm btn-outline-primary me-1">
+                    View
+                  </a>
+                  <a onclick="CancelAppointment(a.id)" class="btn btn-sm btn-outline-danger">
+                    Cancel
+                  </a>
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
 
           } @else {
-            <div class="text-center py-5 text-muted">
-              No upcoming appointments
-            </div>
+          <div class="text-center py-5 text-muted">
+            No upcoming appointments
+          </div>
           }
         </div>
       </div>
@@ -141,25 +148,25 @@
 
           @if (completedAppointments().length > 0) {
 
-            <table class="table table-hover">
-              <tbody>
-                @for (a of completedAppointments(); track a.id) {
-                  <tr>
-                    <td>{{ a.appointmentDate | date:'mediumDate' }}</td>
-                    <td>{{ a.patientName }}</td>
-                    <td>{{ a.phone }}</td>
-                    <td>
-                      <a [routerLink]="['appointmentDetails', a.id]" class="btn btn-sm btn-outline-primary">View</a>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
+          <table class="table table-hover">
+            <tbody>
+              @for (a of completedAppointments(); track a.id) {
+              <tr>
+                <td>{{ a.appointmentDate | date:'mediumDate' }}</td>
+                <td>{{ a.patientName }}</td>
+                <td>{{ a.phone }}</td>
+                <td>
+                  <a [routerLink]="['appointmentDetails', a.id]" class="btn btn-sm btn-outline-primary">View</a>
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
 
           } @else {
-            <div class="text-center py-5 text-muted">
-              No completed appointments
-            </div>
+          <div class="text-center py-5 text-muted">
+            No completed appointments
+          </div>
           }
 
         </div>
@@ -175,32 +182,37 @@
 
           @if (appointments().length > 0) {
 
-            <table class="table table-hover">
-              <tbody>
-                @for (a of appointments(); track a.id) {
-                  <tr>
-                    <td>{{ a.appointmentDate | date:'medium' }}</td>
-                    <td>{{ a.patientName }}</td>
-                    <td>{{ a.reason || 'N/A' }}</td>
-                    <td>
-                      <span class="badge" [ngClass]="getStatusClass(a.status)">
-                        {{ a.status }}
-                      </span>
-                    </td>
-                    <td>
-                      <a [routerLink]="['/appointmentDetails', a.id]" class="btn btn-sm btn-outline-primary">
-                        View
-                      </a>
-                    </td>
-                  </tr>
-                }
-              </tbody>
-            </table>
+          <table class="table table-hover">
+            <tbody>
+              @for (a of appointments(); track a.id) {
+              <tr>
+                <td>{{ a.appointmentDate | date:'medium' }}</td>
+                <td>{{ a.patientName }}</td>
+                <td>{{ a.reason || 'N/A' }}</td>
+                <td>
+                  <span class="badge" [ngClass]="getStatusClass(a.status)">
+                    {{ a.status }}
+                  </span>
+                </td>
+                <td>
+                  <a [routerLink]="['/appointmentDetails', a.id]" class="btn btn-sm btn-outline-primary me-1">
+                    View
+                  </a>
+                   @if(a.status == 'Scheduled'){
+                  <a onclick="CancelAppointment(a.id)" class="btn btn-sm btn-outline-danger">
+                    Cancel
+                  </a>
+                  }
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
 
           } @else {
-            <div class="text-center py-5 text-muted">
-              No appointments found
-            </div>
+          <div class="text-center py-5 text-muted">
+            No appointments found
+          </div>
           }
 
         </div>

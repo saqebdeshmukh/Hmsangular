@@ -25,6 +25,7 @@ export class PrescriptionFormComponent implements OnChanges {
   @Input() doctors: any[] = [];
 
   @Output() formSubmit = new EventEmitter<any>();
+  @Output() markAsComplete = new EventEmitter<void>();
 
   form = this.fb.group({
     id: [null],
@@ -113,7 +114,6 @@ export class PrescriptionFormComponent implements OnChanges {
 
   submit() {
     if (this.form.invalid) {
-      console.log('Form is invalid:', this.form.errors, this.form.value);
       this.form.markAllAsTouched();
       return;
     }

@@ -11,7 +11,6 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class MedicalRecordFormComponent implements OnChanges {
   private fb = inject(FormBuilder);
-  private route = inject(ActivatedRoute);
   @Input() initialData: any = null;
   @Input() appointment: any = null;
   @Input() isEdit = false;
@@ -48,7 +47,7 @@ export class MedicalRecordFormComponent implements OnChanges {
         appointmentId: data.appointmentId,
         patientId: data.patientId,
         doctorId: data.doctorId,
-        visitDate: this.formatDate(data.visitDate), // ✅ FIX
+        visitDate: this.formatDate(data.visitDate),
         symptoms: data.symptoms,
         diagnosis: data.diagnosis,
         treatment: data.treatment,
@@ -61,7 +60,6 @@ export class MedicalRecordFormComponent implements OnChanges {
         notes: data.notes
       });
 
-      console.log('Patched form:', this.form.value);
     }
 
     if (changes['appointment']?.currentValue) {
@@ -78,7 +76,7 @@ export class MedicalRecordFormComponent implements OnChanges {
         sugarBeforeMeal: a.sugarBeforeMeal,
         sugarAfterMeal: a.sugarAfterMeal,
 
-        visitDate: this.formatDate(new Date().toISOString()) // ✅ FIX
+        visitDate: this.formatDate(new Date().toISOString())
       });
     }
   }
@@ -94,12 +92,10 @@ export class MedicalRecordFormComponent implements OnChanges {
   }
 
   submit() {
-    console.log('Submit clicked');
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
-    console.log('Form valid'); // 👈 confirm
     this.formSubmit.emit(this.form.getRawValue());
   }
 }
