@@ -1,7 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { DashboardService } from '../../../services/dashboard.service';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { AppointmentStatus } from '../../pages/appointmentStatus.enum';
 
 @Component({
   selector: 'app-doctor-dash-component',
@@ -14,7 +15,9 @@ export class DoctorDashComponent {
   todayAppointments = signal<any[]>([]);
   upcomingAppointments = signal<any[]>([]);
   loading = signal(true);
-   dashboardService = inject(DashboardService)
+  dashboardService = inject(DashboardService);
+  router = inject(Router);
+ AppointmentStatus = AppointmentStatus;
   ngOnInit(): void {
     this.loadDashboard();
   }
@@ -25,33 +28,28 @@ export class DoctorDashComponent {
       key: 'totalAppointments',
       icon: 'fas fa-calendar-check',
       bg: '#E0E7FF',
-      color: '#4F46E5'
+      color: '#4F46E5',
+      tab: 'all'
     },
     {
       label: 'Pending',
       key: 'pendingAppointments',
       icon: 'fas fa-clock',
       bg: '#FEF3C7',
-      color: '#D97706'
+      color: '#D97706',
+      tab: 'today'
     },
     {
       label: 'Completed',
       key: 'completedAppointments',
       icon: 'fas fa-check-circle',
       bg: '#D1FAE5',
-      color: '#059669'
-    },
-    {
-      label: 'Patients Seen',
-      key: 'totalPatientsSeenToday',
-      icon: 'fas fa-users',
-      bg: '#CFFAFE',
-      color: '#0891B2'
+      color: '#059669',
+      tab: 'completed'
     }
   ];
 
   loadDashboard() {
-
     this.dashboardService.getDoctorDashboardData().subscribe({
       next: (res:any) => {
         
@@ -63,5 +61,30 @@ export class DoctorDashComponent {
 
       }
     });
+  }
+
+  onStatCardClick(tab: string) {
+    this.router.navigate(['/appointments'], { queryParams: { tab } });
+  }
+
+  redirectToContinuePage(appointmentId: string) {
+    this.dashboardService.getIdToRedirect(appointmentId).subscribe({
+      next: (res:any) => {
+        const data = res.data;
+        if (res.isSuccess) {
+          if(data.status === AppointmentStatus.InProgress){
+            this.router.navigate(['/medical-records/create', data.id]);
+          } else if(res.data.status === AppointmentStatus.MedicalRecordCreated){
+            this.router.navigate(['/prescription/create', data.id]);
+          }
+        } else {
+          console.error('Redirect URL not found in the response.');
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching redirect URL:', err);
+      }
+    })
+    
   }
 }

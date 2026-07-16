@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { AppointmentService } from '../../../../services/appointment.service';
 import { ToastService } from '../../../../services/toast.service';
 import { AuthService } from '../../../../services/auth.services';
+import { AppointmentStatus } from '../../appointmentStatus.enum';
 
 @Component({
   selector: 'app-appointment-details.component',
@@ -15,13 +16,14 @@ import { AuthService } from '../../../../services/auth.services';
 export class AppointmentDetailsComponent {
   private service = inject(AppointmentService);
   private route = inject(ActivatedRoute);
+  router = inject(Router);
   private destroyRef = inject(DestroyRef);
-private toastr = inject(ToastService);
-private auth=inject(AuthService)
+  private toastr = inject(ToastService);
+  private auth = inject(AuthService)
   appointment = signal<any>(null);
 
   // ✅ Role from localStorage (since no session in Angular)
-role = computed(() => this.auth.user()?.role);
+  role = computed(() => this.auth.user()?.role);
 
   isAdmin = computed(() => this.role() === 'Admin');
   isDoctor = computed(() => this.role() === 'Doctor');
@@ -57,16 +59,22 @@ role = computed(() => this.auth.user()?.role);
   deleteAppointment(id: string) {
     if (!confirm('Are you sure you want to delete this appointment?')) return;
 
-    this.service.deleteAppointment(id).subscribe((res:any) => {
+    this.service.deleteAppointment(id).subscribe((res: any) => {
       this.loadDetails(id);
       this.toastr.success(res.message || 'Appointment deleted successfully', 'Success');
     });
   }
 
   completeAppointment(id: string) {
-    this.service.completeAppointment(id, 'Completed').subscribe((res:any ) => {
+    this.service.updateAppointmentStatus(id, AppointmentStatus.Completed).subscribe((res: any) => {
       this.loadDetails(id);
       this.toastr.success(res.message || 'Appointment completed successfully', 'Success');
+    });
+  }
+  updateAppointmentStatus(id: string) {
+    this.service.updateAppointmentStatus(id, AppointmentStatus.InProgress).subscribe((res: any) => {
+      this.loadDetails(id);
+      this.router.navigate(['/medical-records/create', id]);
     });
   }
 }

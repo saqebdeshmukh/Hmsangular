@@ -2,64 +2,229 @@
 
   <!-- HEADER -->
 
-     <div class="d-flex justify-content-between align-items-center mb-4">
-       <div>
-           <h2 class="text-info mb-0"><i class="bi bi-prescription me-2"></i>Prescriptions</h2>
-       </div>
-       @if (role() == "Doctor")
-       {
-           <a routerLink="/prescription/create" class="btn btn-info mt-2">
-               <i class="bi bi-plus-circle me-2"></i>New Prescription
-           </a>
-       }
-   </div>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="text-info mb-0"><i class="bi bi-prescription me-2"></i>Prescriptions</h2>
+    </div>
+    @if (role() == "Doctor")
+    {
+    <a routerLink="/prescription/create" class="btn btn-info mt-2">
+      <i class="bi bi-plus-circle me-2"></i>New Prescription
+    </a>
+    }
+  </div>
 
-  <!-- FILTERS -->
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#internal"
+        (click)="onTabChange('internal')">Internal</button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#external" [disabled]="role() === 'Receptionist'"
+        (click)="onTabChange('external')">Medical Store</button>
+    </li>
+  </ul>
   <div class="row mb-3">
 
     <div class="col-md-3">
-      <input type="text" class="form-control"
-             placeholder="Search..."
-             (input)="search.set($any($event.target).value)">
+      <input type="text" class="form-control" placeholder="Search..." [value]="currentSearchValue()"
+        (input)="updateSearchFilter($any($event.target).value)">
     </div>
 
     <div class="col-md-2">
-      <input type="date" class="form-control"
-             (change)="dateFilter.set($any($event.target).value)">
+      <input type="date" class="form-control" [value]="currentDateValue()"
+        (change)="updateDateFilter($any($event.target).value)">
     </div>
 
     @if (role() === 'Receptionist') {
 
-      <div class="col-md-2">
-        <select class="form-select"
-                (change)="patientFilter.set($any($event.target).value)">
-          <option value="">All Patients</option>
-        </select>
-      </div>
+    <div class="col-md-2">
+      <select class="form-select" [value]="currentPatientValue()"
+        (change)="updatePatientFilter($any($event.target).value)">
+        <option value="">All Patients</option>
+      </select>
+    </div>
 
-      <div class="col-md-2">
-        <select class="form-select"
-                (change)="doctorFilter.set($any($event.target).value)">
-          <option value="">All Doctors</option>
-        </select>
-      </div>
+    <div class="col-md-2">
+      <select class="form-select" [value]="currentDoctorValue()"
+        (change)="updateDoctorFilter($any($event.target).value)">
+        <option value="">All Doctors</option>
+      </select>
+    </div>
     }
 
     <div class="col-md-2">
-      <button class="btn btn-outline-secondary w-100"
-              (click)="search.set(''); dateFilter.set('')">
+      <button class="btn btn-outline-secondary w-100" (click)="clearFilters()">
         Clear
       </button>
     </div>
-
   </div>
+  <div class="tab-content">
+    <div class="tab-pane fade show active" id="internal">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          Internal
+        </div>
 
-  <!-- GRID -->
-  <ag-grid-angular
-    class="ag-theme-alpine"
-    style="height: 500px"
-    [rowData]="filteredData()"
-    [columnDefs]="columnDefs">
-  </ag-grid-angular>
+        <div class="card-body">
+          <ag-grid-angular class="ag-theme-alpine" style="height:500px" [rowData]="internalRows()"
+            [columnDefs]="columnDefs" (gridReady)="onGridReady($event)" (sortChanged)="onSortChanged($event)">
+          </ag-grid-angular>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane fade" id="external">
+      <div class="card">
+        <div class="card-header bg-secondary text-white">
+          Medical Store
+        </div>
 
+        <div class="card-body">
+          <ag-grid-angular class="ag-theme-alpine" style="height:500px" [rowData]="externalRows()"
+            [columnDefs]="columnDefs" (gridReady)="onGridReady($event)" (sortChanged)="onSortChanged($event)">
+          </ag-grid-angular>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3 pt-2 border-top">
+
+    <!-- Page Size -->
+    <div class="d-flex align-items-center gap-2 text-muted">
+
+        <span>Show</span>
+
+        <select 
+            class="form-select form-select-sm"
+            style="width:70px"
+            [value]="currentPageSize()"
+            (change)="onPageSizeChange($any($event.target).value)">
+
+            @for(size of pageSizeOptions; track size)
+            {
+                <option [value]="size">
+                    {{size}}
+                </option>
+            }
+
+        </select>
+
+        <span>records</span>
+
+    </div>
+
+
+
+    <!-- Record Count -->
+    <div class="text-muted">
+
+        Showing 
+        {{currentStartRecord()}}
+        to
+        {{currentEndRecord()}}
+        of
+        {{currentTotalRecords()}}
+        records
+
+    </div>
+
+
+
+    <!-- Pagination -->
+
+    <nav>
+
+        <ul class="pagination pagination-sm mb-0">
+
+
+            <!-- First -->
+
+            <li class="page-item"
+                [class.disabled]="currentPageNumber()==1">
+
+                <button class="page-link"
+                (click)="firstPage()">
+
+                    First
+
+                </button>
+
+            </li>
+
+
+
+            <!-- Previous -->
+
+            <li class="page-item"
+                [class.disabled]="currentPageNumber()==1">
+
+                <button class="page-link"
+                (click)="previousPage()">
+
+                    Previous
+
+                </button>
+
+            </li>
+
+
+
+            <!-- Numbers -->
+
+            @for(page of currentPages(); track page)
+            {
+
+                <li class="page-item"
+                    [class.active]="page==currentPageNumber()">
+
+                    <button class="page-link"
+                    (click)="goToPage(page)">
+
+                        {{page}}
+
+                    </button>
+
+                </li>
+
+            }
+
+
+
+            <!-- Next -->
+
+            <li class="page-item"
+                [class.disabled]="currentPageNumber()==currentTotalPages()">
+
+                <button class="page-link"
+                (click)="nextPage()">
+
+                    Next
+
+                </button>
+
+            </li>
+
+
+
+            <!-- Last -->
+
+            <li class="page-item"
+                [class.disabled]="currentPageNumber()==currentTotalPages()">
+
+                <button class="page-link"
+                (click)="lastPage()">
+
+                    Last
+
+                </button>
+
+            </li>
+
+
+        </ul>
+
+    </nav>
+
+
+</div>
+  </div>
 </div>

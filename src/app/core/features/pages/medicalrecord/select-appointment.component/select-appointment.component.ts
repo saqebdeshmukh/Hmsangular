@@ -18,7 +18,6 @@ export class SelectAppointmentComponent {
 
   ngOnInit() {
     this.service.getAppointments().subscribe(res => {
-      console.log('Fetched appointments:', res.data.appointments);
       this.appointments.set(res.data.appointments || []);
     });
   }

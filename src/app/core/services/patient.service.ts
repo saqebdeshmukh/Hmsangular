@@ -3,14 +3,20 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../environment/environment';
 import { map } from 'rxjs';
 import { ToastService } from './toast.service';
+import { GridRequest } from '../GridRequestResponse/gridRequestResponse';
 
 @Injectable({ providedIn: 'root' })
 export class PatientService {
   constructor(private http: HttpClient, private toastr:ToastService) {}
  private apiUrl = environment.apiUrl;
 
-  getAllPatients() {
-    return this.http.get<any>(`${this.apiUrl}/patient/getPatients`);
+  getAllPatients(request: GridRequest) {
+    return this.http.post<any>(`${this.apiUrl}/patient/getPatients`, request).pipe(
+      map(res => {
+        if (!res.isSuccess) this.toastr.warning(res.message,"Warning");
+        return res;
+      })
+    );
   }
   createPatient(data: any) {
     return this.http.post<any>(`${this.apiUrl}/patient/createPatient`, data).pipe(
@@ -20,7 +26,7 @@ export class PatientService {
       })
     );;
   }
-  updatePatient(id: number, data: any) {
+  updatePatient(id: string | number, data: any) {
     return this.http.put<any>(`${this.apiUrl}/patient/updatePatient/${id}`, data).pipe(
       map(res => {
         if (!res.isSuccess) this.toastr.warning(res.message,"Warning");
@@ -48,5 +54,17 @@ export class PatientService {
 
   doctorLookup() {
     return this.http.get<any>(`${this.apiUrl}/doctor/getDoctors`);
+  }
+
+  getGeneticDiseases() {
+    return this.http.get<any>(`${this.apiUrl}/geneticDisease/getGeneticDiseases`);
+  }
+  CreateGeneticDisease(data: any) {
+    return this.http.post<any>(`${this.apiUrl}/geneticDisease/createGeneticDisease`, data).pipe(
+      map(res => {
+        if (!res.isSuccess) this.toastr.warning(res.message,"Warning");
+        return res;
+      })
+    );;
   }
 }

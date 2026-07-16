@@ -3,10 +3,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { PatientService } from '../../../../services/patient.service';
+import { MedicalRecordService } from '../../../../services/medicarecord.service';
+import { PrescriptionService } from '../../../../services/prescription.service';
 import { AppointmentModalComponent } from '../appointment-modal.component/appointment-modal.component';
 import { AppointmentService } from '../../../../services/appointment.service';
 import { AuthService } from '../../../../services/auth.services';
 import { ToastService } from '../../../../services/toast.service';
+import { environment } from '../../../../environment/environment';
 
 @Component({
   selector: 'app-patient-detail',
@@ -19,6 +22,8 @@ export class PatientDetailComponent {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private patientService = inject(PatientService);
+  private medicalRecordService = inject(MedicalRecordService);
+  private prescriptionService = inject(PrescriptionService);
   private appointmentService = inject(AppointmentService);
   private auth = inject(AuthService);
   private toastr = inject(ToastService);
@@ -28,40 +33,30 @@ export class PatientDetailComponent {
 
   showModal = signal(false);
   doctors = signal<any[]>([]);
+  medicalRecords = signal<any[]>([]);
+  prescriptions = signal<any[]>([]);
   selectedDoctor = signal('');
   reason = signal('');
+    documents = signal<Array<{
+    id?: string;
+    clientKey?: string;
+    originalName: string;
+    savedName?: string;
+    contentType: string;
+    contentBase64?: string;
+    reading?: boolean;
+    fileSize?: number;
+  }>>([]);
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) this.getPatient(id);
-
-    this.getDoctors();
+    
   }
 
   truncate(text: string | null | undefined, limit: number): string {
     if (!text) return 'N/A';
     return text.length > limit ? text.substring(0, limit) + '...' : text;
-  }
-
-  calculateAge(dateOfBirth: string | Date | null | undefined): number {
-    if (!dateOfBirth) return 0;
-
-    const dob = new Date(dateOfBirth);
-    const today = new Date();
-
-    let age = today.getFullYear() - dob.getFullYear();
-
-    const monthDiff = today.getMonth() - dob.getMonth();
-
-    // If birthday hasn't occurred yet this year → subtract 1
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < dob.getDate())
-    ) {
-      age--;
-    }
-
-    return age;
   }
   goPatients() {
     this.router.navigate(['/patients']);
@@ -70,18 +65,34 @@ export class PatientDetailComponent {
   getPatient(id: string) {
     this.patientService.getPatientDetails(id).subscribe((res: any) => {
       this.patient.set(res.data);
+      const docs = res.data?.patientReportDocs || [];
+    if (Array.isArray(docs) && docs.length > 0) {
+      const mapped = docs.map((d: any) => {
+        const addr = d.docAddress || d.DocAddress || d.address || d.url || '';
+        const savedName = addr ? addr.split(/[\\/]/).pop() : undefined;
+        const original = d.fileName || d.originalName || d.name || (savedName || 'file');
+        return {
+          id: d.id || d.Id,
+          originalName: original,
+          savedName: savedName,
+          contentType: d.contentType || d.docType || d.DocType || '',
+          contentBase64: d.contentBase64 || ''
+        };
+      });
+      this.documents.set(mapped);
+    }
+  
     });
   }
-
+getFileUrl(savedName?: string) {
+    if (!savedName) return '';
+    const base = environment.base || '';
+    return base + encodeURIComponent(savedName);
+  }
   getDoctors() {
     this.patientService.doctorLookup().subscribe((res: any) => {
       this.doctors.set(res.data);
     });
-  }
-
-  get age() {
-    const dob = new Date(this.patient()?.dateOfBirth);
-    return new Date().getFullYear() - dob.getFullYear();
   }
 
   getStatusClass(status: string) {
@@ -94,6 +105,7 @@ export class PatientDetailComponent {
   }
 
   openModal() {
+    this.getDoctors();
     this.showModal.set(true);
   }
 
@@ -104,7 +116,6 @@ export class PatientDetailComponent {
   handleBooking(data: any) {
     this.appointmentService.createAppointment(data).subscribe({
       next: (res: any) => {
-        //this.selectedPatientId.set('');
         if (!res.isSuccess) {
           this.toastr.error(res.message || 'Something went wrong', 'Error');
           this.closeModal();
@@ -138,6 +149,43 @@ export class PatientDetailComponent {
   }
 
   viewPrescription(id: string) {
-    this.router.navigate(['/prescription', id]);
+    this.router.navigate(['/prescriptiondetails', id]);
+  }
+
+  setActiveTab(tab: string) {
+    this.activeTab = tab;
+    const id = this.patient()?.id || this.route.snapshot.paramMap.get('id');
+    if (!id) return;
+
+    if (tab === 'records') {
+      this.medicalRecordService.getMedicalRecordsByPatientId(id).subscribe({
+        next: (res: any) => {
+          this.medicalRecords.set(res?.data || []);
+        },
+        error: () => {
+          this.errorMessage.set('Failed to load medical records');
+        }
+      });
+    }
+
+    if (tab === 'prescriptions') {
+      this.prescriptionService.getPrescriptionsByPatientId(id).subscribe({
+        next: (res: any) => {
+          // Do not overwrite the main patient signal when loading prescriptions.
+          // The API may return either an array or an object with a `prescriptions` field.
+          const data = res?.data;
+          if (Array.isArray(data)) {
+            this.prescriptions.set(data);
+          } else if (data && Array.isArray(data.prescriptions)) {
+            this.prescriptions.set(data.prescriptions);
+          } else {
+            this.prescriptions.set([]);
+          }
+        },
+        error: () => {
+          this.errorMessage.set('Failed to load prescriptions');
+        }
+      });
+    }
   }
 }

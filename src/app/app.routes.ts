@@ -57,7 +57,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data: { roles: ['Doctor'] }
   },
-
+{
+path: 'medicines',
+  loadComponent: () => import('./core/features/pages/medicines.component/medicines.component')
+  .then(m => m.MedicinesComponent)
+},
 {
     path: 'doctors',
     loadComponent: () =>

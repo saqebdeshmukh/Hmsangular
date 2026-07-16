@@ -17,8 +17,14 @@ export class HeaderComponent {
   // ✅ Reactive role using signal
   role = computed(() => this.auth.user()?.role);
 
+  // ngOnInit() {
+  //   if(!this.role()) {
+  //     this.router.navigate(['/login']);
+  //   }
+  // }
+
   logout() {
     this.auth.logout();
-    this.router.navigate(['/login']); // ✅ better than location.href
+    this.router.navigate(['/login']);
   }
 }

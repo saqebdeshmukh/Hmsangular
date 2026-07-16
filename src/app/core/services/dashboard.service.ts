@@ -16,4 +16,7 @@ export class DashboardService {
   getReceptionistDashboardData() {
     return this.http.get<any>(`${this.apiUrl}/dashboard/receptionistDashboard`);
   }
+  getIdToRedirect(appointmentId: string) {
+    return this.http.get<any>(`${this.apiUrl}/dashboard/getIdToRedirect/${appointmentId}`);
+  }
 }

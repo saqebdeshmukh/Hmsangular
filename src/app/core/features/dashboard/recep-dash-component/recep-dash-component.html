@@ -23,8 +23,10 @@
   <!-- STATS -->
   <div class="row g-3 mb-4">
     @for (item of statsConfig; track item.key) {
-      <div class="col-6 col-lg-3">
-        <div class="stat-card">
+      <div class="col-6 col-lg-4">
+        <div class="stat-card"
+             style="cursor: pointer;"
+             (click)="onStatCardClick(item.tab)">
           <div class="d-flex justify-content-between align-items-start">
             <div>
               <p class="stat-label mb-1">{{ item.label }}</p>
@@ -49,15 +51,20 @@
     <!-- TODAY APPOINTMENTS -->
     <div class="col-lg-6 mb-3">
       <div class="card h-100">
-        <div class="card-header">
-          <span class="card-title">
-            <i class="fas fa-calendar-day me-2 text-primary"></i>
-            Today's Appointments
-          </span>
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-2">
+            <span class="card-title">
+              <i class="fas fa-calendar-day me-2 text-primary"></i>
+              Today's Appointments
+            </span>
+            <span class="badge bg-primary">
+              {{ todayAppointments().length }}
+            </span>
+          </div>
 
-          <span class="badge bg-primary">
-            {{ todayAppointments().length }}
-          </span>
+          <a [routerLink]="['/appointments']" [queryParams]="{ tab: 'today' }" class="btn btn-sm btn-ghost">
+            View All
+          </a>
         </div>
 
         <div class="card-body p-0">
@@ -117,11 +124,20 @@
     <div class="col-lg-6 mb-3">
       <div class="card h-100">
 
-        <div class="card-header">
-          <span class="card-title">
-            <i class="fas fa-calendar-week me-2 text-info"></i>
-            Completed Appointments
-          </span>
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-2">
+            <span class="card-title">
+              <i class="fas fa-calendar-week me-2 text-info"></i>
+              Completed Appointments
+            </span>
+            <span class="badge bg-success">
+              {{ completedAppointments().length }}
+            </span>
+          </div>
+
+          <a [routerLink]="['/appointments']" [queryParams]="{ tab: 'completed' }" class="btn btn-sm btn-ghost">
+            View All
+          </a>
         </div>
 
         <div class="card-body p-0">
@@ -189,7 +205,7 @@
   </div>
 
   <!-- QUICK ACTIONS -->
-  <div class="card mt-3">
+  <!-- <div class="card mt-3">
     <div class="card-header">
       <span class="card-title">
         <i class="fas fa-bolt me-2 text-warning"></i>Quick Actions
@@ -225,6 +241,6 @@
 
       </div>
     </div>
-  </div>
+  </div> -->
 
 </div>

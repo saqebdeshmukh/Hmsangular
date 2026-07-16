@@ -41,7 +41,6 @@ export class LoginComponent {
     }
 
     this.errorMessage.set('');
-    this.isLoading.set(true);
 
     const { email, password } = this.loginForm.value;
 
@@ -50,7 +49,6 @@ export class LoginComponent {
 
         const role = this.auth.user()?.role;
 
-        // ✅ Navigate based on role
         switch (role) {
           case 'Admin':
             this.router.navigate(['/admin']);
@@ -64,15 +62,12 @@ export class LoginComponent {
           default:
             this.router.navigate(['/']);
         }
-
-        this.isLoading.set(false);
       },
 
       error: (err) => {
         this.errorMessage.set(
           err?.error?.message || 'Invalid email or password'
         );
-        this.isLoading.set(false);
       }
     });
   }

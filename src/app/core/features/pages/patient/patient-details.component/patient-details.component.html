@@ -55,7 +55,7 @@
 
             <div class="col-6 mb-3">
               <small class="text-muted d-block">Age</small>
-              <strong>{{ calculateAge(patient()?.dateOfBirth) }} years</strong>
+              <strong>{{ patient()?.age }} years</strong>
             </div>
 
             <div class="col-6 mb-3">
@@ -99,7 +99,22 @@
                 }}
               </strong>
             </div>
+            <div class="col-12 mb-3">
+              <small class="text-muted d-block">Report Documents</small>
+              @for(doc of documents(); track doc.id) {
+              <strong>
+                <ul style="list-style-type: none; padding-left: 0;">
+                  <li><i class="bi bi-file-earmark me-1"></i>
+                    @if (doc.savedName) {
+                    <a [href]="getFileUrl(doc.savedName)" target="_blank" rel="noopener">{{ doc.originalName }}</a>
+                    }
+                  </li>
+                </ul>
 
+              </strong>
+
+              }
+            </div>
           </div>
         </div>
 
@@ -134,19 +149,20 @@
             </li>
 
             <li class="nav-item">
-              <button class="nav-link" [class.active]="activeTab==='records'" (click)="activeTab='records'">
+              <button class="nav-link" [class.active]="activeTab==='records'" (click)="setActiveTab('records')">
                 <i class="bi bi-file-medical me-1"></i>Medical Records
                 <span class="badge bg-success ms-1">
-                  {{ patient()?.medicalRecords?.length || 0 }}
+                  {{ medicalRecords().length || patient()?.medicalRecordCount || 0 }}
                 </span>
               </button>
             </li>
 
             <li class="nav-item">
-              <button class="nav-link" [class.active]="activeTab==='prescriptions'" (click)="activeTab='prescriptions'">
+              <button class="nav-link" [class.active]="activeTab==='prescriptions'"
+                (click)="setActiveTab('prescriptions')">
                 <i class="bi bi-prescription me-1"></i>Prescriptions
                 <span class="badge bg-info ms-1">
-                  {{ patient()?.prescriptions?.length || 0 }}
+                  {{ prescriptions().length || patient()?.prescriptionCount || 0 }}
                 </span>
               </button>
             </li>
@@ -209,10 +225,10 @@
           <!-- RECORDS -->
           @if (activeTab === 'records') {
 
-          @if (patient()?.medicalRecords?.length) {
+          @if (medicalRecords().length) {
 
           <div class="list-group list-group-flush">
-            @for (r of patient()?.medicalRecords; track r.id) {
+            @for (r of medicalRecords(); track r.id) {
             <a class="list-group-item list-group-item-action" (click)="viewRecord(r.id)">
 
               <div class="d-flex justify-content-between">
@@ -224,6 +240,22 @@
                 <i class="bi bi-chevron-right"></i>
               </div>
 
+            </a>
+            }
+          </div>
+
+          } @else if (patient()?.medicalRecords?.length) {
+          <div class="list-group list-group-flush">
+            @for (r of patient()?.medicalRecords; track r.id) {
+            <a class="list-group-item list-group-item-action" (click)="viewRecord(r.id)">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <h6 class="mb-1">{{ r.visitDate | date:'MMMM dd, yyyy' }}</h6>
+                  <small>Dr. {{ r.doctorName }}</small>
+                  <p><strong>Diagnosis:</strong> {{ truncate(r.diagnosis,50) }}</p>
+                </div>
+                <i class="bi bi-chevron-right"></i>
+              </div>
             </a>
             }
           </div>
@@ -240,7 +272,7 @@
           <!-- PRESCRIPTIONS -->
           @if (activeTab === 'prescriptions') {
 
-          @if (patient()?.prescriptions?.length) {
+          @if (prescriptions().length) {
 
           <div class="table-responsive">
             <table class="table table-hover">
@@ -249,13 +281,14 @@
                   <th>Date</th>
                   <th>Medicine</th>
                   <th>Doctor</th>
+                  <th>Type</th>
                   <th>Actions</th>
                 </tr>
               </thead>
 
               <tbody>
 
-                @for (p of patient()?.prescriptions; track $index) {
+                @for (p of prescriptions(); track $index) {
 
                 @for (item of p.prescriptionItemRequests; track item.id; let i = $index) {
 
@@ -273,21 +306,84 @@
                     {{ item.medicineName }}
                   </td>
 
-                 
+
                   <!-- Doctor (only once) -->
                   @if (i === 0) {
                   <td [attr.rowspan]="p.prescriptionItemRequests.length">
                     Dr. {{ p.doctorName }}
                   </td>
                   <td>
+                    {{ p.type }}
+                  </td>
+                  <td>
                     <button class="btn btn-sm btn-outline-primary" (click)="viewPrescription(p.id)">
                       <i class="bi bi-eye"></i>
                     </button>
-                    <button class="btn btn-sm btn-outline-secondary" (click)="print(p.id)">
+                    @if(p.type === 'MedicalStore') {
+                    <button class="btn btn-sm btn-outline-secondary" title="Print Prescription" (click)="print(p.id)">
                       <i class="bi bi-printer"></i>
-                    </button>
+                    </button>}
                   </td>
+                  }
+                </tr>
+
                 }
+
+                }
+
+              </tbody>
+            </table>
+          </div>
+
+          } @else if (patient()?.prescriptions?.length) {
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead class="table-light">
+                <tr>
+                  <th>Date</th>
+                  <th>Medicine</th>
+                  <th>Doctor</th>
+                  <th>Type</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+
+              <tbody>
+
+                @for (p of patient()?.prescriptions; track $index) {
+
+                @for (item of p.prescriptionItemRequests; track item.id; let i = $index) {
+
+                <tr>
+
+                  @if (i === 0) {
+                  <td [attr.rowspan]="p.prescriptionItemRequests.length">
+                    {{ p.prescriptionDate | date:'MMM dd, yyyy' }}
+                  </td>
+                  }
+
+                  <td>
+                    {{ item.medicineName }}
+                  </td>
+
+
+                  @if (i === 0) {
+                  <td [attr.rowspan]="p.prescriptionItemRequests.length">
+                    Dr. {{ p.doctorName }}
+                  </td>
+                  <td>
+                    {{ p.type }}
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary" (click)="viewPrescription(p.id)">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                    @if(p.type === 'MedicalStore') {
+                    <button class="btn btn-sm btn-outline-secondary" title="Print Prescription" (click)="print(p.id)">
+                      <i class="bi bi-printer"></i>
+                    </button>}
+                  </td>
+                  }
                 </tr>
 
                 }
@@ -314,13 +410,8 @@
   </div>
 
   <!-- MODAL -->
-  <app-appointment-modal
-  [show]="showModal()"
-  [doctors]="doctors()"
-  [patientDetails]="patient()"
-  (close)="closeModal()"
-  (book)="handleBooking($event)"
->
-</app-appointment-modal>
+  <app-appointment-modal [show]="showModal()" [doctors]="doctors()" [patientDetails]="patient()" (close)="closeModal()"
+    (book)="handleBooking($event)">
+  </app-appointment-modal>
 
 </div>

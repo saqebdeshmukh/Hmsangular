@@ -79,9 +79,9 @@
                     @if (isDoctor() && a.status == "Scheduled") {
 
                     <div class="d-grid gap-2">
-                        <a [routerLink]="['/medical-records/create', a.id]" class="btn btn-success">
+                        <button (click)="updateAppointmentStatus(a.id)" class="btn btn-success">
                             Create Medical Record
-                        </a>
+                        </button>
 
                         <button (click)="completeAppointment(a.id)" class="btn btn-primary">
                             Mark as Completed
@@ -147,7 +147,7 @@
                                 </div>
                             </div>
                             @if (isDoctor() || isAdmin()) {
-                            <a [routerLink]="['/patients', a.patientId]" class="btn btn-outline-primary btn-sm">
+                            <a [routerLink]="['/patientdetails', a.patientId]" class="btn btn-outline-primary btn-sm">
                                 View Profile
                             </a>
                             }
@@ -186,11 +186,11 @@
                                     <small class="text-muted">Phone</small><br>
                                     <strong>{{ a.doctorPhone || 'N/A' }}</strong>
                                 </div>
-                                <div class="col-12 mb-2">
+                                <!-- <div class="col-12 mb-2">
                                     <small class="text-muted">Consultation Fee</small><br>
                                     <strong class="text-success fs-5">${{ a.doctorConsultationFee?.toFixed(2) || '0.00'
                                         }}</strong>
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>

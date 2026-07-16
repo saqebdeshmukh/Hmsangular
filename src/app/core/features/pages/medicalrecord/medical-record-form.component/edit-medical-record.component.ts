@@ -3,6 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MedicalRecordFormComponent } from './medical-record-form.component';
 import { MedicalRecordService } from '../../../../services/medicarecord.service';
 import { ToastService } from '../../../../services/toast.service';
+import { AppointmentService } from '../../../../services/appointment.service';
+import { AppointmentStatus } from '../../appointmentStatus.enum';
 
 @Component({
   selector: 'app-edit-medical-record',
@@ -24,12 +26,12 @@ export class EditMedicalRecordComponent {
   private service = inject(MedicalRecordService);
   private toast = inject(ToastService);
   private router = inject(Router);
+  private appointmentService = inject(AppointmentService);
 
   record = signal<any>(null);
 
   ngOnInit() {
     const id = this.route.snapshot.params['id'];
-console.log('Editing medical record with id:', id);
     this.service.getMedicalRecordForEdit(id).subscribe(res => {
       this.record.set(res.data);
     });
@@ -37,10 +39,25 @@ console.log('Editing medical record with id:', id);
 
   update(data: any) {
     this.service.updateMedicalRecord(data.id, data).subscribe(res => {
-      if (res.isSuccess) {
-        this.toast.success(res.message);
-        this.router.navigate(['/medical-records']);
+      if (!res.isSuccess) {
+        return;
       }
+
+      this.toast.success(res.message);
+
+      if (data.isComplete) {
+        this.appointmentService.updateAppointmentStatus(this.record()?.appointmentId, AppointmentStatus.Completed).subscribe(statusRes => {
+          if (statusRes.isSuccess) {
+            this.router.navigate(['/medical-records']);
+            return;
+          }
+
+          this.router.navigate(['/medical-records']);
+        });
+        return;
+      }
+
+      this.router.navigate(['/medical-records']);
     });
   }
 }

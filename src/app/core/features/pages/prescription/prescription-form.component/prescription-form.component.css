@@ -1,0 +1,74 @@
+.genetic-disease-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.genetic-disease-card {
+  border: 1px solid #0d6efd;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+}
+
+.genetic-disease-name {
+  font-weight: 600;
+  color: #0d6efd;
+}
+
+.color-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(13,110,253,0.25);
+}
+
+.family-history .history-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.family-history .history-block {
+  flex: 1 1 45%;
+  min-width: 200px;
+}
+
+.history-label {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #6c757d;
+  margin-bottom: 0.25rem;
+}
+
+.history-value {
+  font-size: 0.95rem;
+  color: #212529;
+  white-space: pre-line;
+}
+
+/* Patient summary enhancements */
+.patient-summary .avatar-circle {
+  width: 64px;
+  height: 64px;
+  font-size: 1.25rem;
+}
+
+.patient-summary .patient-badges .badge {
+  font-size: 0.75rem;
+  padding: 0.35rem 0.5rem;
+}
+
+.patient-actions .info-value {
+  font-weight: 600;
+}
+
+.patient-summary .info-value {
+  font-weight: 600;
+  color: #212529;
+}
+
+.patient-summary .patient-actions a.btn {
+  min-width: 120px;
+}

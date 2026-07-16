@@ -47,10 +47,38 @@ export class CreatePatientComponent {
   }
 
   handleCreate(data: any) {
-    this.service.createPatient(data).subscribe({
-      next: () => {
-        this.toastr.success('Patient created successfully');
-        this.router.navigate(['/patients']);
+    const sendDocs = (data.documents || [])
+      .filter((d: any) => d.contentBase64)
+      .map((d: any) => ({ FileName: d.originalName || d.fileName || 'file', ContentBase64: d.contentBase64, ContentType: d.contentType || '' }));
+
+    const payload = {
+      FirstName: data.firstName || data.FirstName || '',
+      LastName: data.lastName || data.LastName || '',
+      DateOfBirth: data.dateOfBirth || data.DateOfBirth || '',
+      Gender: data.gender || data.Gender || '',
+      Phone: data.phone || data.Phone || '',
+      Address: data.address || data.Address || '',
+      BloodGroup: data.bloodGroup || data.BloodGroup || '',
+      DoctorId: data.doctorId || data.DoctorId || '',
+      Weight: data.weight || data.Weight || '',
+      Height: data.height || data.Height || '',
+      BloodPressure: data.bloodPressure || data.BloodPressure || '',
+      SugarBeforeMeal: data.sugarBeforeMeal || data.SugarBeforeMeal || '',
+      SugarAfterMeal: data.sugarAfterMeal || data.SugarAfterMeal || '',
+      Reason: data.reason || data.Reason || '',
+      GeneticFrom: data.geneticFrom || data.GeneticFrom || '',
+      GeneticDiseases: data.GeneticDiseases || data.geneticDiseases || [],
+      Diabetic: data.diabetic || data.Diabetic || '',
+      Hypertension: data.hypertension || data.Hypertension || '',
+      BookAppointment: data.bookAppointment || false,
+      Documents: sendDocs
+    };
+
+    this.service.createPatient(payload).subscribe({
+      next: (res) => {
+        if (res.isSuccess) {
+          this.router.navigate(['/patients']);          
+        }
       }
     });
   }

@@ -1,11 +1,12 @@
 @if (prescription()) {
-<button class="print-btn no-print" (click)="print()">
+<div class="action-buttons no-print">
+    <button class="print-btn" (click)="print()">
         🖨️ Print Prescription
     </button>
-
-    <button class="btn btn-secondary" (click)="complete()">
+    <button class="complete-btn btn btn-secondary" (click)="complete()">
         Mark as Complete
     </button>
+</div>
 
 <div class="print-wrapper">
     <div class="prescription">
@@ -27,10 +28,12 @@
                 <p><strong>
                         {{ prescription().patientName }}
                     </strong></p>
-                <p>Email: {{ prescription().patient?.user?.email }}</p>
+                @if (prescription().email) {
+                <p>Email: {{ prescription().email }}</p>
+                }
 
-                @if (prescription().patient?.phone) {
-                <p>Phone: {{ prescription().patient.phone }}</p>
+                @if (prescription().patientPhoneNo) {
+                <p>Phone: {{ prescription().patientPhoneNo }}</p>
                 }
             </div>
 
@@ -57,7 +60,7 @@
             <div class="medicine-block">
 
                 <div class="medicine-name">
-                     {{ item.medicineName }}
+                    {{ item.medicineName }}
                 </div>
 
                 <div class="medicine-details">
@@ -115,14 +118,11 @@
 
         <!-- FOOTER -->
         <div class="footer">
-
             <div class="date-section">
-                <p>Printed on: {{ today | date:'MMMM dd, yyyy HH:mm' }}</p>
-                <p class="note">
-                    This prescription is valid for 30 days.
-                </p>
+                @if(prescription().nextAppointment) {
+                <p>Next appointment on: <strong>{{ prescription().nextAppointment | date:'MMM dd, yyyy' }}</strong></p>
+            }
             </div>
-
             <div class="signature-section">
                 <div class="signature-line">
 

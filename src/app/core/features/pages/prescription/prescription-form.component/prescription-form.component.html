@@ -1,5 +1,5 @@
 <div class="row justify-content-center">
-  <div class="col-lg-8">
+  <div class="col-lg-10">
     <div class="card shadow-sm">
 
       <div class="card-header bg-info text-white">
@@ -12,28 +12,100 @@
 
         <!-- RECORD INFO -->
         @if (record) {
-        <div class="alert alert-info mb-4">
-          <div class="row">
-            <div class="col-md-6">
-              <h6 class="mb-1"><i class="bi bi-person me-2"></i>Patient</h6>
-              <strong>{{ record.patientName }}</strong>
+
+        <div class="patient-summary card mb-4 shadow-sm">
+          <div class="card-body d-flex align-items-center gap-3">
+            <div class="flex-grow-1">
+              <h5 class="mb-1">{{ record?.patientName }}</h5>
+              <div class="patient-badges mb-2">
+                <span class="badge bg-info me-1">{{ record?.gender || record?.patient?.gender
+                  || 'Unknown' }}</span>
+              </div>
+
+              <div class="d-flex flex-wrap gap-3">
+                <div>
+                  <small class="text-muted">Phone : </small>
+                  <span class="info-value">{{ record?.patientPhone || record?.phone || 'N/A'
+                    }}</span>
+                </div>
+
+              </div>
             </div>
-            <div class="col-md-6">
-              <h6 class="mb-1"><i class="bi bi-clipboard2-pulse me-2"></i>Diagnosis</h6>
-              <strong>{{ record.diagnosis ?? "N/A" }}</strong>
+
+            <div class="text-end patient-actions">
+              <div class="mb-2"><strong>{{ record?.visitDate | date:'medium' }}</strong></div>
+              @if (role() !== 'Patient') {
+              <a class="btn btn-outline-primary btn-sm" [routerLink]="['/patientdetails', record?.patientId]">
+                <i class="bi bi-eye me-1"></i>View Profile
+              </a>
+              }
             </div>
-          </div>
-          <div class="mt-2">
-            <h6 class="mb-1"><i class="bi bi-calendar me-2"></i>Visit Date</h6>
-            <strong>{{ record.visitDate | date:'MMMM dd, yyyy' }}</strong>
           </div>
         </div>
-        <!-- <div class="alert alert-info mb-4">
-          <strong>
-            {{ record.patientName }}
-          </strong>
-          <div>{{ record.diagnosis }}</div>
-        </div> -->
+
+        <div class="row mb-4">
+          <div class="col-md-12">
+            <div class="card border-success shadow-sm">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                  <div>
+                    <h6 class="card-title text-success mb-1">
+                      <i class="bi bi-heart-pulse me-2"></i>Genetic History
+                    </h6>
+                    <p class="text-muted small mb-0">Inherited conditions and family history</p>
+                  </div>
+                  <span class="badge bg-success">Genetics</span>
+                </div>
+
+                <div>
+                  <p class="text-muted small mb-2">Genetic Diseases</p>
+                  <div class="genetic-disease-grid">
+                    <div class="row">
+                      @for (gd of record?.geneticDiseases || record?.GeneticDiseases || [];
+                      track gd.diseaseName || gd.DiseaseName) {
+                      <div class="col-md-4">
+                        <div class="genetic-disease-card">
+                          <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+                            <span class="genetic-disease-name"
+                              [style.color]="gd.ColorCode || gd.colorCode || '#0d6efd'">
+                              {{ gd.diseaseName || gd.DiseaseName || gd.name || gd.Name ||
+                              'Unknown' }}
+                            </span>
+                          </div>
+                          <p class="mb-0 text-muted small">
+                            <strong>Medicines:</strong>
+                            {{ gd.Medicines || gd.medicines || 'Not specified' }}
+                          </p>
+                        </div>
+                      </div>
+                      }
+                      @if (!(record?.geneticDiseases || record?.GeneticDiseases ||
+                      []).length) {
+                      <span class="text-muted">No genetic diseases listed</span>
+                      }
+                    </div>
+                  </div>
+                </div>
+                @if(record?.geneticFrom){
+                <div class="family-history mt-3">
+                  <div class="history-row">
+                    <div class="history-block">
+                      <span class="history-label">Parents</span>
+                      <span class="history-value">{{ familyHistory.parents || 'Not provided'
+                        }}</span>
+                    </div>
+                    <div class="history-block">
+                      <span class="history-label">Grand Parents</span>
+                      <span class="history-value">{{ familyHistory.grandparents || 'Not provided'
+                        }}</span>
+                    </div>
+                  </div>
+                </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
         }
 
         <form [formGroup]="form" (ngSubmit)="submit()">
@@ -72,29 +144,51 @@
 
           <!-- TYPE -->
           <div class="mb-3">
-            <label class="form-label">Prescription Type</label>
-            <select formControlName="type" class="form-select">
-              <option value="MedicalStore">Medical Store</option>
-              <option value="Internal">Internal</option>
-            </select>
+            <label class="form-label d-block mb-2">Prescription Type</label>
+
+            @if (!isEdit || selectedTab === 'Internal') {
+            <button type="button" class="btn btn-outline-primary mx-2" [class.active]="selectedTab === 'Internal'" [disabled]="isEdit"
+              (click)="setTab('Internal')">
+              Internal
+            </button>
+            }
+
+            @if (!isEdit || selectedTab === 'MedicalStore') {
+            <button type="button" class="btn btn-outline-primary mx-2" [class.active]="selectedTab === 'MedicalStore'" [disabled]="isEdit"
+              (click)="setTab('MedicalStore')">
+              Medical
+            </button>
+            }
+
+            <input type="hidden" formControlName="type" />
           </div>
 
           <!-- ITEMS -->
-          <div formArrayName="items">
-
+          @if (selectedTab === 'Internal') {
+          <div formArrayName="internalItems">
             @for (item of items.controls; track $index; let i = $index) {
             <div [formGroupName]="i" class="row mb-3">
-
-              <div class="col-md-3">
-                <label class="form-label">Medicine Name</label>
-                <input formControlName="medicineName" class="form-control" placeholder="Medicine">
+              <div class="col-md-3 position-relative">
+                <label class="form-label">
+                  Medicine Name
+                </label>
+                <input formControlName="medicineName" class="form-control" placeholder="Medicine" autocomplete="off"
+                  (keydown)="onMedicineKeydown($event, i)">
+                @if (suggestions[getRowKey(i)] && suggestions[getRowKey(i)].length > 0) {
+                <ul class="list-group position-absolute w-100" style="z-index:1050; max-height:200px; overflow:auto;">
+                  @for (m of suggestions[getRowKey(i)]; track m.id; let si = $index) {
+                  <li class="list-group-item list-group-item-action"
+                    [class.active]="focusedSuggestion[getRowKey(i)] === si" (pointerdown)="selectMedicine(i, m)">
+                    {{ m.name }}
+                  </li>
+                  }
+                </ul>
+                }
               </div>
-
               <div class="col-md-2">
                 <label class="form-label">Dosage</label>
                 <input formControlName="dosage" class="form-control" placeholder="Dosage">
               </div>
-
               <div class="col-md-2">
                 <label class="form-label">Frequency</label>
                 <select formControlName="frequency" class="form-select">
@@ -104,12 +198,10 @@
                   <option [value]="4">4</option>
                 </select>
               </div>
-
               <div class="col-md-2">
                 <label class="form-label">Duration</label>
                 <input type="text" formControlName="duration" class="form-control" placeholder="Days">
               </div>
-
               <div class="col-md-2">
                 <label class="form-label">Meal Timing</label>
                 <select formControlName="mealTiming" class="form-select">
@@ -118,18 +210,77 @@
                   <option>Anytime</option>
                 </select>
               </div>
-
               <div class="col-md-1">
                 <label class="form-label">Remove</label>
                 <button type="button" class="btn btn-danger" (click)="removeItem(i)">
                   ×
                 </button>
               </div>
-
             </div>
             }
-
           </div>
+          } @else {
+          <div formArrayName="externalItems">
+            @for (item of items.controls; track $index; let i = $index) {
+            <div [formGroupName]="i" class="row mb-3">
+              <div class="col-md-3 position-relative">
+                <label class="form-label">
+                  Medicine Name
+                </label>
+                <input formControlName="medicineName" class="form-control" placeholder="Medicine" autocomplete="off"
+                  (keydown)="onMedicineKeydown($event, i)">
+                @if (suggestions[getRowKey(i)] && suggestions[getRowKey(i)].length > 0) {
+                <ul class="list-group position-absolute w-100" style="z-index:1050; max-height:200px; overflow:auto;">
+                  @for (m of suggestions[getRowKey(i)]; track m.id; let si = $index) {
+                  <li class="list-group-item list-group-item-action"
+                    [class.active]="focusedSuggestion[getRowKey(i)] === si" (pointerdown)="selectMedicine(i, m)">
+                    {{ m.name }}
+                  </li>
+                  }
+                </ul>
+                }
+              </div>
+              <div class="col-md-2">
+                <label class="form-label">Dosage</label>
+                <input formControlName="dosage" class="form-control" placeholder="Dosage">
+              </div>
+              <div class="col-md-2">
+                <label class="form-label">Frequency</label>
+                <select formControlName="frequency" class="form-select">
+                  <option [value]="1">1</option>
+                  <option [value]="2">2</option>
+                  <option [value]="3">3</option>
+                  <option [value]="4">4</option>
+                </select>
+              </div>
+              <div class="col-md-2">
+                <label class="form-label">Duration</label>
+                <input type="text" formControlName="duration" class="form-control" placeholder="Days">
+              </div>
+              <div class="col-md-2">
+                <label class="form-label">Meal Timing</label>
+                <select formControlName="mealTiming" class="form-select">
+                  <option>After Meal</option>
+                  <option>Before Meal</option>
+                  <option>Anytime</option>
+                </select>
+              </div>
+              <div class="col-md-1">
+                <label class="form-label">Remove</label>
+                <button type="button" class="btn btn-danger" (click)="removeItem(i)">
+                  ×
+                </button>
+              </div>
+            </div>
+            }
+          </div>
+          }
+
+          @if (errorMessage) {
+          <div class="alert alert-danger">
+            {{ errorMessage }}
+          </div>
+          }
 
           <button type="button" class="btn btn-outline-primary mb-3" (click)="addItem()">
             Add Medicine
@@ -153,8 +304,13 @@
             <i class="bi bi-list me-2"></i>Instructions
           </h5>
           <textarea formControlName="instructions" class="form-control mb-3" placeholder="Instructions"></textarea>
+          <div class="col-md-2 mb-3">
+            <label class="form-label">Next Appointment</label>
+            <input type="date" formControlName="appointmentDate" [min]="minDate" class="form-control"
+              placeholder="Days">
+          </div>
 
-          <button class="btn btn-info">
+          <button type="submit" class="btn btn-info">
             {{ isEdit ? 'Update' : 'Create' }}
           </button>
 

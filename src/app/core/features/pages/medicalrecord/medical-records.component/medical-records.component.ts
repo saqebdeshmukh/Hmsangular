@@ -1,142 +1,289 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AgGridAngular } from 'ag-grid-angular';
-import { ColDef } from 'ag-grid-community';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+
+import { AgGridAngular } from 'ag-grid-angular';
+import { ColDef } from 'ag-grid-community';
+
 import { AuthService } from '../../../../services/auth.services';
 import { MedicalRecordService } from '../../../../services/medicarecord.service';
+import { BaseGridComponent } from '../../../../GridRequestResponse/BaseGridComponent';
 
 @Component({
   selector: 'app-medical-record-list',
   standalone: true,
-  imports: [CommonModule, AgGridAngular, FormsModule, RouterModule],
-  templateUrl: './medical-records.component.html',
+  imports: [
+    CommonModule,
+    FormsModule,
+    AgGridAngular,
+    RouterModule
+  ],
+  templateUrl: './medical-records.component.html'
 })
-export class MedicalRecordsComponent {
+export class MedicalRecordsComponent extends BaseGridComponent {
+
   private service = inject(MedicalRecordService);
   private router = inject(Router);
+
   auth = inject(AuthService);
 
   records = signal<any[]>([]);
 
-  searchText = '';
   dateFilter = '';
 
+  constructor() {
+    super();
+  }
+
   columnDefs: ColDef[] = [
+
     {
-      headerName: 'Visit Date',
       field: 'visitDate',
+      headerName: 'Visit Date',
+      sortable: true,
       flex: 1,
-      valueGetter: (p: any) => {
-        const d = new Date(p.data.visitDate);
+      valueFormatter: params => {
+
+        if (!params.value) return '';
+
+        const d = new Date(params.value);
+
         return d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
+
       }
     },
+
     {
+      field: 'patientName',
+      colId: 'patientName',
       headerName: 'Patient',
-      flex: 1,
-      valueGetter: (p: any) =>
-        `${p.data.patientName}`
+      sortable: true,
+      flex: 1
     },
 
-    ...(this.isAdmin() ? [{
-      headerName: 'Doctor',
-      flex: 1,
-      valueGetter: (p: any) =>
-        `Dr. ${p.data.doctorName}`
-    }] : []),
+    ...(this.isAdmin()
+      ? [
+          {
+            field: 'doctorName',
+            colId: 'doctorName',
+            headerName: 'Doctor',
+            sortable: true,
+            flex: 1,
+            valueFormatter: (params: any) =>
+              params.value ? `Dr. ${params.value}` : ''
+          }
+        ]
+      : []),
 
     {
       field: 'diagnosis',
       headerName: 'Diagnosis',
+      sortable: true,
       flex: 1,
-      valueGetter: (p: any) =>
-        p.data.diagnosis?.length > 40
-          ? p.data.diagnosis.substring(0, 40) + '...'
-          : p.data.diagnosis || 'N/A'
+      valueFormatter: params => {
+
+        if (!params.value)
+          return 'N/A';
+
+        return params.value.length > 40
+          ? params.value.substring(0, 40) + '...'
+          : params.value;
+
+      }
     },
+
     {
       field: 'treatment',
       headerName: 'Treatment',
+      sortable: true,
       flex: 1,
-      valueGetter: (p: any) =>
-        p.data.treatment?.length > 40
-          ? p.data.treatment.substring(0, 40) + '...'
-          : p.data.treatment || 'N/A'
+      valueFormatter: params => {
+
+        if (!params.value)
+          return 'N/A';
+
+        return params.value.length > 40
+          ? params.value.substring(0, 40) + '...'
+          : params.value;
+
+      }
     },
+
     {
       headerName: 'Actions',
+      sortable: false,
+      filter: false,
+      flex: 1.3,
+
       cellRenderer: (params: any) => {
+
         const div = document.createElement('div');
 
         div.innerHTML = `
-          <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-eye"></i></button>
-          ${this.isDoctor() ? `
-            <button class="btn btn-sm btn-outline-warning me-1"><i class="bi bi-pencil"></i></button>
-            <button class="btn btn-sm btn-outline-success"><i class="bi bi-capsule"></i></button>
-          ` : ''}
+          <button class="btn btn-sm btn-outline-primary me-1">
+            <i class="bi bi-eye"></i>
+          </button>
+
+          ${this.isDoctor()
+            ? `
+              <button class="btn btn-sm btn-outline-warning me-1">
+                <i class="bi bi-pencil"></i>
+              </button>
+
+              <button class="btn btn-sm btn-outline-success">
+                <i class="bi bi-capsule"></i>
+              </button>
+            `
+            : ''}
         `;
 
         const buttons = div.querySelectorAll('button');
 
-        // VIEW
-        buttons[0].addEventListener('click', () =>
-          this.router.navigate(['/medical-records/details', params.data.id])
-        );
+        buttons[0].addEventListener('click', () => {
+
+          this.router.navigate([
+            '/medical-records/details',
+            params.data.id
+          ]);
+
+        });
 
         if (this.isDoctor()) {
-          // EDIT
-          buttons[1].addEventListener('click', () =>
-            this.router.navigate(['/medical-records/edit', params.data.id])
-          );
 
-          // PRESCRIPTION
-          buttons[2].addEventListener('click', () =>
-           this.router.navigate(['/prescription/create', params.data.id])
-          );
+          buttons[1].addEventListener('click', () => {
+
+            this.router.navigate([
+              '/medical-records/edit',
+              params.data.id
+            ]);
+
+          });
+
+          buttons[2].addEventListener('click', () => {
+
+            this.router.navigate([
+              '/prescription/create',
+              params.data.id
+            ]);
+
+          });
+
         }
 
         return div;
+
       }
+
     }
+
   ];
 
-  ngOnInit() {
-    this.loadRecords();
+  override loadData(): void {
+
+    const filters: any = {};
+
+    if (this.dateFilter) {
+
+      filters.visitDate = this.dateFilter;
+
+    }
+
+    this.service
+      .getMedicalRecords(
+        this.createRequest(filters)
+      )
+      .subscribe({
+
+        next: (res: any) => {
+
+          if (!res.isSuccess) {
+
+            this.records.set([]);
+
+            this.totalRecords.set(0);
+
+            return;
+
+          }
+
+          this.records.set(res.data ?? []);
+
+          this.totalRecords.set(res.totalCount ?? 0);
+
+        },
+
+        error: () => {
+
+          this.records.set([]);
+
+          this.totalRecords.set(0);
+
+        }
+
+      });
+
   }
 
-  loadRecords() {
-    this.service.getMedicalRecords().subscribe(res => {
-      this.records.set(res.data || []);
-    });
-  }
+  isDoctor(): boolean {
 
-  isDoctor() {
     return this.auth.user()?.role === 'Doctor';
+
   }
 
-  isAdmin() {
+  isAdmin(): boolean {
+
     return this.auth.user()?.role === 'Admin';
+
   }
 
-  // 🔥 FILTERING
-  get filteredRecords() {
-    return this.records().filter(r => {
+  override onSortChanged(event: any): void {
 
-      const text = JSON.stringify(r).toLowerCase();
-      const matchesSearch = text.includes(this.searchText.toLowerCase());
+    const sort = event.api
+      .getColumnState()
+      .find((x: any) => x.sort);
 
-      const matchesDate =
-        !this.dateFilter ||
-        new Date(r.visitDate).toISOString().slice(0, 10) === this.dateFilter;
+    if (sort) {
 
-      return matchesSearch && matchesDate;
-    });
+      this.sortColumn.set(sort.colId);
+
+      this.sortDirection.set(sort.sort);
+
+    }
+    else {
+
+      this.sortColumn.set('visitDate');
+
+      this.sortDirection.set('desc');
+
+    }
+
+    this.pageNumber.set(1);
+
+    this.loadData();
+
   }
 
-  clearFilters() {
-    this.searchText = '';
+  onDateFilterChange(value: string): void {
+
+    this.dateFilter = value;
+
+    this.pageNumber.set(1);
+
+    this.loadData();
+
+  }
+
+  clearFilters(): void {
+
     this.dateFilter = '';
+
+    this.search.set('');
+
+    this.pageNumber.set(1);
+
+    this.loadData();
+
   }
+
 }

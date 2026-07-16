@@ -8,8 +8,8 @@ import { ToastService } from './toast.service';
 export class MedicalRecordService {
   constructor(private http: HttpClient, private toastr:ToastService) {}
  private apiUrl = environment.apiUrl;
-getMedicalRecords() {
-    return this.http.get<any>(`${this.apiUrl}/medicalrecord/GetMedicalRecords`).pipe(
+getMedicalRecords(request: any = {}) {
+    return this.http.post<any>(`${this.apiUrl}/medicalrecord/GetMedicalRecords`, request).pipe(
       map(res => {
         if (!res.isSuccess) this.toastr.warning(res.message,"Warning");
         return res;
@@ -34,6 +34,22 @@ getMedicalRecords() {
   }
   getMedicalRecordById(id: string | null) {
     return this.http.get<any>(`${this.apiUrl}/medicalrecord/getMedicalRecordById/${id}`).pipe(
+      map(res => {
+        if (!res.isSuccess) this.toastr.warning(res.message,"Warning");
+        return res;
+      })
+    );
+  }
+  getMedicalRecordByIdForPres(id: string | null) {
+    return this.http.get<any>(`${this.apiUrl}/medicalrecord/getMedicalRecordByIdForPres/${id}`).pipe(
+      map(res => {
+        if (!res.isSuccess) this.toastr.warning(res.message,"Warning");
+        return res;
+      })
+    );
+  }
+  getMedicalRecordsByPatientId(patientId: string | null) {
+    return this.http.get<any>(`${this.apiUrl}/medicalrecord/getMedicalRecordsByPatientId/${patientId}`).pipe(
       map(res => {
         if (!res.isSuccess) this.toastr.warning(res.message,"Warning");
         return res;

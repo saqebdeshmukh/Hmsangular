@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { DashboardService } from '../../../services/dashboard.service';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 })
 export class RecepDashComponent {
   private dashboardService = inject(DashboardService);
+  private router = inject(Router);
 
   stats = signal<any>(null);
   todayAppointments = signal<any[]>([]);
@@ -27,28 +28,24 @@ export class RecepDashComponent {
       key: 'totalAppointments',
       icon: 'fas fa-calendar-check',
       bg: '#E0E7FF',
-      color: '#4F46E5'
+      color: '#4F46E5',
+      tab: 'all'
     },
     {
       label: 'Pending',
       key: 'pendingAppointments',
       icon: 'fas fa-clock',
       bg: '#FEF3C7',
-      color: '#D97706'
+      color: '#D97706',
+      tab: 'upcoming'
     },
     {
       label: 'Completed',
       key: 'completedAppointments',
       icon: 'fas fa-check-circle',
       bg: '#D1FAE5',
-      color: '#059669'
-    },
-    {
-      label: 'Patients Seen',
-      key: 'totalPatientsSeenToday',
-      icon: 'fas fa-users',
-      bg: '#CFFAFE',
-      color: '#0891B2'
+      color: '#059669',
+      tab: 'completed'
     }
   ];
 
@@ -80,7 +77,13 @@ export class RecepDashComponent {
       case 'Scheduled': return 'status-scheduled';
       case 'Completed': return 'status-completed';
       case 'Cancelled': return 'status-cancelled';
+      case 'InProgress': return 'status-inprogress';
+      case 'MedicalRecordCreated': return 'status-medicalrecordcreated';
       default: return 'bg-secondary';
     }
+  }
+
+  onStatCardClick(tab: string) {
+    this.router.navigate(['/appointments'], { queryParams: { tab } });
   }
 }

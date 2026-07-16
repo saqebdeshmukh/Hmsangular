@@ -25,15 +25,41 @@ export class AppointmentService {
       })
     );
   }
-  getAppointments() {
-    return this.http.get<any>(`${this.apiUrl}/appointment/GetAppointments`).pipe(
+  getAppointments(request: any = {}) {
+    return this.http.post<any>(`${this.apiUrl}/appointment/GetAppointments`, request).pipe(
       map(res => {
         if (!res.isSuccess) this.toastr.warning(res.message,"Warning");
         return res;
       })
     );
   }
-  completeAppointment(id: string,status: string) {
+  getTodaysAppointments() {
+    return this.http.get<any>(`${this.apiUrl}/appointment/GetTodayAppointments`).pipe(
+      map(res => {
+        if (!res.isSuccess) this.toastr.warning(res.message,"Warning");
+        return res;
+      })
+    );
+  }
+
+  getUpcomingAppointments() {
+    return this.http.get<any>(`${this.apiUrl}/appointment/GetUpcomingAppointments`).pipe(
+      map(res => {
+        if (!res.isSuccess) this.toastr.warning(res.message,"Warning");
+        return res;
+      })
+    );
+  }
+
+  getCompletedAppointments() {
+    return this.http.get<any>(`${this.apiUrl}/appointment/GetCompletedAppointments`).pipe(
+      map(res => {
+        if (!res.isSuccess) this.toastr.warning(res.message,"Warning");
+        return res;
+      })
+    );
+  }
+  updateAppointmentStatus(id: string,status: string) {
     return this.http.put<any>(`${this.apiUrl}/appointment/updateAppointmentStatus/${id}/${status}`, {}).pipe(
       map(res => {
         if (!res.isSuccess) this.toastr.warning(res.message,"Warning");

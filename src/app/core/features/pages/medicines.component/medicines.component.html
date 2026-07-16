@@ -1,0 +1,427 @@
+<div class="container-fluid px-4 py-4">
+    <!-- Page Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4">
+        <div class="mb-3 mb-md-0">
+            <h1 class="page-title mb-1">Medicines</h1>
+            <p class="page-subtitle mb-0">Manage all registered medicines</p>
+        </div>
+        <button (click)="openModal()" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i>Add Medicine
+        </button>
+    </div>
+
+    <!-- AG-Grid Table -->
+    <div class="card-body">
+        <ag-grid-angular
+            class="ag-theme-alpine"
+            style="width: 100%; height: 500px;"
+            [rowData]="rowData()"
+            [columnDefs]="columnDefs"
+            [pagination]="true"
+            [paginationPageSize]="10"
+            (cellClicked)="onCellClicked($event)"
+        >
+        </ag-grid-angular>
+    </div>
+</div>
+
+<!-- Create Medicine Modal -->
+@if (showModal()) {
+  <div class="modal-backdrop" @backdropFade (click)="onCreateBackdropClick()">
+    <div
+      class="modal-container"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="createMedicineTitle"
+      @modalZoom
+      (click)="stopPropagation($event)">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createMedicineTitle">Add New Medicine</h5>
+        <button
+          type="button"
+          class="modal-close-btn"
+          aria-label="Close dialog"
+          (click)="closeModal()"
+          [disabled]="isLoading()">
+          <i class="fas fa-times" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <form [formGroup]="medicineForm" (ngSubmit)="onCreateSubmit()">
+        <div class="modal-body">
+          <p class="modal-hint">Choose one: add a single medicine or import many from CSV (optional).</p>
+
+          <div class="create-mode-tabs" role="tablist" aria-label="Create medicine mode">
+            <button
+              type="button"
+              class="create-mode-tab"
+              role="tab"
+              [attr.aria-selected]="createMode() === 'manual'"
+              [class.active]="createMode() === 'manual'"
+              (click)="setCreateMode('manual')"
+              [disabled]="isLoading()">
+              <i class="fas fa-pills me-1"></i> Single record
+            </button>
+            <button
+              type="button"
+              class="create-mode-tab"
+              role="tab"
+              [attr.aria-selected]="createMode() === 'bulk'"
+              [class.active]="createMode() === 'bulk'"
+              (click)="setCreateMode('bulk')"
+              [disabled]="isLoading()">
+              <i class="fas fa-file-csv me-1"></i> Bulk CSV
+            </button>
+          </div>
+
+          @if (createMode() === 'manual') {
+            <div class="modal-form-grid">
+              <div class="modal-field modal-field--full">
+                <label for="createName" class="form-label">Medicine Name *</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="createName"
+                  formControlName="name"
+                  placeholder="Enter medicine name"
+                  [class.is-invalid]="medicineForm.get('name')?.invalid && medicineForm.get('name')?.touched">
+                @if (medicineForm.get('name')?.invalid && medicineForm.get('name')?.touched) {
+                  <div class="invalid-feedback">
+                    @if (medicineForm.get('name')?.errors?.['required']) {
+                      <small>Medicine name is required</small>
+                    }
+                    @if (medicineForm.get('name')?.errors?.['minlength']) {
+                      <small>Minimum 2 characters required</small>
+                    }
+                  </div>
+                }
+              </div>
+
+              <div class="modal-field">
+                <label for="createDosage" class="form-label">Dosage *</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="createDosage"
+                  formControlName="dosage"
+                  placeholder="e.g., 500mg"
+                  [class.is-invalid]="medicineForm.get('dosage')?.invalid && medicineForm.get('dosage')?.touched">
+                @if (medicineForm.get('dosage')?.invalid && medicineForm.get('dosage')?.touched) {
+                  <div class="invalid-feedback"><small>Dosage is required</small></div>
+                }
+              </div>
+
+              <div class="modal-field">
+                <label for="createDuration" class="form-label">Duration *</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="createDuration"
+                  formControlName="duration"
+                  placeholder="e.g., 7 days"
+                  [class.is-invalid]="medicineForm.get('duration')?.invalid && medicineForm.get('duration')?.touched">
+                @if (medicineForm.get('duration')?.invalid && medicineForm.get('duration')?.touched) {
+                  <div class="invalid-feedback"><small>Duration is required</small></div>
+                }
+              </div>
+
+              <div class="modal-field">
+                <label for="createFrequency" class="form-label">Frequency (per day) *</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="createFrequency"
+                  formControlName="frequency"
+                  min="1"
+                  [class.is-invalid]="medicineForm.get('frequency')?.invalid && medicineForm.get('frequency')?.touched">
+                @if (medicineForm.get('frequency')?.invalid && medicineForm.get('frequency')?.touched) {
+                  <div class="invalid-feedback"><small>Frequency must be at least 1</small></div>
+                }
+              </div>
+
+              <div class="modal-field">
+                <label for="createMealTiming" class="form-label">Meal Timing *</label>
+                <select
+                  class="form-select"
+                  id="createMealTiming"
+                  formControlName="mealTiming"
+                  [class.is-invalid]="medicineForm.get('mealTiming')?.invalid && medicineForm.get('mealTiming')?.touched">
+                  <option value="">Select meal timing</option>
+                  <option value="Before Meal">Before Meal</option>
+                  <option value="After Meal">After Meal</option>
+                  <option value="With Meal">With Meal</option>
+                  <option value="Any Time">Any Time</option>
+                </select>
+                @if (medicineForm.get('mealTiming')?.invalid && medicineForm.get('mealTiming')?.touched) {
+                  <div class="invalid-feedback"><small>Meal timing is required</small></div>
+                }
+              </div>
+            </div>
+          }
+
+          @if (createMode() === 'bulk') {
+            <div class="bulk-upload-panel">
+              <label for="bulkUpload" class="form-label">CSV files (add one or more, then upload)</label>
+              <input
+                type="file"
+                class="form-control"
+                id="bulkUpload"
+                accept=".csv,.xlsx,.xls"
+                multiple
+                (change)="onFileSelected($event)"
+                [disabled]="isLoading()">
+              <small class="form-text text-muted">
+                Format: name,dosage,frequency,mealTiming,duration
+              </small>
+              <small class="form-text text-muted d-block">
+                Example: Aspirin,500mg,2,After Meal,7 days
+              </small>
+              @if (selectedFiles().length > 0) {
+                <ul class="list-group mt-3 mb-0">
+                  @for (file of selectedFiles(); track file.name + file.size + file.lastModified) {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      <div>
+                        <i class="fas fa-file-csv text-danger me-2"></i>
+                        <span>{{ file.name }}</span>
+                        <small class="text-muted d-block">{{ (file.size / 1024).toFixed(2) }} KB</small>
+                      </div>
+                      <button
+                        type="button"
+                        class="btn btn-sm btn-outline-danger"
+                        (click)="removeFile(file)"
+                        [disabled]="isLoading()">
+                        <i class="fas fa-times"></i> Remove
+                      </button>
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="closeModal()"
+            [disabled]="isLoading()">
+            Cancel
+          </button>
+          @if (createMode() === 'manual') {
+            <button
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="medicineForm.invalid || isLoading()">
+              @if (!isLoading()) {
+                <span>Create Medicine</span>
+              } @else {
+                <span>
+                  <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  Creating...
+                </span>
+              }
+            </button>
+          }
+          @if (createMode() === 'bulk') {
+            <button
+              type="button"
+              class="btn btn-success"
+              (click)="uploadBulkMedicines()"
+              [disabled]="selectedFiles().length === 0 || isLoading()">
+              @if (!isLoading()) {
+                <span>
+                  <i class="fas fa-upload me-2"></i>
+                  @if (selectedFiles().length <= 1) {
+                    Upload CSV
+                  } @else {
+                    Upload {{ selectedFiles().length }} files
+                  }
+                </span>
+              } @else {
+                <span>
+                  <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  Uploading...
+                </span>
+              }
+            </button>
+          }
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Edit Medicine Modal -->
+@if (showEditModal()) {
+  <div class="modal-backdrop" @backdropFade (click)="onEditBackdropClick()">
+    <div
+      class="modal-container"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="editMedicineTitle"
+      @modalZoom
+      (click)="stopPropagation($event)">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editMedicineTitle">Edit Medicine</h5>
+        <button
+          type="button"
+          class="modal-close-btn"
+          aria-label="Close dialog"
+          (click)="closeEditModal()"
+          [disabled]="isLoading()">
+          <i class="fas fa-times" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <form [formGroup]="editMedicineForm" (ngSubmit)="onEditSubmit()">
+        <div class="modal-body">
+          <div class="modal-form-grid">
+          <div class="modal-field modal-field--full">
+            <label for="editName" class="form-label">Medicine Name *</label>
+            <input
+              type="text"
+              class="form-control"
+              id="editName"
+              formControlName="name"
+              placeholder="Enter medicine name"
+              [class.is-invalid]="editMedicineForm.get('name')?.invalid && editMedicineForm.get('name')?.touched">
+            @if (editMedicineForm.get('name')?.invalid && editMedicineForm.get('name')?.touched) {
+              <div class="invalid-feedback">
+                @if (editMedicineForm.get('name')?.errors?.['required']) {
+                  <small>Medicine name is required</small>
+                }
+                @if (editMedicineForm.get('name')?.errors?.['minlength']) {
+                  <small>Minimum 2 characters required</small>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="modal-field">
+            <label for="editDosage" class="form-label">Dosage *</label>
+            <input
+              type="text"
+              class="form-control"
+              id="editDosage"
+              formControlName="dosage"
+              placeholder="e.g., 500mg"
+              [class.is-invalid]="editMedicineForm.get('dosage')?.invalid && editMedicineForm.get('dosage')?.touched">
+            @if (editMedicineForm.get('dosage')?.invalid && editMedicineForm.get('dosage')?.touched) {
+              <div class="invalid-feedback">
+                <small>Dosage is required</small>
+              </div>
+            }
+          </div>
+
+          <div class="modal-field">
+            <label for="editDuration" class="form-label">Duration *</label>
+            <input
+              type="text"
+              class="form-control"
+              id="editDuration"
+              formControlName="duration"
+              placeholder="e.g., 7 days"
+              [class.is-invalid]="editMedicineForm.get('duration')?.invalid && editMedicineForm.get('duration')?.touched">
+            @if (editMedicineForm.get('duration')?.invalid && editMedicineForm.get('duration')?.touched) {
+              <div class="invalid-feedback">
+                <small>Duration is required</small>
+              </div>
+            }
+          </div>
+
+          <div class="modal-field">
+            <label for="editFrequency" class="form-label">Frequency (per day) *</label>
+            <input
+              type="number"
+              class="form-control"
+              id="editFrequency"
+              formControlName="frequency"
+              min="1"
+              [class.is-invalid]="editMedicineForm.get('frequency')?.invalid && editMedicineForm.get('frequency')?.touched">
+            @if (editMedicineForm.get('frequency')?.invalid && editMedicineForm.get('frequency')?.touched) {
+              <div class="invalid-feedback">
+                <small>Frequency must be at least 1</small>
+              </div>
+            }
+          </div>
+
+          <div class="modal-field">
+            <label for="editMealTiming" class="form-label">Meal Timing *</label>
+            <select
+              class="form-select"
+              id="editMealTiming"
+              formControlName="mealTiming"
+              [class.is-invalid]="editMedicineForm.get('mealTiming')?.invalid && editMedicineForm.get('mealTiming')?.touched">
+              <option value="">Select meal timing</option>
+              <option value="Before Meal">Before Meal</option>
+              <option value="After Meal">After Meal</option>
+              <option value="With Meal">With Meal</option>
+              <option value="Any Time">Any Time</option>
+            </select>
+            @if (editMedicineForm.get('mealTiming')?.invalid && editMedicineForm.get('mealTiming')?.touched) {
+              <div class="invalid-feedback">
+                <small>Meal timing is required</small>
+              </div>
+            }
+          </div>
+          </div>
+
+          <div class="bulk-upload-panel mt-3">
+            <label for="editBulkUpload" class="form-label">Replace from CSV (optional)</label>
+            <input
+              type="file"
+              class="form-control"
+              id="editBulkUpload"
+              (change)="onEditFileSelected($event)"
+              [disabled]="isLoading()">
+            <small class="form-text text-muted">
+              Uploading a file replaces this medicine's fields from the first data row (does not add new medicines).
+            </small>
+            @if (editSelectedFile()) {
+              <div class="alert alert-info mt-3 mb-0">
+                <div class="file-preview">
+                  <div>
+                    <i class="fas fa-file-csv text-danger me-2"></i>
+                    <span>{{ editSelectedFile()?.name }}</span>
+                    <small class="text-muted d-block">{{ (editSelectedFile()!.size / 1024).toFixed(2) }} KB</small>
+                  </div>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-danger"
+                    (click)="removeEditFile()"
+                    [disabled]="isLoading()">
+                    <i class="fas fa-times"></i> Remove
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="closeEditModal()"
+            [disabled]="isLoading()">
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="editMedicineForm.invalid || isLoading()">
+            @if (!isLoading()) {
+              <span>Update Medicine</span>
+            } @else {
+              <span>
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Updating...
+              </span>
+            }
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

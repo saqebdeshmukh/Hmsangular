@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { MedicalRecordService } from "../../../../services/medicarecord.service";
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { AppointmentService } from "../../../../services/appointment.service";
+import { AppointmentStatus } from "../../appointmentStatus.enum";
 
 @Component({
   selector: 'app-edit-prescription',
@@ -51,25 +52,72 @@ export class EditPrescriptionComponent {
 
   }
 
+  private shouldCreateAppointment(selectedDate: string | null | undefined): boolean {
+    if (!selectedDate) return false;
+
+    const today = new Date();
+    const todayString = new Date(today.getTime() - today.getTimezoneOffset() * 60000)
+      .toISOString()
+      .slice(0, 10);
+
+    return selectedDate !== todayString;
+  }
+
   update(data: any) {
-    const payload = {
-      ...data,
-      prescriptionItemRequests: data.items.map((item: any) => ({
-        ...item,
-        duration: item.duration?.toString() // optional safety
-      }))
-    };
 
-    delete payload.items;
+  const payload = {
+    medicalRecordId: data.medicalRecordId,
+    patientId: data.patientId,
+    doctorId: data.doctorId,
+    instructions: data.instructions,
+    type: data.type,
+    appointmentDate: data.appointmentDate,
+    prescriptionItemRequests: data.items.map((item: any) => ({
+      id: item.id,               // Include if editing existing items
+      medicineName: item.medicineName,
+      dosage: item.dosage,
+      frequency: item.frequency,
+      mealTiming: item.mealTiming,
+      duration: item.duration?.toString()
+    }))
+  };
 
-    this.service.updatePrescription(data.id, payload).subscribe({
-      next: (res: any) => {
+  this.service.updatePrescription(data.id, payload).subscribe({
+    next: (res: any) => {
+      if (this.shouldCreateAppointment(data.appointmentDate)) {
+        const appointmentPayload = {
+          patientId: data.patientId,
+          doctorId: data.doctorId,
+          reason: 'Prescription follow-up',
+          weight: '',
+          height: '',
+          bloodPressure: '',
+          sugarBeforeMeal: '',
+          sugarAfterMeal: '',
+          appointmentDate: data.appointmentDate
+        };
+
+        this.appointmentService.createAppointment(appointmentPayload).subscribe({
+          next: (appointmentRes: any) => {
+            if (!appointmentRes.isSuccess) {
+              this.toastr.error(appointmentRes.message || 'Failed to create appointment');
+              return;
+            }
+
+            this.toastr.success(res.message || 'Prescription updated successfully');
+          },
+          error: () => {
+            this.toastr.error('Failed to create appointment');
+          }
+        });
+      } else {
         this.toastr.success(res.message || 'Prescription updated successfully');
       }
-    });
-  }
+    }
+  });
+}
   markAsComplete() {
-    this.appointmentService.completeAppointment(this.prescription().appointmentId, 'Completed').subscribe((res: any) => {
+    this.appointmentService.updateAppointmentStatus(this.prescription().appointmentId, AppointmentStatus.Completed).subscribe((res: any) => {
       this.toastr.success(res.message, 'Success');
       this.router.navigate(['/doctordashboard']);
     })

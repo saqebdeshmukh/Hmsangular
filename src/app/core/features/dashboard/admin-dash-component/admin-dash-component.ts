@@ -66,7 +66,7 @@ statsConfig = [
     icon: 'fas fa-file-medical',
     bg: '#F3E8FF',
     color: '#7C3AED',
-    route: '/records'
+    route: '/medical-records'
   }
 ];
   loadDashboard() {

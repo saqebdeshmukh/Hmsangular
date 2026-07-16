@@ -5,6 +5,7 @@ import { ToastService } from '../../../../services/toast.service';
 import { AppointmentService } from '../../../../services/appointment.service';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AppointmentStatus } from '../../appointmentStatus.enum';
 
 @Component({
   selector: 'app-create-medical-record',
@@ -39,23 +40,36 @@ export class CreateMedicalRecordComponent {
   if (id) {
     this.appointmentService.getAppointmentDetails(id).subscribe(res => {
       
-        console.log('Fetched appointment details:', res.data);
         this.appointment.set(res.data);
-      console.log("Appointment data is ", res.data);
     });
   }
 }
 
   create(data: any) {
-    data.appointmentId = this.appointment()?.id; 
+    data.appointmentId = this.appointment()?.id;
     data.patientId = this.appointment()?.patientId;
     data.doctorId = this.appointment()?.doctorId;
-    console.log('Creating medical record with data:', data);
+
     this.service.createMedicalRecord(data).subscribe(res => {
-      if (res.isSuccess) {
-        this.toast.success(res.message);
-        this.router.navigate(["/prescription/create", res.data])
+      if (!res.isSuccess) {
+        return;
       }
+
+      this.toast.success(res.message);
+
+      if (data.isComplete) {
+        this.appointmentService.updateAppointmentStatus(this.appointment()?.id, AppointmentStatus.Completed).subscribe(statusRes => {
+          if (statusRes.isSuccess) {
+            this.router.navigate(['/prescription/create', res.data]);
+            return;
+          }
+
+          this.router.navigate(['/prescription/create', res.data]);
+        });
+        return;
+      }
+
+      this.router.navigate(['/prescription/create', res.data]);
     });
   }
 }

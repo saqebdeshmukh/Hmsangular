@@ -100,12 +100,8 @@
   </div>
   <div class="row mb-3">
     <div class="col-md-3">
-      <label class="form-label">Diastolic BP</label>
-      <input formControlName="diastolicBp" class="form-control" placeholder="Sugar (e.g. 90 mg/dL)">
-    </div>
-    <div class="col-md-3">
-      <label class="form-label">Systolic BP</label>
-      <input formControlName="systolicBp" class="form-control" placeholder="BP (e.g. 120/80)">
+      <label class="form-label">Blood Pressure</label>
+      <input formControlName="bloodPressure" class="form-control" placeholder="BP (e.g. 120/80)">
     </div>
 
     <div class="col-md-3">
@@ -114,7 +110,7 @@
     </div>
     <div class="col-md-3">
       <label class="form-label">Sugar (After Meal)</label>
-      <input formControlName="sugarAfterMeal" class="form-control" placeholder="BP (e.g. 120/80)">
+      <input formControlName="sugarAfterMeal" class="form-control" placeholder="Sugar (e.g. 90 mg/dL)">
     </div>
   </div>
   <!-- CONTACT -->
@@ -135,9 +131,125 @@
     </div>
   </div>
 
+  <h5 class="text-muted mb-3 border-bottom pb-2">
+    <i class="bi bi-activity me-2"></i>Medical Conditions
+  </h5>
+
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <label class="form-label">Family History of</label>
+      <div class="d-flex gap-2 flex-wrap mb-2">
+        <button
+          type="button"
+          class="btn btn-sm"
+          (click)="toggleGeneticFrom('Parents')"
+          [style.background]="isGeneticFromSelected('Parents') ? '#0d6efd' : null"
+          [style.color]="isGeneticFromSelected('Parents') ? '#fff' : null"
+        >
+          Parents
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm"
+          (click)="toggleGeneticFrom('Grand Parents')"
+          [style.background]="isGeneticFromSelected('Grand Parents') ? '#0d6efd' : null"
+          [style.color]="isGeneticFromSelected('Grand Parents') ? '#fff' : null"
+        >
+          Grand Parents
+        </button>
+      </div>
+      @if (selectedGeneticFrom().length > 0) {
+      <div class="mb-2">
+        @for (item of selectedGeneticFrom(); track item.name) {
+        <div class="mb-2">
+          <div class="input-group">
+            <span class="input-group-text">{{ item.name }} :</span>
+            <input type="text" class="form-control" [value]="item.value" (input)="updateGeneticFromValue(item.name, $any($event.target).value)" placeholder="Details for {{ item.name }}" />
+          </div>
+        </div>
+        }
+      </div>
+      }
+      <input type="hidden" formControlName="geneticFrom" [value]="selectedGeneticFrom().map(i => i.name + ' : ' + i.value).join('\n')" />
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <div class="mb-2">
+      <label class="form-label">Known Diseases for</label>
+      <div class="d-flex gap-2 flex-wrap">
+        @for (disease of geneticDiseases(); track disease.id) {
+        <button
+          type="button"
+          class="btn btn-sm"
+          [class.btn-outline-secondary]="!isGeneticDiseaseSelected(disease)"
+          (click)="toggleGeneticDisease(disease)"
+          [style.background]="isGeneticDiseaseSelected(disease) ? disease.color : null"
+          [style.color]="isGeneticDiseaseSelected(disease) ? getContrastColor(disease.color) : null"
+        >{{ disease.name }}</button>
+        }
+      </div>
+      <input type="hidden" formControlName="geneticDiseases" [value]="selectedGeneticDiseases().map(item => item.name).join(', ')" />
+    </div>
+
+    @if (selectedGeneticDiseases().length > 0) {
+    <div class="mt-3">
+      @for (disease of selectedGeneticDiseases(); track disease.id) {
+      <div class="card mb-2 p-3" [style.borderLeft]="'6px solid ' + (disease.color || '#000')">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <strong>{{ disease.name }}</strong>
+          <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeSelectedGeneticDisease(disease.id)">Remove</button>
+        </div>
+        <input
+          type="text"
+          class="form-control"
+          [value]="disease.medicines"
+          placeholder="Medicines for {{ disease.name }}"
+          (input)="updateSelectedDiseaseMedicines(disease.id, $any($event.target).value)"
+        />
+      </div>
+      }
+    </div>
+    }
+  </div>
+<div class="mb-3">
+  <label class="form-label">Disease not listed? Add new</label>
+  <input type="text" class="form-control" placeholder="Enter disease name" [value]="NewDisease()" (input)="NewDisease.set($any($event.target).value)" />
+  <span><button type="button" class="btn btn-sm btn-primary mt-2" (click)="addNewDisease()">Add Disease</button></span>
+</div>
   <div class="mb-3">
     <label class="form-label">Address</label>
     <textarea formControlName="address" class="form-control" placeholder="Address"></textarea>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Documents</label>
+    <input type="file" multiple (change)="handleFiles($event.target.files, $event.target)" class="form-control" />
+    @if (isEdit) {
+      <small class="form-text text-muted">
+        New files are added to the list. Use Remove, then Update, to delete a saved file from the patient.
+      </small>
+    }
+
+    @if (documents().length > 0) {
+    <ul class="list-group mt-2">
+      @for (doc of documents(); track doc.id ?? doc.clientKey ?? doc.originalName) {
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div class="me-2">
+          @if (doc.savedName) {
+          <a [href]="getFileUrl(doc.savedName)" target="_blank" rel="noopener">{{ doc.originalName }}</a>
+          } @else {
+          <span>{{ doc.originalName }}</span>
+          }
+          @if (doc.reading) {
+          <small class="text-muted d-block">Preparing upload…</small>
+          }
+        </div>
+        <button type="button" class="btn btn-sm btn-link text-danger" (click)="removeDocument(doc)">Remove</button>
+      </li>
+      }
+    </ul>
+    }
   </div>
 
   <!-- ACTIONS -->

@@ -13,27 +13,90 @@
       <i class="bi bi-calendar3 me-2"></i>Calendar View
     </a>
   </div>
+  <div class="col-md-6">
+    <div class="mb-3 d-flex flex-column flex-md-row gap-2">
+      <input #searchInput type="search" class="form-control" placeholder="Search appointments" (input)="onSearch($any($event.target).value)" [value]="search()" />
+      <select class="form-select" style="max-width: 220px;" (change)="onFilterChange($any($event.target).value)" [value]="statusFilter()">
+        <option value="">All Appointments</option>
+        <option value="Scheduled">Scheduled</option>
+        <option value="Completed">Completed</option>
+        <option value="Canceled">Canceled</option>
+      </select>
+      <button class="btn btn-outline-secondary" type="button" (click)="onSearch(''); onFilterChange(''); searchInput.value = ''">Clear</button>
+    </div>
+    </div>
+    <div class="card">
+<div class="card-body">   
+      <ag-grid-angular
+        class="ag-theme-alpine"
+        style="width: 100%; height: 500px;"
+        [columnDefs]="columnDefs"
+        [rowData]="rowData()"
+        (gridReady)="onGridReady($event)"
+        (sortChanged)="onSortChanged($event)"
+        (cellClicked)="onCellClicked($event)"
+      >
+      </ag-grid-angular>
 
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3 pt-2 border-top">
+        <div class="d-flex align-items-center gap-2 text-muted">
+          <span>Show</span>
+          <select class="form-select form-select-sm" style="width: 57px;" [value]="pageSize()" (change)="onPageSizeChange($any($event.target).value)">
+            @for (size of pageSizeOptions; track size) {
+              <option [value]="size">{{ size }}</option>
+            }
+          </select>
+          <span>records</span>
+        </div>
+
+        <div class="text-muted">
+          Showing {{ startRecord() }} to {{ endRecord() }} of {{ totalRecords() }} records
+        </div>
+
+        <nav aria-label="Appointment pagination">
+          <ul class="pagination pagination-sm mb-0">
+            <li class="page-item" [class.disabled]="pageNumber() == 1">
+              <button class="page-link" (click)="firstPage()">First</button>
+            </li>
+            <li class="page-item" [class.disabled]="pageNumber() == 1">
+              <button class="page-link" (click)="previousPage()">Previous</button>
+            </li>
+            @for (page of pages(); track page) {
+              <li class="page-item" [class.active]="page == pageNumber()">
+                <button class="page-link" (click)="goToPage(page)">{{ page }}</button>
+              </li>
+            }
+            <li class="page-item" [class.disabled]="pageNumber() == totalPages()">
+              <button class="page-link" (click)="nextPage()">Next</button>
+            </li>
+            <li class="page-item" [class.disabled]="pageNumber() == totalPages()">
+              <button class="page-link" (click)="lastPage()">Last</button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
   <!-- Tabs -->
-  <ul class="nav nav-tabs mb-4">
+  <!-- <ul class="nav nav-tabs mb-4">
     <li class="nav-item">
-      <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#today">Today</button>
+      <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#today" (click)="onTabChange('today')">Today</button>
     </li>
     <li class="nav-item">
-      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#upcoming">Upcoming</button>
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#upcoming" (click)="onTabChange('upcoming')">Upcoming</button>
     </li>
     <li class="nav-item">
-      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#completed">Completed</button>
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#completed" (click)="onTabChange('completed')">Completed</button>
     </li>
     <li class="nav-item">
-      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#all">All</button>
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#all" (click)="onTabChange('all')">All</button>
     </li>
   </ul>
 
-  <div class="tab-content">
+  <div class="tab-content"> -->
 
     <!-- TODAY -->
-    <div class="tab-pane fade show active" id="today">
+    <!-- <div class="tab-pane fade show active" id="today">
       <div class="card">
         <div class="card-header bg-primary text-white">
           Today's Schedule - {{ today | date:'fullDate' }}
@@ -70,7 +133,7 @@
                     {{ appointment.status === 'Scheduled' ? 'Start' : 'View' }}
                   </a>
                   @if(appointment.status == 'Scheduled'){
-                  <a onclick="CancelAppointment(a.id)" class="btn btn-sm btn-outline-danger">
+                  <a (click)="CancelAppointment(appointment.id)" class="btn btn-sm btn-outline-danger">
                     Cancel
                   </a>
                   }
@@ -88,10 +151,10 @@
 
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- UPCOMING -->
-    <div class="tab-pane fade" id="upcoming">
+    <!-- <div class="tab-pane fade" id="upcoming">
       <div class="card">
         <div class="card-header bg-info text-white">Upcoming</div>
 
@@ -137,10 +200,10 @@
           }
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- COMPLETED -->
-    <div class="tab-pane fade" id="completed">
+    <!-- <div class="tab-pane fade" id="completed">
       <div class="card">
         <div class="card-header bg-success text-white">Completed</div>
 
@@ -171,10 +234,10 @@
 
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- ALL -->
-    <div class="tab-pane fade" id="all">
+    <!-- <div class="tab-pane fade" id="all">
       <div class="card">
         <div class="card-header bg-secondary text-white">All</div>
 
@@ -188,7 +251,6 @@
               <tr>
                 <td>{{ a.appointmentDate | date:'medium' }}</td>
                 <td>{{ a.patientName }}</td>
-                <td>{{ a.reason || 'N/A' }}</td>
                 <td>
                   <span class="badge" [ngClass]="getStatusClass(a.status)">
                     {{ a.status }}
@@ -199,7 +261,7 @@
                     View
                   </a>
                    @if(a.status == 'Scheduled'){
-                  <a onclick="CancelAppointment(a.id)" class="btn btn-sm btn-outline-danger">
+                  <a (click)="CancelAppointment(a.id)" class="btn btn-sm btn-outline-danger">
                     Cancel
                   </a>
                   }
@@ -219,5 +281,5 @@
       </div>
     </div>
 
-  </div>
+  </div> -->
 </div>

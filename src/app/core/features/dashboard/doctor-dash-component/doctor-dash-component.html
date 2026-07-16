@@ -12,11 +12,11 @@
     </div>
 
     <div class="d-flex gap-2">
-      <a class="btn btn-outline-secondary" routerLink="/availability">
+      <!-- <a class="btn btn-outline-secondary" routerLink="/availability">
         <i class="fas fa-clock me-1"></i> My Availability
-      </a>
+      </a> -->
 
-      <a class="btn btn-outline-primary" routerLink="/calendar">
+      <a class="btn btn-outline-primary" routerLink="/appointments/calendar">
         <i class="fas fa-calendar-alt me-1"></i> My Calendar
       </a>
 
@@ -30,26 +30,24 @@
   <div class="row g-3 mb-4">
 
     @for (card of statsConfig; track card.key) {
-      <div class="col-6 col-lg-3">
-        <div class="stat-card">
-          <div class="d-flex justify-content-between align-items-start">
+    <div class="col-6 col-lg-4">
+      <div class="stat-card" style="cursor: pointer;" (click)="onStatCardClick(card.tab)">
+        <div class="d-flex justify-content-between align-items-start">
 
-            <div>
-              <p class="stat-label mb-1">{{ card.label }}</p>
-              <h3 class="stat-value mb-0">
-                {{ stats()?.[card.key] }}
-              </h3>
-            </div>
-
-            <div class="stat-icon"
-                 [style.background]="card.bg"
-                 [style.color]="card.color">
-              <i [class]="card.icon"></i>
-            </div>
-
+          <div>
+            <p class="stat-label mb-1">{{ card.label }}</p>
+            <h3 class="stat-value mb-0">
+              {{ stats()?.[card.key] }}
+            </h3>
           </div>
+
+          <div class="stat-icon" [style.background]="card.bg" [style.color]="card.color">
+            <i [class]="card.icon"></i>
+          </div>
+
         </div>
       </div>
+    </div>
     }
 
   </div>
@@ -60,87 +58,99 @@
     <div class="col-lg-6 mb-3">
       <div class="card h-100">
 
-        <div class="card-header d-flex justify-content-between">
-          <span class="card-title">
-            <i class="fas fa-calendar-day me-2 text-primary"></i>
-            Today's Appointments
-          </span>
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-2">
+            <span class="card-title">
+              <i class="fas fa-calendar-day me-2 text-primary"></i>
+              Today's Appointments
+            </span>
+            <span class="badge bg-primary">
+              {{ todayAppointments().length }}
+            </span>
+          </div>
 
-          <span class="badge bg-primary">
-            {{ todayAppointments().length }}
-          </span>
+          <a [routerLink]="['/appointments']" [queryParams]="{ tab: 'today' }" class="btn btn-sm btn-ghost">
+            View All
+          </a>
         </div>
 
         <div class="card-body p-0">
 
           @if (todayAppointments().length > 0) {
 
-            <div class="list-group list-group-flush">
+          <div class="list-group list-group-flush">
 
-              @for (appointment of todayAppointments(); track appointment.appointmentDate) {
+            @for (appointment of todayAppointments(); track appointment.appointmentDate) {
 
-                <div class="list-group-item py-3">
+            <div class="list-group-item py-3">
 
-                  <div class="d-flex justify-content-between align-items-center">
+              <div class="d-flex justify-content-between align-items-center">
 
-                    <!-- LEFT -->
-                    <div class="d-flex align-items-center">
+                <!-- LEFT -->
+                <div class="d-flex align-items-center">
 
-                      <div class="avatar me-3"
-                           style="background:#E0E7FF; color:#4F46E5;">
-                        {{ appointment.patientName?.substring(0,1) }}
-                      </div>
+                  <div class="avatar me-3" style="background:#E0E7FF; color:#4F46E5;">
+                    {{ appointment.patientName?.substring(0,1) }}
+                  </div>
 
-                      <div>
-                        <h6 class="mb-0 fw-semibold">
-                          {{ appointment.patientName }}
-                        </h6>
+                  <div>
+                    <h6 class="mb-0 fw-semibold">
+                      {{ appointment.patientName }}
+                    </h6>
 
-                        <small class="text-muted">
-                          <i class="fas fa-clock me-1"></i>
-                          {{ appointment.appointmentDate | date:'hh:mm a' }}
-                        </small>
-                      </div>
-
-                    </div>
-
-                    <!-- RIGHT -->
-                    <div class="d-flex align-items-center gap-2">
-
-                      <span class="badge"
-                        [ngClass]="{
-                          'status-scheduled': appointment.status === 'Scheduled',
-                          'status-completed': appointment.status === 'Completed',
-                          'status-cancelled': appointment.status === 'Cancelled',
-                          'bg-secondary': !appointment.status
-                        }">
-                        {{ appointment.status }}
-                      </span>
-
-                      @if (appointment.status === 'Scheduled') {
-                        <a class="btn btn-sm btn-primary"
-                           [routerLink]="['/appointmentDetails', appointment.id]">
-                          Start
-                        </a>
-                      }
-
-                    </div>
-
+                    <small class="text-muted">
+                      <i class="fas fa-clock me-1"></i>
+                      {{ appointment.appointmentDate | date:'hh:mm a' }}
+                    </small>
                   </div>
 
                 </div>
 
-              }
+                <!-- RIGHT -->
+                <div class="d-flex align-items-center gap-2">
+
+                  <span class="badge" [ngClass]="{
+                     'status-scheduled': appointment.status === AppointmentStatus.Scheduled,
+                     'status-completed': appointment.status === AppointmentStatus.Completed,
+                     'status-canceled': appointment.status === AppointmentStatus.Canceled,
+                      'status-inprogress': appointment.status === AppointmentStatus.InProgress,
+                      'status-medicalrecordcreated': appointment.status === AppointmentStatus.MedicalRecordCreated,
+                     'bg-secondary': !appointment.status
+                    }">
+                    {{ appointment.status }}
+                  </span>
+
+                  @if (appointment.status === AppointmentStatus.Scheduled) {
+                  <a class="btn btn-sm btn-primary" [routerLink]="['/appointmentDetails', appointment.id]">
+                    Start
+                  </a>
+                  }
+                  @if (
+                  appointment.status === AppointmentStatus.InProgress ||
+                  appointment.status === AppointmentStatus.MedicalRecordCreated
+                  ) {
+                   
+                  <button class="btn btn-sm btn-warning" (click)="redirectToContinuePage(appointment.id)">
+                    Continue
+                  </button>
+                  }
+                </div>
+
+              </div>
 
             </div>
+
+            }
+
+          </div>
 
           } @else {
 
-            <div class="empty-state py-5 text-center">
-              <i class="fas fa-calendar-check"></i>
-              <h5>No Appointments Today</h5>
-              <p>You have no scheduled appointments for today.</p>
-            </div>
+          <div class="empty-state py-5 text-center">
+            <i class="fas fa-calendar-check"></i>
+            <h5>No Appointments Today</h5>
+            <p>You have no scheduled appointments for today.</p>
+          </div>
 
           }
 
@@ -152,13 +162,18 @@
     <div class="col-lg-6 mb-3">
       <div class="card h-100">
 
-        <div class="card-header d-flex justify-content-between">
-          <span class="card-title">
-            <i class="fas fa-calendar-week me-2 text-info"></i>
-            Upcoming Appointments
-          </span>
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center gap-2">
+            <span class="card-title">
+              <i class="fas fa-calendar-week me-2 text-info"></i>
+              Upcoming Appointments
+            </span>
+            <span class="badge bg-info">
+              {{ upcomingAppointments().length }}
+            </span>
+          </div>
 
-          <a routerLink="/dashboard" class="btn btn-sm btn-ghost">
+          <a [routerLink]="['/appointments']" [queryParams]="{ tab: 'upcoming' }" class="btn btn-sm btn-ghost">
             View All
           </a>
         </div>
@@ -167,67 +182,65 @@
 
           @if (upcomingAppointments().length > 0) {
 
-            <div class="table-responsive">
-              <table class="table table-hover mb-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
 
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Patient</th>
-                    <th class="text-end">Action</th>
-                  </tr>
-                </thead>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Patient</th>
+                  <th class="text-end">Action</th>
+                </tr>
+              </thead>
 
-                <tbody>
+              <tbody>
 
-                  @for (appointment of upcomingAppointments(); track appointment.appointmentDate) {
+                @for (appointment of upcomingAppointments(); track appointment.appointmentDate) {
 
-                    <tr>
+                <tr>
 
-                      <td>
-                        <span class="fw-medium">
-                          {{ appointment.appointmentDate | date:'MMM dd' }}
-                        </span>
-                      </td>
+                  <td>
+                    <span class="fw-medium">
+                      {{ appointment.appointmentDate | date:'MMM dd' }}
+                    </span>
+                  </td>
 
-                      <td>
-                        {{ appointment.appointmentDate | date:'hh:mm a' }}
-                      </td>
+                  <td>
+                    {{ appointment.appointmentDate | date:'hh:mm a' }}
+                  </td>
 
-                      <td>
-                        <div class="d-flex align-items-center">
-                          <div class="avatar avatar-sm me-2"
-                               style="background:#E0E7FF; color:#4F46E5;">
-                            {{ appointment.patientName?.substring(0,1) }}
-                          </div>
-                          {{ appointment.patientName }}
-                        </div>
-                      </td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="avatar avatar-sm me-2" style="background:#E0E7FF; color:#4F46E5;">
+                        {{ appointment.patientName?.substring(0,1) }}
+                      </div>
+                      {{ appointment.patientName }}
+                    </div>
+                  </td>
 
-                      <td class="text-end">
-                        <a class="btn btn-sm btn-ghost"
-                           [routerLink]="['/appointment', appointment.id]">
-                          <i class="fas fa-eye"></i>
-                        </a>
-                      </td>
+                  <td class="text-end">
+                    <a class="btn btn-sm btn-ghost" [routerLink]="['/appointmentDetails', appointment.id]">
+                      <i class="fas fa-eye"></i>
+                    </a>
+                  </td>
 
-                    </tr>
+                </tr>
 
-                  }
+                }
 
-                </tbody>
+              </tbody>
 
-              </table>
-            </div>
+            </table>
+          </div>
 
           } @else {
 
-            <div class="empty-state py-5 text-center">
-              <i class="fas fa-calendar-times"></i>
-              <h5>No Upcoming Appointments</h5>
-              <p>You have no upcoming appointments scheduled.</p>
-            </div>
+          <div class="empty-state py-5 text-center">
+            <i class="fas fa-calendar-times"></i>
+            <h5>No Upcoming Appointments</h5>
+            <p>You have no upcoming appointments scheduled.</p>
+          </div>
 
           }
 
@@ -238,7 +251,7 @@
   </div>
 
   <!-- QUICK ACTIONS -->
-  <div class="card mt-3">
+  <!-- <div class="card mt-3">
 
     <div class="card-header">
       <span class="card-title">
@@ -277,6 +290,6 @@
       </div>
     </div>
 
-  </div>
+  </div> -->
 
 </div>

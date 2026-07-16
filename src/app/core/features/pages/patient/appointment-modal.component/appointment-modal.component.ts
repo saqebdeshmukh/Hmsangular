@@ -3,12 +3,12 @@ import {
   EventEmitter,
   Input,
   Output,
-  signal,
   HostListener,
   OnChanges,
-  SimpleChanges,
-  input
+  SimpleChanges
 } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import {
   trigger,
   transition,
@@ -18,6 +18,8 @@ import {
 
 @Component({
   selector: 'app-appointment-modal',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './appointment-modal.component.html',
   styleUrl: './appointment-modal.component.css',
   animations: [
@@ -52,20 +54,39 @@ export class AppointmentModalComponent implements OnChanges {
   @Output() close = new EventEmitter<void>();
   @Output() book = new EventEmitter<any>();
 
-  selectedDoctor = signal('');
-  reason = signal('');
-  systolicBp = signal('');
-  diastolicBp = signal('');
-  sugarBeforeMeal = signal('');
-  sugarAfterMeal = signal('');
-  weight = signal('');
-  height = signal('');
+  form: FormGroup;
 
+  constructor(private fb: FormBuilder) {
+    this.form = this.fb.group({
+      doctorId: [''],
+      reason: [''],
+      weight: [''],
+      height: [''],
+      bloodPressure: [''],
+      sugarBeforeMeal: [''],
+      sugarAfterMeal: [''],
+      appointmentDate: [this.minDate] // Set default to today's date
+    });
+    // default the appointment date to today
+    this.form.patchValue({ appointmentDate: this.minDate });
+  }
+private formatToInputDate(value: any) {
+    if (!value) return this.minDate;
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return this.minDate;
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString().slice(0, 10);
+  }
   ngOnChanges(changes: SimpleChanges) {
 
-  // ✅ Auto select doctor if only one
-  if (changes['doctors'] && this.doctors?.length === 1) {
-    this.selectedDoctor.set(this.doctors[0].id);
+  // ✅ Auto select doctor if only one and disable the control so user can't change it
+  if (changes['doctors']) {
+    if (this.doctors?.length === 1) {
+      this.form.get('doctorId')?.setValue(this.doctors[0].id);
+      this.form.get('doctorId')?.disable({ emitEvent: false });
+    } else {
+      this.form.get('doctorId')?.enable({ emitEvent: false });
+    }
   }
 
   // ✅ Guard against null
@@ -74,16 +95,24 @@ export class AppointmentModalComponent implements OnChanges {
     const health = this.patientDetails // <-- match API name
 
     if (health) {
-      this.systolicBp.set(health.systolicBp ?? '');
-      this.diastolicBp.set(health.diastolicBp ?? '');
-      this.sugarBeforeMeal.set(health.sugarBeforeMeal ?? '');
-      this.sugarAfterMeal.set(health.sugarAfterMeal ?? '');
-      this.weight.set(health.weight ?? '');
-      this.height.set(health.height ?? '');
+      this.form.patchValue({
+        bloodPressure: health.bloodPressure ?? '',
+        sugarBeforeMeal: health.sugarBeforeMeal ?? '',
+        sugarAfterMeal: health.sugarAfterMeal ?? '',
+        weight: health.weight ?? '',
+        height: health.height ?? ''
+      });
     }
   }
 }
+minDate: string = (() => {
+    const d = new Date();
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString().slice(0, 10);
+  })();
 
+
+  
   @HostListener('document:keydown.escape')
   handleEsc() {
     if (this.show) {
@@ -104,14 +133,17 @@ export class AppointmentModalComponent implements OnChanges {
   }
 
   onBook() {
+    const values = this.form.getRawValue();
     this.book.emit({
       patientId: this.patientDetails.id,
-      doctorId: this.selectedDoctor(),
-      reason: this.reason(),
-      systolicBp: this.systolicBp(),
-      diastolicBp: this.diastolicBp(),
-      sugarBeforeMeal: this.sugarBeforeMeal(),
-      sugarAfterMeal: this.sugarAfterMeal()
+      doctorId: values.doctorId,
+      reason: values.reason,
+      weight: values.weight,
+      height: values.height,
+      bloodPressure: values.bloodPressure,
+      sugarBeforeMeal: values.sugarBeforeMeal,
+      sugarAfterMeal: values.sugarAfterMeal,
+      appointmentDate: values.appointmentDate
     });
   }
 }

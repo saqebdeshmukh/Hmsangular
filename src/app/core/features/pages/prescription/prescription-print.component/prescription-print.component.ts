@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { PrescriptionService } from '../../../../services/prescription.service';
 import { AppointmentService } from '../../../../services/appointment.service';
 import { ToastrService } from 'ngx-toastr';
+import { AppointmentStatus } from '../../appointmentStatus.enum';
 
 @Component({
   selector: 'app-prescription-print',
@@ -25,17 +26,17 @@ export class PrescriptionPrintComponent {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) return;
 
-    this.service.getPrescriptionById(id).subscribe((res: any) => {
+    this.service.getPrescriptionByIdForPrint(id).subscribe((res: any) => {
       this.prescription.set(res.data);
     });
   }
-  today = new Date();
+  
   print() {
     window.print();
   }
   
   complete() {
-    this.appointmentService.completeAppointment(this.prescription().appointmentId, 'Completed').subscribe((res: any) => {
+    this.appointmentService.updateAppointmentStatus(this.prescription().appointmentId, AppointmentStatus.Completed).subscribe((res: any) => {
       this.toastr.success(res.message, 'Success');
     })
   }
