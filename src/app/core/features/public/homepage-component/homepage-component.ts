@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '../../../services/auth.services';
 
 @Component({
   selector: 'app-homepage-component',
@@ -8,4 +9,7 @@ import { RouterModule } from '@angular/router';
   templateUrl: './homepage-component.html',
   styleUrl: './homepage-component.css',
 })
-export class HomepageComponent {}
+export class HomepageComponent {
+  private auth = inject(AuthService);
+  role = computed(() => this.auth.user()?.role);
+}

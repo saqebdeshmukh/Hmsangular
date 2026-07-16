@@ -108,7 +108,7 @@ private formatToInputDate(value: any) {
 minDate: string = (() => {
     const d = new Date();
     d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-    return d.toISOString().slice(0, 10);
+    return d.toISOString().slice(0, 16);
   })();
 
 

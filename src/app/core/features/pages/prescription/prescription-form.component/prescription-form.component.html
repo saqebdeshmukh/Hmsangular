@@ -306,7 +306,7 @@
           <textarea formControlName="instructions" class="form-control mb-3" placeholder="Instructions"></textarea>
           <div class="col-md-2 mb-3">
             <label class="form-label">Next Appointment</label>
-            <input type="date" formControlName="appointmentDate" [min]="minDate" class="form-control"
+            <input type="datetime-local" formControlName="appointmentDate" [min]="minDate" class="form-control"
               placeholder="Days">
           </div>
 

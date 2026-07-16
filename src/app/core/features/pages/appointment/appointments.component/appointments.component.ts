@@ -144,7 +144,6 @@ export class AppointmentsComponent extends BaseGridComponent {
   ];
 
   override loadData(): void {
-
     const filters: any = {};
 
     if (this.statusFilter()) {
@@ -250,7 +249,6 @@ export class AppointmentsComponent extends BaseGridComponent {
   }
 
   override onSortChanged(event: any): void {
-
     const sort = event.api
       .getColumnState()
       .find((x: any) => x.sort);
