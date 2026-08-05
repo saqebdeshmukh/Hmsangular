@@ -18,36 +18,21 @@
   <!-- <div class="card mb-4"> -->
     <!-- <div class="card-body"> -->
       <div class="col-md-6">
-      <div class="mb-3 d-flex flex-column flex-md-row gap-2">
-
-        <!-- <div class="col-md-4"> -->
+      <div class="mb-3 d-flex flex-column flex-md-row gap-2">       
           <input type="text" class="form-control" placeholder="Search medical records..." (input)="onSearch($any($event.target).value)" [value]="search()">
-        <!-- </div> -->
-
-        <!-- <div class="col-md-3"> -->
           <input type="date" class="form-control" [value]="dateFilter" (change)="onDateFilterChange($any($event.target).value)">
-        <!-- </div> -->
-
-        <!-- <div class="col-md-2"> -->
           <button class="btn btn-outline-secondary w-100" (click)="clearFilters()">
             Clear
           </button>
-        <!-- </div> -->
 </div>
       </div>
-    <!-- </div> -->
-  <!-- </div> -->
-
   <!-- GRID -->
   <div class="card">
     <div class="card-body">
-
-
       <ag-grid-angular class="ag-theme-alpine" style="width:100%; height:500px" [rowData]="records()"
          [columnDefs]="columnDefs"
         (gridReady)="onGridReady($event)"
         (sortChanged)="onSortChanged($event)">
-
       </ag-grid-angular>
 
       <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3 pt-2 border-top">
@@ -87,10 +72,6 @@
           </ul>
         </nav>
       </div>
-
-
-
     </div>
   </div>
-
 </div>

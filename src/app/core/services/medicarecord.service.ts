@@ -64,4 +64,12 @@ getMedicalRecords(request: any = {}) {
       })
     );
   }
+  getHealthReport(patientId: string | null,request: any = {}) {
+    return this.http.post<any>(`${this.apiUrl}/medicalrecord/getHealthReport/${patientId}`,request).pipe(
+      map(res => {
+        if (!res.isSuccess) this.toastr.warning(res.message,"Warning");
+        return res;
+      })
+    );
+  }
 }

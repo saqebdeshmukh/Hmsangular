@@ -175,7 +175,7 @@
                       </td>
 
                       <td class="text-end">
-                        <a [routerLink]="['/appointmentDetails', a.id]"
+                        <a title="View" [routerLink]="['/appointmentDetails', a.id]"
                            class="btn btn-sm btn-ghost">
                           <i class="fas fa-eye"></i>
                         </a>
@@ -195,52 +195,9 @@
               <h5>No Completed Appointments</h5>
               <p>No completed appointments today.</p>
             </div>
-
           }
-
         </div>
       </div>
     </div>
-
   </div>
-
-  <!-- QUICK ACTIONS -->
-  <!-- <div class="card mt-3">
-    <div class="card-header">
-      <span class="card-title">
-        <i class="fas fa-bolt me-2 text-warning"></i>Quick Actions
-      </span>
-    </div>
-
-    <div class="card-body">
-      <div class="row g-2">
-
-        <div class="col-6 col-md-3">
-          <a routerLink="/patients" class="btn btn-outline-primary w-100">
-            <i class="fas fa-users me-2"></i>View Patients
-          </a>
-        </div>
-
-        <div class="col-6 col-md-3">
-          <a routerLink="/medical-records" class="btn btn-outline-success w-100">
-            <i class="fas fa-file-medical me-2"></i>Medical Records
-          </a>
-        </div>
-
-        <div class="col-6 col-md-3">
-          <a routerLink="/prescriptions" class="btn btn-outline-info w-100">
-            <i class="fas fa-prescription me-2"></i>Prescriptions
-          </a>
-        </div>
-
-        <div class="col-6 col-md-3">
-          <a routerLink="/appointments/calendar" class="btn btn-outline-warning w-100">
-            <i class="fas fa-calendar-alt me-2"></i>My Calendar
-          </a>
-        </div>
-
-      </div>
-    </div>
-  </div> -->
-
 </div>

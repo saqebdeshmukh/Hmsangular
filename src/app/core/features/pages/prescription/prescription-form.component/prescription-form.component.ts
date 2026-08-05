@@ -521,34 +521,35 @@ private parseFamilyHistory(record: any) {
     delete this.focusedSuggestion[rowKey];
   }
 
-  removeItem(index: number) {
+  removeItem(item: AbstractControl | number) {
+    const currentTab = this.selectedTab;
+    const index = typeof item === 'number' ? item : this.items.controls.indexOf(item);
+    if (index < 0) return;
     const rowKey = this.getRowKey(index);
-    if (this.rowSubs[rowKey]) {
-      this.rowSubs[rowKey].unsubscribe();
-      delete this.rowSubs[rowKey];
-    }
-    delete this.suggestions[rowKey];
-    delete this.focusedSuggestion[rowKey];
+
+    // cleanup removed row
+    this.cleanupRow(index);
     this.items.removeAt(index);
 
-    const oldKeyPrefix = `${this.selectedTab}-`;
-    const newRowSubs: { [key: string]: Subscription } = {};
-    const newSuggestions: { [key: string]: any[] } = {};
-    const newFocused: { [key: string]: number } = {};
-    for (let k = 0; k < this.items.length + 1; k++) {
-      const oldKey = `${oldKeyPrefix}${k}`;
-      if (oldKey === rowKey) continue;
-      const newIndex = k > index ? k - 1 : k;
-      const newKey = `${oldKeyPrefix}${newIndex}`;
-      if (this.rowSubs[oldKey]) newRowSubs[newKey] = this.rowSubs[oldKey];
-      if (this.suggestions[oldKey]) newSuggestions[newKey] = this.suggestions[oldKey];
-      if (typeof this.focusedSuggestion[oldKey] !== 'undefined') newFocused[newKey] = this.focusedSuggestion[oldKey];
-    }
-    this.rowSubs = { ...this.rowSubs, ...newRowSubs };
-    this.suggestions = { ...this.suggestions, ...newSuggestions };
-    this.focusedSuggestion = { ...this.focusedSuggestion, ...newFocused };
-  }
+    // clear stale state only for the current tab, then recreate row subscriptions
+    const tabPrefix = `${currentTab}-`;
+    Object.keys(this.rowSubs)
+      .filter(key => key.startsWith(tabPrefix))
+      .forEach(key => {
+        this.rowSubs[key].unsubscribe();
+        delete this.rowSubs[key];
+      });
+    Object.keys(this.suggestions)
+      .filter(key => key.startsWith(tabPrefix))
+      .forEach(key => delete this.suggestions[key]);
+    Object.keys(this.focusedSuggestion)
+      .filter(key => key.startsWith(tabPrefix))
+      .forEach(key => delete this.focusedSuggestion[key]);
 
+    for (let i = 0; i < this.items.length; i++) {
+      this.attachAutocompleteToIndex(i, currentTab);
+    }
+  }
 
 
   ngOnDestroy() {

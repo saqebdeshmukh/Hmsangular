@@ -203,7 +203,7 @@
                   </td>
 
                   <td>
-                    <button class="btn btn-sm btn-outline-primary" (click)="viewAppointment(a.id)">
+                    <button class="btn btn-sm btn-outline-primary" title="View" (click)="viewAppointment(a.id)">
                       <i class="bi bi-eye"></i>
                     </button>
                   </td>
@@ -316,7 +316,7 @@
                     {{ p.type }}
                   </td>
                   <td>
-                    <button class="btn btn-sm btn-outline-primary" (click)="viewPrescription(p.id)">
+                    <button class="btn btn-sm btn-outline-primary" title="View" (click)="viewPrescription(p.id)">
                       <i class="bi bi-eye"></i>
                     </button>
                     @if(p.type === 'MedicalStore') {
@@ -375,7 +375,7 @@
                     {{ p.type }}
                   </td>
                   <td>
-                    <button class="btn btn-sm btn-outline-primary" (click)="viewPrescription(p.id)">
+                    <button class="btn btn-sm btn-outline-primary" title="View" (click)="viewPrescription(p.id)">
                       <i class="bi bi-eye"></i>
                     </button>
                     @if(p.type === 'MedicalStore') {

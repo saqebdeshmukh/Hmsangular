@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { MedicalRecordFormComponent } from './medical-record-form.component';
 import { MedicalRecordService } from '../../../../services/medicarecord.service';
 import { ToastService } from '../../../../services/toast.service';
@@ -6,11 +6,12 @@ import { AppointmentService } from '../../../../services/appointment.service';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppointmentStatus } from '../../appointmentStatus.enum';
+import { AuthService } from '../../../../services/auth.services';
 
 @Component({
   selector: 'app-create-medical-record',
   standalone: true,
-  imports: [MedicalRecordFormComponent,CommonModule],
+  imports: [MedicalRecordFormComponent, CommonModule],
   template: `
   
  
@@ -31,19 +32,20 @@ export class CreateMedicalRecordComponent {
   private toast = inject(ToastService);
   private appointmentService = inject(AppointmentService);
   private route = inject(ActivatedRoute);
-  private router=inject(Router);
-
+  private router = inject(Router);
+  private auth = inject(AuthService);
+  role = computed(() => this.auth.user()?.role);
   appointment = signal<any>(null);
 
   ngOnInit() {
-  const id = this.route.snapshot.paramMap.get('appointmentId');
-  if (id) {
-    this.appointmentService.getAppointmentDetails(id).subscribe(res => {
-      
+    const id = this.route.snapshot.paramMap.get('appointmentId');
+    if (id) {
+      this.appointmentService.getAppointmentDetails(id).subscribe(res => {
+
         this.appointment.set(res.data);
-    });
+      });
+    }
   }
-}
 
   create(data: any) {
     data.appointmentId = this.appointment()?.id;
@@ -60,7 +62,11 @@ export class CreateMedicalRecordComponent {
       if (data.isComplete) {
         this.appointmentService.updateAppointmentStatus(this.appointment()?.id, AppointmentStatus.Completed).subscribe(statusRes => {
           if (statusRes.isSuccess) {
-            this.router.navigate(['/prescription/create', res.data]);
+            if (this.role() === 'Doctor') {
+              this.router.navigate(['/doctordashboard']);
+            } else {
+              this.router.navigate(['/admin']);
+            }
             return;
           }
 

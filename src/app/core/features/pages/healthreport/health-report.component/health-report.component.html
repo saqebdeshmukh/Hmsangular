@@ -1,0 +1,85 @@
+<div class="container-fluid">
+
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="text-success mb-0">Health Reports</h2>
+      <p class="text-muted mb-0">{{reports()[0]?.patientName}}</p>
+    </div>
+     @if (isDoctor()) {
+    <button class="btn btn-success" (click)="openModal()">
+      + New Record
+    </button>
+    }
+  </div>
+
+  <div class="col-md-4 mb-3">
+    <div class="d-flex gap-2">
+      <input
+        type="date"
+        class="form-control"
+        [value]="dateFilter"
+        (change)="onDateFilterChange($any($event.target).value)">
+
+      <button
+        class="btn btn-outline-secondary"
+        (click)="clearFilters()">
+        Clear
+      </button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+
+      <ag-grid-angular
+        class="ag-theme-alpine"
+        style="height:500px;width:100%;"
+        [rowData]="reports()"
+        [columnDefs]="columnDefs"
+        (gridReady)="onGridReady($event)"
+        (sortChanged)="onSortChanged($event)">
+      </ag-grid-angular>
+
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3 pt-2 border-top">
+        <div class="d-flex align-items-center gap-2 text-muted">
+          <span>Show</span>
+          <select class="form-select form-select-sm" style="width: 57px;" [value]="pageSize()" (change)="onPageSizeChange($any($event.target).value)">
+            @for (size of pageSizeOptions; track size) {
+              <option [value]="size">{{ size }}</option>
+            }
+          </select>
+          <span>records</span>
+        </div>
+
+        <div class="text-muted">
+          Showing {{ startRecord() }} to {{ endRecord() }} of {{ totalRecords() }} records
+        </div>
+
+        <nav aria-label="Medical records pagination">
+          <ul class="pagination pagination-sm mb-0">
+            <li class="page-item" [class.disabled]="pageNumber() == 1">
+              <button class="page-link" (click)="firstPage()">First</button>
+            </li>
+            <li class="page-item" [class.disabled]="pageNumber() == 1">
+              <button class="page-link" (click)="previousPage()">Previous</button>
+            </li>
+            @for (page of pages(); track page) {
+              <li class="page-item" [class.active]="page == pageNumber()">
+                <button class="page-link" (click)="goToPage(page)">{{ page }}</button>
+              </li>
+            }
+            <li class="page-item" [class.disabled]="pageNumber() == totalPages()">
+              <button class="page-link" (click)="nextPage()">Next</button>
+            </li>
+            <li class="page-item" [class.disabled]="pageNumber() == totalPages()">
+              <button class="page-link" (click)="lastPage()">Last</button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
+<app-appointment-modal [show]="showModal()" [doctors]="doctors()" [patientDetails]="patientDetails()"
+    (close)="closeModal()" (book)="handleBooking($event)">
+  </app-appointment-modal>
+</div>

@@ -203,6 +203,12 @@ path: 'medical-records',
       .then(m => m.PrescriptionPrintComponent),
       data: { hideLayout: true }
 },
+{
+  path:'healthreport/:patientId',
+  loadComponent: () =>
+    import('./core/features/pages/healthreport/health-report.component/health-report.component')
+      .then(m => m.HealthReportComponent)
+},
 
 //   // ❌ Unauthorized
    { path: '' , component: HomepageComponent },

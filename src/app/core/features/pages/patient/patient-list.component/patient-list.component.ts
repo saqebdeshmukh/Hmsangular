@@ -119,15 +119,15 @@ export class PatientListComponent extends BaseGridComponent {
 
       cellRenderer: () => `
 
-        <button class="btn btn-sm btn-info me-1 action-view">
+        <button title="View" class="btn btn-sm btn-info me-1 action-view">
           <i class="fa fa-eye"></i>
         </button>
 
-        <button class="btn btn-sm btn-primary me-1 action-edit">
+        <button title="Edit Patient" class="btn btn-sm btn-primary me-1 action-edit">
           <i class="fa fa-edit"></i>
         </button>
 
-        <button class="btn btn-sm btn-success action-book">
+        <button title="Book Appointment" class="btn btn-sm btn-success action-book">
           <i class="fa fa-calendar-plus"></i>
         </button>
 

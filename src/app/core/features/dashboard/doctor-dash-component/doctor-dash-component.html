@@ -75,35 +75,25 @@
         </div>
 
         <div class="card-body p-0">
-
           @if (todayAppointments().length > 0) {
-
           <div class="list-group list-group-flush">
-
             @for (appointment of todayAppointments(); track appointment.appointmentDate) {
-
             <div class="list-group-item py-3">
-
               <div class="d-flex justify-content-between align-items-center">
-
                 <!-- LEFT -->
                 <div class="d-flex align-items-center">
-
                   <div class="avatar me-3" style="background:#E0E7FF; color:#4F46E5;">
                     {{ appointment.patientName?.substring(0,1) }}
                   </div>
-
                   <div>
                     <h6 class="mb-0 fw-semibold">
                       {{ appointment.patientName }}
                     </h6>
-
                     <small class="text-muted">
                       <i class="fas fa-clock me-1"></i>
                       {{ appointment.appointmentDate | date:'hh:mm a' }}
                     </small>
                   </div>
-
                 </div>
 
                 <!-- RIGHT -->
@@ -129,19 +119,15 @@
                   appointment.status === AppointmentStatus.InProgress ||
                   appointment.status === AppointmentStatus.MedicalRecordCreated
                   ) {
-                   
+
                   <button class="btn btn-sm btn-warning" (click)="redirectToContinuePage(appointment.id)">
                     Continue
                   </button>
                   }
                 </div>
-
               </div>
-
             </div>
-
             }
-
           </div>
 
           } @else {
@@ -151,9 +137,7 @@
             <h5>No Appointments Today</h5>
             <p>You have no scheduled appointments for today.</p>
           </div>
-
           }
-
         </div>
       </div>
     </div>
@@ -220,7 +204,7 @@
                   </td>
 
                   <td class="text-end">
-                    <a class="btn btn-sm btn-ghost" [routerLink]="['/appointmentDetails', appointment.id]">
+                    <a class="btn btn-sm btn-ghost" title="View" [routerLink]="['/appointmentDetails', appointment.id]">
                       <i class="fas fa-eye"></i>
                     </a>
                   </td>
@@ -241,55 +225,9 @@
             <h5>No Upcoming Appointments</h5>
             <p>You have no upcoming appointments scheduled.</p>
           </div>
-
           }
-
         </div>
       </div>
     </div>
-
   </div>
-
-  <!-- QUICK ACTIONS -->
-  <!-- <div class="card mt-3">
-
-    <div class="card-header">
-      <span class="card-title">
-        <i class="fas fa-bolt me-2 text-warning"></i>
-        Quick Actions
-      </span>
-    </div>
-
-    <div class="card-body">
-      <div class="row g-2">
-
-        <div class="col-6 col-md-3">
-          <a routerLink="/patients" class="btn btn-outline-primary w-100">
-            <i class="fas fa-users me-2"></i>View Patients
-          </a>
-        </div>
-
-        <div class="col-6 col-md-3">
-          <a routerLink="/medical-records" class="btn btn-outline-success w-100">
-            <i class="fas fa-file-medical me-2"></i>Medical Records
-          </a>
-        </div>
-
-        <div class="col-6 col-md-3">
-          <a routerLink="/prescriptions" class="btn btn-outline-info w-100">
-            <i class="fas fa-prescription me-2"></i>Prescriptions
-          </a>
-        </div>
-
-        <div class="col-6 col-md-3">
-          <a routerLink="/calendar" class="btn btn-outline-warning w-100">
-            <i class="fas fa-calendar-alt me-2"></i>My Calendar
-          </a>
-        </div>
-
-      </div>
-    </div>
-
-  </div> -->
-
 </div>

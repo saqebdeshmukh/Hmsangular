@@ -28,7 +28,7 @@ export class MedicalRecordFormComponent implements OnChanges {
     visitDate: ['', Validators.required],
     symptoms: ['', Validators.required],
     diagnosis: ['', Validators.required],
-    treatment: ['', Validators.required],
+    treatment: [''],
     notes: [''],
     weight: [''],
     height: [''],
@@ -63,18 +63,19 @@ export class MedicalRecordFormComponent implements OnChanges {
 
     }
 
-    if (changes['appointment']?.currentValue) {
+    // Only apply appointment-derived defaults when creating a new record
+    if (changes['appointment']?.currentValue && !this.isEdit) {
       const a = changes['appointment'].currentValue;
-
+console.log('Appointment data received:', a);
       this.form.patchValue({
         appointmentId: a.id,
         patientId: a.patientId,
         doctorId: a.doctorId,
-        weight: a.weight,
-        height: a.height,
-        bloodPressure: a.bloodPressure,
-        sugarBeforeMeal: a.sugarBeforeMeal,
-        sugarAfterMeal: a.sugarAfterMeal,
+        weight: a.weight ?? '0',
+        height: a.height ?? '0',
+        bloodPressure: a.bloodPressure ?? '0',
+        sugarBeforeMeal: a.sugarBeforeMeal ?? '0',
+        sugarAfterMeal: a.sugarAfterMeal ?? '0',
 
         visitDate: this.formatDate(new Date().toISOString())
       });

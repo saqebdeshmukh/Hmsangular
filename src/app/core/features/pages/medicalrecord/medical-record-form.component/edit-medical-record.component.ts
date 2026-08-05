@@ -1,10 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MedicalRecordFormComponent } from './medical-record-form.component';
 import { MedicalRecordService } from '../../../../services/medicarecord.service';
 import { ToastService } from '../../../../services/toast.service';
 import { AppointmentService } from '../../../../services/appointment.service';
 import { AppointmentStatus } from '../../appointmentStatus.enum';
+import { AuthService } from '../../../../services/auth.services';
 
 @Component({
   selector: 'app-edit-medical-record',
@@ -27,6 +28,8 @@ export class EditMedicalRecordComponent {
   private toast = inject(ToastService);
   private router = inject(Router);
   private appointmentService = inject(AppointmentService);
+  private auth = inject(AuthService);
+    role = computed(() => this.auth.user()?.role);
 
   record = signal<any>(null);
 
@@ -48,7 +51,11 @@ export class EditMedicalRecordComponent {
       if (data.isComplete) {
         this.appointmentService.updateAppointmentStatus(this.record()?.appointmentId, AppointmentStatus.Completed).subscribe(statusRes => {
           if (statusRes.isSuccess) {
-            this.router.navigate(['/medical-records']);
+            if (this.role() === 'Doctor') {
+              this.router.navigate(['/doctordashboard']);
+            } else {
+              this.router.navigate(['/admin']);
+            }
             return;
           }
 

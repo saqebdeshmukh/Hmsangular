@@ -188,7 +188,7 @@
           <a
             class="btn btn-sm btn-outline-primary me-1"
             title="View Details"
-            [routerLink]="['/prescriptionDetails', p.id]">
+            [routerLink]="['/prescriptiondetails', p.id]">
             <i class="bi bi-eye"></i>
           </a>
 
@@ -322,20 +322,96 @@
               </div>
               </div>
             </div>
-            <div class="family-history mt-3">
-              <div class="history-row">
-                <div class="history-block">
-                  <span class="history-label">Parents</span>
-                  <span class="history-value">{{ familyHistory().parents || 'Not provided' }}</span>
-                </div>
-                <div class="history-block">
-                  <span class="history-label">Grand Parents</span>
-                  <span class="history-value">{{ familyHistory().grandparents || 'Not provided' }}</span>
-                </div>
+          <div class="family-history mt-3">
+            <div class="history-row">
+              <div class="history-block">
+                <span class="history-label">Parents</span>
+                <span class="history-value">{{ familyHistory().parents || 'Not provided' }}</span>
+              </div>
+              <div class="history-block">
+                <span class="history-label">Grand Parents</span>
+                <span class="history-value">{{ familyHistory().grandparents || 'Not provided' }}</span>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
 
+      <!-- Health History -->
+      <div class="card mb-4">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+          <h6 class="mb-0">
+            <i class="bi bi-clock-history me-2"></i>Health History
+          </h6>
+          <!-- <span class="badge bg-light text-dark">Last 3 Records</span> -->
+        </div>
+
+        <div class="card-body">
+          @if (r.healthHistory && r.healthHistory.length > 0) {
+            <div class="list-group list-group-flush">
+              @for (h of r.healthHistory; track h.id) {
+                <div class="list-group-item px-0 py-3">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="fw-bold text-secondary small">
+                      <i class="bi bi-calendar-event me-1"></i>
+                      {{ h.createdAt | date:'MMM dd, yyyy' }}
+                    </span>
+                  </div>
+
+                  <!-- Conditionally display indicators based on age -->
+                  @if (r.patientAge < 15) {
+                    <div class="row g-2">
+                      <div class="col-6">
+                        <div class="info-card py-2 px-3">
+                          <small class="text-muted d-block" style="font-size: 0.75rem;">Weight</small>
+                          <span class="fw-bold text-dark">{{ h.weight ? h.weight + ' kg' : 'N/A' }}</span>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="info-card py-2 px-3">
+                          <small class="text-muted d-block" style="font-size: 0.75rem;">Height</small>
+                          <span class="fw-bold text-dark">{{ h.height ? h.height + ' cm' : 'N/A' }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  } @else {
+                    <div class="row g-2">
+                      <div class="col-12 mb-1">
+                        <div class="info-card py-2 px-3">
+                          <small class="text-muted d-block" style="font-size: 0.75rem;">Blood Pressure</small>
+                          <span class="fw-bold text-dark">{{ h.bloodPressure || 'N/A' }}</span>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="info-card py-2 px-3">
+                          <small class="text-muted d-block" style="font-size: 0.75rem;">Sugar (Before Meal)</small>
+                          <span class="fw-bold text-dark">{{ h.sugarBeforeMeal ? h.sugarBeforeMeal + ' mg/dL' : 'N/A' }}</span>
+                        </div>
+                      </div>
+                      <div class="col-6">
+                        <div class="info-card py-2 px-3">
+                          <small class="text-muted d-block" style="font-size: 0.75rem;">Sugar (After Meal)</small>
+                          <span class="fw-bold text-dark">{{ h.sugarAfterMeal ? h.sugarAfterMeal + ' mg/dL' : 'N/A' }}</span>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          } @else {
+            <div class="text-center py-3 text-muted">
+              <i class="bi bi-activity fs-4"></i>
+              <p class="mt-2 mb-0 small">No health history records found</p>
+            </div>
+          }
+
+          <div class="mt-3">
+            <a class="btn btn-outline-primary btn-sm w-100" [routerLink]="['/healthreport', r.patientId]">
+              More...
+            </a>
+          </div>
         </div>
       </div>
 

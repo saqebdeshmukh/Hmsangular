@@ -150,13 +150,10 @@
 
                     <!-- TREATMENT -->
                     <div class="mb-3">
-                        <label class="form-label"><i class="bi bi-capsule me-1"></i>Treatment *</label>
+                        <label class="form-label"><i class="bi bi-capsule me-1"></i>Instructions</label>
                         <textarea formControlName="treatment" class="form-control"
                             placeholder="Describe the treatment plan and recommendations"></textarea>
 
-                        @if (f.treatment.touched && f.treatment.invalid) {
-                        <small class="text-danger">Required</small>
-                        }
                     </div>
                     <div class="row mb-3">
 
@@ -203,7 +200,7 @@
                         <button type="submit" class="btn btn-success">
                             {{ isEdit ? 'Update Record And Continue' : 'Create Record And Continue' }}
                         </button>
-                        <button type="button" class="btn btn-outline-info" (click)="saveAndComplete()">
+                        <button type="button" class="btn btn-info" (click)="saveAndComplete()">
                             Save & Complete
                         </button>
                     </div>

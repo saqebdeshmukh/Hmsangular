@@ -121,17 +121,17 @@ export class MedicalRecordsComponent extends BaseGridComponent {
         const div = document.createElement('div');
 
         div.innerHTML = `
-          <button class="btn btn-sm btn-outline-primary me-1">
+          <button title="View" class="btn btn-sm btn-outline-primary me-1">
             <i class="bi bi-eye"></i>
           </button>
 
           ${this.isDoctor()
             ? `
-              <button class="btn btn-sm btn-outline-warning me-1">
+              <button title="Edit" class="btn btn-sm btn-outline-warning me-1">
                 <i class="bi bi-pencil"></i>
               </button>
 
-              <button class="btn btn-sm btn-outline-success">
+              <button title="Create Prescription" class="btn btn-sm btn-outline-success">
                 <i class="bi bi-capsule"></i>
               </button>
             `
