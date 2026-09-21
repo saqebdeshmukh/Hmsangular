@@ -117,22 +117,20 @@ export class MedicalRecordsComponent extends BaseGridComponent {
       flex: 1.3,
 
       cellRenderer: (params: any) => {
-
         const div = document.createElement('div');
+        div.className = 'd-flex justify-content-start gap-1 h-100 align-items-center';
 
         div.innerHTML = `
-          <button title="View" class="btn btn-sm btn-outline-primary me-1">
-            <i class="bi bi-eye"></i>
+          <button title="View Details" class="btn btn-sm btn-ghost text-primary action-view">
+            <i class="fas fa-eye"></i>
           </button>
-
           ${this.isDoctor()
             ? `
-              <button title="Edit" class="btn btn-sm btn-outline-warning me-1">
-                <i class="bi bi-pencil"></i>
+              <button title="Edit Record" class="btn btn-sm btn-ghost text-warning action-edit">
+                <i class="fas fa-edit"></i>
               </button>
-
-              <button title="Create Prescription" class="btn btn-sm btn-outline-success">
-                <i class="bi bi-capsule"></i>
+              <button title="Create Prescription" class="btn btn-sm btn-ghost text-success action-rx">
+                <i class="fas fa-prescription"></i>
               </button>
             `
             : ''}
@@ -141,40 +139,30 @@ export class MedicalRecordsComponent extends BaseGridComponent {
         const buttons = div.querySelectorAll('button');
 
         buttons[0].addEventListener('click', () => {
-
           this.router.navigate([
             '/medical-records/details',
             params.data.id
           ]);
-
         });
 
         if (this.isDoctor()) {
-
           buttons[1].addEventListener('click', () => {
-
             this.router.navigate([
               '/medical-records/edit',
               params.data.id
             ]);
-
           });
 
           buttons[2].addEventListener('click', () => {
-
             this.router.navigate([
               '/prescription/create',
               params.data.id
             ]);
-
           });
-
         }
 
         return div;
-
       }
-
     }
 
   ];

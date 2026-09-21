@@ -1,5 +1,5 @@
 <div class="row justify-content-center">
-    <div class="col-lg-8">
+    <div class="col-12 col-lg-8">
 
         <div class="card shadow-sm">
 
@@ -20,9 +20,9 @@
                         Account Information
                     </h5>
 
-                    <div class="row mb-3">
+                    <div class="row g-2 g-md-3 mb-3">
 
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <label>Email *</label>
                             <input formControlName="userEmail" class="form-control">
 
@@ -32,7 +32,7 @@
                         </div>
 
                         @if (!isEdit) {
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <label>Password *</label>
                             <input type="password" formControlName="userPassword" class="form-control">
 
@@ -51,9 +51,9 @@
                         Personal Information
                     </h5>
 
-                    <div class="row mb-3">
+                    <div class="row g-2 g-md-3 mb-3">
 
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <input formControlName="firstName" class="form-control" placeholder="First Name">
 
                             @if (f.firstName.touched && f.firstName.invalid) {
@@ -61,7 +61,7 @@
                             }
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <input formControlName="lastName" class="form-control" placeholder="Last Name">
 
                             @if (f.lastName.touched && f.lastName.invalid) {
@@ -78,9 +78,9 @@
                         Professional Information
                     </h5>
 
-                    <div class="row mb-3">
+                    <div class="row g-2 g-md-3 mb-3">
 
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <select formControlName="specialization" class="form-select">
                                 <option value="">Select Specialization</option>
 
@@ -94,7 +94,7 @@
                             }
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <div class="input-group">
                                 <span class="input-group-text">$</span>
                                 <input type="number" formControlName="consultationFee" class="form-control">
@@ -106,7 +106,12 @@
                         </div>
 
                     </div>
-
+                    <div class="row g-2 g-md-3 mb-3">
+                        <div class="col-12 col-md-6">
+                            <input type="text" formControlName="regNo" class="form-control"
+                                placeholder="Registration Number">
+                        </div>
+                    </div>
                     <hr>
 
                     <!-- CONTACT -->
@@ -114,13 +119,13 @@
                         Contact Information
                     </h5>
 
-                    <div class="row mb-4">
+                    <div class="row g-2 g-md-3 mb-4">
 
-                        <div class="col-md-6">
-                            <input formControlName="phone" class="form-control" placeholder="Phone">
+                        <div class="col-12 col-md-6">
+                            <input formControlName="phoneNumber" class="form-control" placeholder="Phone">
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-12 col-md-6">
                             <input formControlName="email" class="form-control" placeholder="Professional Email">
 
                             @if (f.email.touched && f.email.invalid) {
@@ -129,9 +134,13 @@
                         </div>
 
                     </div>
-
+                    <div class="row g-2 g-md-3 mb-4">
+                        <div class="col-12 col-md-10">
+                            <textarea formControlName="address" class="form-control" placeholder="Address"></textarea>
+                        </div>
+                    </div>
                     <!-- ACTIONS -->
-                    <div class="d-flex justify-content-between">
+                    <div class="d-flex flex-column flex-sm-row gap-2 justify-content-between">
 
                         <button type="button" class="btn btn-outline-secondary" routerLink="/doctors">
                             Back

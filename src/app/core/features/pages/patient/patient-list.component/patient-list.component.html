@@ -9,14 +9,18 @@
       <i class="fas fa-user-plus me-1"></i> Add Patient
     </a>
   </div>
- <div class="col-md-6">
-    <div class="mb-3 d-flex flex-column flex-md-row gap-2">
-    <input #searchInput class="form-control" placeholder="Search..." (input)="onSearch($any($event.target).value)">
-    <button class="btn btn-outline-secondary" type="button"
-      (click)="onSearch(''); searchInput.value = ''">Clear</button>
+
+  <div class="row mb-3">
+    <div class="col-12 col-md-6">
+      <div class="d-flex flex-column flex-sm-row gap-2">
+        <input #searchInput class="form-control" placeholder="Search..." (input)="onSearch($any($event.target).value)">
+        <button class="btn btn-outline-secondary" type="button"
+          (click)="onSearch(''); searchInput.value = ''">Clear</button>
+      </div>
+    </div>
   </div>
- </div>
-  <div class="card">
+
+  <div class="card card-responsive">
     <div class="card-body">
       <ag-grid-angular
         class="ag-theme-alpine"

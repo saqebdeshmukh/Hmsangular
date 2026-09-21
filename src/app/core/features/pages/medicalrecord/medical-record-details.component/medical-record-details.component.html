@@ -183,10 +183,10 @@
           </span>
         </td>
 
-        <td [attr.rowspan]="p.prescriptionItemRequests.length">
+        <td [attr.rowspan]="p.prescriptionItemRequests.length" class="d-flex justify-content-start gap-1 h-100 align-items-center">
 
           <a
-            class="btn btn-sm btn-outline-primary me-1"
+            class="btn btn-sm btn-ghost text-primary view-btn"
             title="View Details"
             [routerLink]="['/prescriptiondetails', p.id]">
             <i class="bi bi-eye"></i>
@@ -194,7 +194,7 @@
 
           @if (p.type === 'MedicalStore') {
             <a
-              class="btn btn-sm btn-outline-secondary"
+              class="btn btn-sm btn-ghost text-secondary print-btn"
               title="Print Prescription"
               [routerLink]="['/prescriptionprint', p.id]"
               target="_blank">

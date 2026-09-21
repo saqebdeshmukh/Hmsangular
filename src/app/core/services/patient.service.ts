@@ -52,6 +52,8 @@ export class PatientService {
     );
   }
 
+  
+
   doctorLookup() {
     return this.http.get<any>(`${this.apiUrl}/doctor/getDoctors`);
   }

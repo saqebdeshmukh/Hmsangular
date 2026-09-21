@@ -48,6 +48,106 @@
   white-space: pre-line;
 }
 
+.medical-history-card {
+  height: max-content;
+}
+
+.medical-history-card .card-body {
+  flex: 0 0 auto;
+}
+
+.medical-history-card .accordion {
+  flex: 0 0 auto;
+}
+
+.prescription-history {
+  border-top: 1px solid #e9ecef;
+  padding-top: 1rem;
+}
+
+.prescription-history-heading,
+.prescription-history-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.prescription-history-heading {
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.prescription-history-section {
+  border-left: 3px solid #198754;
+  background: #f8fbf9;
+  border-radius: 0 8px 8px 0;
+  padding: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.prescription-history-section.store-history {
+  border-left-color: #0dcaf0;
+  background: #f6fbfc;
+}
+
+.prescription-history-section-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 0.65rem;
+}
+
+.prescription-type-icon {
+  color: #198754;
+  font-size: 1rem;
+}
+
+.store-history .prescription-type-icon {
+  color: #087990;
+}
+
+.prescription-count {
+  margin-left: auto;
+  min-width: 1.5rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 999px;
+  background: #d1e7dd;
+  color: #146c43;
+  font-size: 0.72rem;
+  text-align: center;
+}
+
+.store-history .prescription-count {
+  background: #cff4fc;
+  color: #055160;
+}
+
+.history-medicine-list {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.history-medicine-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.history-medicine-item strong {
+  color: #212529;
+  font-size: 0.85rem;
+}
+
+.history-medicine-item span,
+.history-medicine-item small {
+  color: #6c757d;
+  font-size: 0.75rem;
+}
+
 /* Patient summary enhancements */
 .patient-summary .avatar-circle {
   width: 64px;
@@ -71,4 +171,34 @@
 
 .patient-summary .patient-actions a.btn {
   min-width: 120px;
+}
+.allergy-tag {
+  font-size: 0.7rem;
+  letter-spacing: 0.2px;
+  transition: all 0.2s ease;
+}
+
+.allergy-tag:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.12) !important;
+}
+
+.allergy-tag i {
+  font-size: 0.8rem;
+}
+
+.allergy-close {
+  width: 0.65rem;
+  height: 0.65rem;
+  margin-left: 0.15rem;
+  opacity: 0.65;
+  transition: opacity 0.2s ease;
+}
+
+.allergy-close:hover {
+  opacity: 1;
+}
+
+.allergy-close:disabled {
+  opacity: 0.35;
 }

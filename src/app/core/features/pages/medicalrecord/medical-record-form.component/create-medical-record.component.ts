@@ -13,17 +13,13 @@ import { AuthService } from '../../../../services/auth.services';
   standalone: true,
   imports: [MedicalRecordFormComponent, CommonModule],
   template: `
-  
- 
 @if (appointment()) {
-
   <app-medical-record-form
     [appointment]="appointment()"
+    [medicalHistory]="medicalHistory()"
     (formSubmit)="create($event)">
   </app-medical-record-form>
-
 }
-  
   `
 })
 export class CreateMedicalRecordComponent {
@@ -36,46 +32,134 @@ export class CreateMedicalRecordComponent {
   private auth = inject(AuthService);
   role = computed(() => this.auth.user()?.role);
   appointment = signal<any>(null);
-
+  medicalHistory = signal<any[]>([]);
+appointmentId = signal<any | null>(null);
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('appointmentId');
     if (id) {
       this.appointmentService.getAppointmentDetails(id).subscribe(res => {
-
         this.appointment.set(res.data);
+        this.getMedicalHistory(res.data?.patientId);
       });
     }
   }
 
-  create(data: any) {
-    data.appointmentId = this.appointment()?.id;
-    data.patientId = this.appointment()?.patientId;
-    data.doctorId = this.appointment()?.doctorId;
+  getMedicalHistory(patientId: string | null) {
+    if (!patientId) {
+      this.medicalHistory.set([]);
+      return;
+    }
 
-    this.service.createMedicalRecord(data).subscribe(res => {
+    this.service.getMedicalHistory(patientId).subscribe({
+      next: response => {
+        this.medicalHistory.set(response?.isSuccess ? response.data || [] : []);
+      },
+      error: () => {
+        this.medicalHistory.set([]);
+      }
+    });
+  }
+
+  private buildPrescriptionPayload(data: any) {
+    if (!data) {
+      return {
+        internalPrescriptionRequest: null,
+        externalPrescriptionRequest: null
+      };
+    }
+
+    const internalItems = (data.internalItems || []).filter((item: any) => item?.medicineName?.trim());
+    const externalItems = (data.externalItems || []).filter((item: any) => item?.medicineName?.trim());
+    const commonData = {
+      medicalRecordId: null,
+      patientId: this.appointment()?.patientId,
+      doctorId: this.appointment()?.doctorId,
+      instructions: data.instructions,
+      appointmentDate: data.appointmentDate
+    };
+
+    return {
+      internalPrescriptionRequest: internalItems.length ? {
+        ...commonData,
+        type: 'Internal',
+        prescriptionItemRequests: internalItems.map((item: any) => ({
+          medicineName: item.medicineName,
+          dosage: item.dosage,
+          frequency: item.frequency,
+          duration: item.duration?.toString?.() ?? item.duration,
+          mealTiming: item.mealTiming
+        }))
+      } : null,
+      externalPrescriptionRequest: externalItems.length ? {
+        ...commonData,
+        type: 'MedicalStore',
+        prescriptionItemRequests: externalItems.map((item: any) => ({
+          medicineName: item.medicineName,
+          dosage: item.dosage,
+          frequency: item.frequency,
+          duration: item.duration?.toString?.() ?? item.duration,
+          mealTiming: item.mealTiming
+        }))
+      } : null
+    };
+  }
+
+  create(data: any) {
+    const appointment = this.appointment();
+    const formMedicalRecord = data.medicalRecord ?? data;
+    const medicalRecord = {
+      ...formMedicalRecord,
+      appointmentId: appointment?.id ?? formMedicalRecord.appointmentId,
+      patientId: appointment?.patientId ?? formMedicalRecord.patientId,
+      doctorId: appointment?.doctorId ?? formMedicalRecord.doctorId
+    };
+
+    const request = {
+      medicalRecordRequestModel: {
+        patientId: medicalRecord.patientId ?? '',
+        doctorId: medicalRecord.doctorId ?? '',
+        appointmentId: medicalRecord.appointmentId ?? '',
+        weight: medicalRecord.weight,
+        height: medicalRecord.height,
+        bloodPressure: medicalRecord.bloodPressure,
+        sugarAfterMeal: medicalRecord.sugarAfterMeal,
+        sugarBeforeMeal: medicalRecord.sugarBeforeMeal,
+        diagnosis: medicalRecord.diagnosis ?? '',
+        symptoms: medicalRecord.symptoms ?? '',
+        treatment: medicalRecord.treatment ?? '',
+        notes: medicalRecord.notes ?? ''
+      },
+      prescriptionRequestModel: this.buildPrescriptionPayload(data.prescription)
+    };
+
+    this.service.createMedicalRecord(request).subscribe(res => {
       if (!res.isSuccess) {
         return;
       }
 
-      this.toast.success(res.message);
+      const completeFlow = () => {
+        this.toast.success(res.message || 'Medical record created successfully');
 
-      if (data.isComplete) {
-        this.appointmentService.updateAppointmentStatus(this.appointment()?.id, AppointmentStatus.Completed).subscribe(statusRes => {
-          if (statusRes.isSuccess) {
-            if (this.role() === 'Doctor') {
-              this.router.navigate(['/doctordashboard']);
-            } else {
-              this.router.navigate(['/admin']);
+        if (medicalRecord.isComplete) {
+          this.appointmentService.updateAppointmentStatus(this.appointment()?.id, AppointmentStatus.Completed).subscribe(statusRes => {
+            if (statusRes.isSuccess) {
+              if (this.role() === 'Doctor') {
+                this.router.navigate(['/doctordashboard']);
+              } else {
+                this.router.navigate(['/admin']);
+              }
+              return;
             }
-            return;
-          }
 
-          this.router.navigate(['/prescription/create', res.data]);
-        });
-        return;
-      }
+            this.router.navigate(['/medical-records']);
+          });
+          return;
+        }
 
-      this.router.navigate(['/prescription/create', res.data]);
+        this.router.navigate(['/medical-records']);
+      };
+
+      completeFlow();
     });
   }
 }

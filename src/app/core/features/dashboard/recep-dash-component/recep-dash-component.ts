@@ -17,9 +17,10 @@ export class RecepDashComponent {
   todayAppointments = signal<any[]>([]);
   completedAppointments = signal<any[]>([]);
   loading = signal(true);
-
+ internalPrescriptions = signal<any[]>([]);
   ngOnInit() {
     this.loadDashboard();
+    this.getInternalPrescriptions();
   }
 
   statsConfig = [
@@ -71,6 +72,15 @@ export class RecepDashComponent {
     const parts = name.split(' ');
     return parts.map(x => x[0]).join('').toUpperCase();
   }
+
+  getInternalPrescriptions() {
+    this.dashboardService.getInternalPrescriptions().subscribe({
+      next: (res:any) => {
+        this.internalPrescriptions.set(res.data);
+      }
+    });
+  }
+
 
   getStatusClass(status: string) {
     switch (status) {

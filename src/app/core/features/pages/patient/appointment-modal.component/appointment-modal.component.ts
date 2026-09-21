@@ -90,20 +90,20 @@ private formatToInputDate(value: any) {
   }
 
   // ✅ Guard against null
-  if (changes['patientDetails'] && this.patientDetails) {
+  // if (changes['patientDetails'] && this.patientDetails) {
 
-    const health = this.patientDetails // <-- match API name
+  //   const health = this.patientDetails // <-- match API name
 
-    if (health) {
-      this.form.patchValue({
-        bloodPressure: health.bloodPressure ?? '',
-        sugarBeforeMeal: health.sugarBeforeMeal ?? '',
-        sugarAfterMeal: health.sugarAfterMeal ?? '',
-        weight: health.weight ?? '',
-        height: health.height ?? ''
-      });
-    }
-  }
+  //   if (health) {
+  //     this.form.patchValue({
+  //       bloodPressure: health.bloodPressure ?? '',
+  //       sugarBeforeMeal: health.sugarBeforeMeal ?? '',
+  //       sugarAfterMeal: health.sugarAfterMeal ?? '',
+  //       weight: health.weight ?? '',
+  //       height: health.height ?? ''
+  //     });
+  //   }
+  // }
 }
 minDate: string = (() => {
     const d = new Date();

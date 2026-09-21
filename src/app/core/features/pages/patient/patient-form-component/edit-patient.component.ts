@@ -72,6 +72,7 @@ export class EditPatientComponent {
   }
 
   handleUpdate(data: any) {
+    
     const sendDocs = (data.documents || [])
       .filter((d: any) => d.contentBase64)
       .map((d: any) => ({ FileName: d.originalName || d.fileName || 'file', ContentBase64: d.contentBase64, ContentType: d.contentType || '' }));

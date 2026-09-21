@@ -5,7 +5,7 @@ import { ToastService } from "../../../../services/toast.service";
 import { ActivatedRoute, Router } from "@angular/router";
 
 @Component({
-    selector: 'app-edit-doctor',
+  selector: 'app-edit-doctor',
   standalone: true,
   imports: [DoctorFormComponent],
   template: `
@@ -34,13 +34,17 @@ export class EditDoctorComponent {
 
     this.service.getDoctorById(id).subscribe(res => {
       this.doctor.set(res.data);
+      console.log('Fetched doctor for edit:', res.data);
     });
   }
 
   update(data: any) {
-    this.service.updateDoctor(data.id, data).subscribe(() => {
-      this.toast.success('Doctor updated');
-      this.router.navigate(['/doctors']);
+    const doctorid = this.route.snapshot.paramMap.get('id');
+    this.service.updateDoctor(data, doctorid).subscribe({
+      next: (res) => {
+        this.toast.success('Success',res.message);
+        this.router.navigate(['/doctors']);
+      }
     });
   }
 }

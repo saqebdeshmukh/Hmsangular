@@ -102,43 +102,31 @@ export class AppointmentsComponent extends BaseGridComponent {
     {
 
       headerName: 'Actions',
-
       flex: 1.2,
-
       sortable: false,
 
       cellRenderer: (params: any) => {
-
         const isScheduled =
           params.data &&
           params.data.status === 'Scheduled';
 
         return `
-
-          <button
-            class="btn btn-sm btn-info me-1 action-view"
-            title="View Appointment">
-
-            <i class="fa fa-eye"></i>
-
-          </button>
-
-          ${isScheduled ? `
-
+          <div class="d-flex justify-content-start gap-1 h-100 align-items-center">
             <button
-              class="btn btn-sm btn-danger action-cancel"
-              title="Cancel Appointment">
-
-              <i class="fa fa-times"></i>
-
+              class="btn btn-sm btn-ghost text-primary action-view"
+              title="View Appointment">
+              <i class="fas fa-eye"></i>
             </button>
-
-          ` : ''}
-
+            ${isScheduled ? `
+              <button
+                class="btn btn-sm btn-ghost text-danger action-cancel"
+                title="Cancel Appointment">
+                <i class="fas fa-times"></i>
+              </button>
+            ` : ''}
+          </div>
         `;
-
       }
-
     }
 
   ];

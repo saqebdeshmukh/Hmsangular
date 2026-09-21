@@ -3,6 +3,9 @@
    Modern App-Style Dashboard Design
    ========================================= */
 
+/* Import responsive utilities */
+@import url('assets/css/responsive.css');
+
 /* === CSS Variables for Theme === */
 :root {
   /* Dashboard Color Palette */
@@ -766,6 +769,103 @@ p {
   font-size: 0.9375rem;
   font-weight: 600;
   color: var(--text-primary);
+}
+
+/* Scoped Header Titles for Dark/Colored Background Card Headers */
+.card-header.bg-primary,
+.card-header.bg-success,
+.card-header.bg-info,
+.card-header.bg-secondary,
+.card-header.bg-danger,
+.card-header.bg-dark,
+.card-header.text-white {
+  color: #ffffff !important;
+}
+
+.card-header.bg-primary h1, .card-header.bg-primary h2, .card-header.bg-primary h3, .card-header.bg-primary h4, .card-header.bg-primary h5, .card-header.bg-primary h6, .card-header.bg-primary .card-title,
+.card-header.bg-success h1, .card-header.bg-success h2, .card-header.bg-success h3, .card-header.bg-success h4, .card-header.bg-success h5, .card-header.bg-success h6, .card-header.bg-success .card-title,
+.card-header.bg-info h1, .card-header.bg-info h2, .card-header.bg-info h3, .card-header.bg-info h4, .card-header.bg-info h5, .card-header.bg-info h6, .card-header.bg-info .card-title,
+.card-header.bg-secondary h1, .card-header.bg-secondary h2, .card-header.bg-secondary h3, .card-header.bg-secondary h4, .card-header.bg-secondary h5, .card-header.bg-secondary h6, .card-header.bg-secondary .card-title,
+.card-header.bg-danger h1, .card-header.bg-danger h2, .card-header.bg-danger h3, .card-header.bg-danger h4, .card-header.bg-danger h5, .card-header.bg-danger h6, .card-header.bg-danger .card-title,
+.card-header.bg-dark h1, .card-header.bg-dark h2, .card-header.bg-dark h3, .card-header.bg-dark h4, .card-header.bg-dark h5, .card-header.bg-dark h6, .card-header.bg-dark .card-title,
+.card-header.text-white h1, .card-header.text-white h2, .card-header.text-white h3, .card-header.text-white h4, .card-header.text-white h5, .card-header.text-white h6, .card-header.text-white .card-title {
+  color: #ffffff !important;
+}
+
+/* Ensure Dashboard Summary Stat Cards retain crisp white background with dark text */
+.stat-card,
+.dashboard-card {
+  background: #ffffff !important;
+  color: #1E293B !important;
+}
+
+.stat-card .stat-value,
+.stat-card .stat-label,
+.dashboard-card .stat-value,
+.dashboard-card .stat-label {
+  color: #1E293B !important;
+}
+
+/* === AG Grid Responsiveness & Cell Action Button Styling === */
+.ag-theme-alpine {
+  --ag-grid-size: 5px;
+  --ag-list-item-height: 36px;
+  --ag-header-height: 44px;
+  --ag-row-height: 48px;
+}
+
+.ag-theme-alpine .ag-cell {
+  display: flex !important;
+  align-items: center !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.ag-theme-alpine .ag-cell .btn-ghost,
+.ag-theme-alpine .ag-cell .btn {
+  margin: 0;
+  padding: 0.25rem 0.5rem;
+  height: 32px;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.ag-theme-alpine .ag-cell .btn-ghost:hover,
+.ag-theme-alpine .ag-cell .btn:hover {
+  transform: translateY(-2px) scale(1.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  z-index: 2;
+}
+
+.ag-theme-alpine .ag-cell .btn-ghost.text-primary:hover {
+  background-color: #EEF2FF !important;
+  color: #4F46E5 !important;
+}
+
+.ag-theme-alpine .ag-cell .btn-ghost.text-success:hover {
+  background-color: #ECFDF5 !important;
+  color: #059669 !important;
+}
+
+.ag-theme-alpine .ag-cell .btn-ghost.text-warning:hover {
+  background-color: #FFFBEB !important;
+  color: #D97706 !important;
+}
+
+.ag-theme-alpine .ag-cell .btn-ghost.text-danger:hover {
+  background-color: #FEF2F2 !important;
+  color: #DC2626 !important;
+}
+
+.ag-theme-alpine .ag-cell .btn-ghost.text-secondary:hover {
+  background-color: #F1F5F9 !important;
+  color: #334155 !important;
 }
 
 .card-body {

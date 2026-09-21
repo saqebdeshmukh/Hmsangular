@@ -17,8 +17,9 @@ export class SelectAppointmentComponent {
   appointments = signal<any[]>([]);
 
   ngOnInit() {
-    this.service.getAppointments().subscribe(res => {
-      this.appointments.set(res.data.appointments || []);
+    this.service.getAppointmentsToSelect().subscribe(res => {
+      console.log("appointment data is : ", res.data);
+      this.appointments.set(res.data || []);
     });
   }
 

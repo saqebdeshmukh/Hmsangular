@@ -20,7 +20,7 @@
         (click)="onTabChange('internal')">Internal</button>
     </li>
     <li class="nav-item">
-      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#external" [disabled]="role() === 'Receptionist'"
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#external" 
         (click)="onTabChange('external')">Medical Store</button>
     </li>
   </ul>
@@ -67,9 +67,13 @@
         </div>
 
         <div class="card-body">
-          <ag-grid-angular class="ag-theme-alpine" style="height:500px" [rowData]="internalRows()"
-            [columnDefs]="columnDefs" (gridReady)="onGridReady($event)" (sortChanged)="onSortChanged($event)">
-          </ag-grid-angular>
+          <ag-grid-angular
+    class="ag-theme-alpine"
+    style="height:500px"
+    [rowData]="internalRows()"
+    [columnDefs]="columnDefs"
+    (sortChanged)="onSortChanged($event)">
+</ag-grid-angular>
         </div>
       </div>
     </div>
@@ -80,9 +84,13 @@
         </div>
 
         <div class="card-body">
-          <ag-grid-angular class="ag-theme-alpine" style="height:500px" [rowData]="externalRows()"
-            [columnDefs]="columnDefs" (gridReady)="onGridReady($event)" (sortChanged)="onSortChanged($event)">
-          </ag-grid-angular>
+         <ag-grid-angular
+    class="ag-theme-alpine"
+    style="height:500px"
+    [rowData]="externalRows()"
+    [columnDefs]="columnDefs"
+    (sortChanged)="onSortChanged($event)">
+</ag-grid-angular>
         </div>
       </div>
     </div>

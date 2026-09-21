@@ -19,4 +19,7 @@ export class DashboardService {
   getIdToRedirect(appointmentId: string) {
     return this.http.get<any>(`${this.apiUrl}/dashboard/getIdToRedirect/${appointmentId}`);
   }
+  getInternalPrescriptions() {
+    return this.http.get<any>(`${this.apiUrl}/dashboard/getInternalPrescriptionsforDashboard`);
+  }
 }

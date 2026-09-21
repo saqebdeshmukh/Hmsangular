@@ -28,6 +28,7 @@ export class PrescriptionPrintComponent {
 
     this.service.getPrescriptionByIdForPrint(id).subscribe((res: any) => {
       this.prescription.set(res.data);
+      console.log(res.data);
     });
   }
   

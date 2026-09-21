@@ -118,19 +118,17 @@ export class PatientListComponent extends BaseGridComponent {
       flex: 1.4,
 
       cellRenderer: () => `
-
-        <button title="View" class="btn btn-sm btn-info me-1 action-view">
-          <i class="fa fa-eye"></i>
-        </button>
-
-        <button title="Edit Patient" class="btn btn-sm btn-primary me-1 action-edit">
-          <i class="fa fa-edit"></i>
-        </button>
-
-        <button title="Book Appointment" class="btn btn-sm btn-success action-book">
-          <i class="fa fa-calendar-plus"></i>
-        </button>
-
+        <div class="d-flex justify-content-start gap-1 h-100 align-items-center">
+          <button title="View Details" class="btn btn-sm btn-ghost text-primary action-view">
+            <i class="fas fa-eye"></i>
+          </button>
+          <button title="Edit Patient" class="btn btn-sm btn-ghost text-warning action-edit">
+            <i class="fas fa-edit"></i>
+          </button>
+          <button title="Book Appointment" class="btn btn-sm btn-ghost text-success action-book">
+            <i class="fas fa-calendar-plus"></i>
+          </button>
+        </div>
       `
     }
 

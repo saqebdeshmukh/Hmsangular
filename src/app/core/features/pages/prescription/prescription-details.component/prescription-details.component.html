@@ -151,7 +151,7 @@
         <div class="card-footer">
           <div class="d-flex justify-content-between">
 
-            @if (role === 'Patient') {
+            <!-- @if (role === 'Patient') {
               <button class="btn btn-outline-secondary" (click)="goToMyPrescriptions()">
                 <i class="bi bi-arrow-left me-2"></i>Back to Prescriptions
               </button>
@@ -159,8 +159,10 @@
               <button class="btn btn-outline-secondary" (click)="goToIndex()">
                 <i class="bi bi-arrow-left me-2"></i>Back to Prescriptions
               </button>
-            }
-
+            } -->
+ <button class="btn btn-outline-primary" (click)="prescriptionGiven()">
+              Given
+              </button>
             <div>
 
               @if (role === 'Doctor' || role === 'Admin') {

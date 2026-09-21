@@ -72,12 +72,12 @@ path: 'medicines',
   },
 {
   path: 'doctor/create',
-  loadComponent: () => import('./core/features/pages/doctor/doctor-form-component/doctor-form-component').then(m => m.DoctorFormComponent)
+  loadComponent: () => import('./core/features/pages/doctor/doctor-form-component/create-doctor.component').then(m => m.CreateDoctorComponent)
 },
 
 {
   path: 'doctor/edit/:id',
-  loadComponent: () => import('./core/features/pages/doctor/doctor-form-component/doctor-form-component').then(m => m.DoctorFormComponent)
+  loadComponent: () => import('./core/features/pages/doctor/doctor-form-component/edit-doctor.component').then(m => m.EditDoctorComponent)
 },
 {
   path: 'doctor/:id',

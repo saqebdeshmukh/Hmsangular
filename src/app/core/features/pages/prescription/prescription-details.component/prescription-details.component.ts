@@ -32,7 +32,18 @@ role = localStorage.getItem('role');
 goToMyPrescriptions() {
   this.router.navigate(['/my-prescriptions']);
 }
-
+prescriptionGiven() {
+ this.prescriptionService.updateInternalPrescriptionStatus(this.prescription().id).subscribe({
+  next : (res: any) => {
+    if (res.isSuccess) {
+      this.router.navigate(['/receptionistdashboard']);
+    }
+  },
+  error: (err) => {
+    console.error('Error updating prescription status:', err.message);
+  }
+ });
+}
 edit(id: string) {
   this.router.navigate(['/prescription/edit', id]);
 }

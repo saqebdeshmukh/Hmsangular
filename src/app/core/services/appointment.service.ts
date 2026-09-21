@@ -76,8 +76,18 @@ export class AppointmentService {
       })
     );
   }
+
    getAppointmentCalednar(month: number, year:number) {
     return this.http.get<any>(`${this.apiUrl}/appointment/Calendar/${month}/${year}`).pipe(
+      map(res => {
+        if (!res.isSuccess) this.toastr.warning(res.message,"Warning");
+        return res;
+      })
+    );
+  }
+
+  getAppointmentsToSelect() {
+    return this.http.get<any>(`${this.apiUrl}/appointment/GetAppointmentsToSelect`).pipe(
       map(res => {
         if (!res.isSuccess) this.toastr.warning(res.message,"Warning");
         return res;

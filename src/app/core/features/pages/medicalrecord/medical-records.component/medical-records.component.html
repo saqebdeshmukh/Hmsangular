@@ -1,9 +1,9 @@
 <div class="container-fluid">
 
   <!-- HEADER -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2 mb-4">
     <div>
-      <h2 class="text-success mb-0">Medical Records</h2>
+      <h2 class="text-success mb-1">Medical Records</h2>
       <p class="text-muted mb-0">View all medical records</p>
     </div>
 
@@ -15,30 +15,32 @@
   </div>
 
   <!-- FILTERS -->
-  <!-- <div class="card mb-4"> -->
-    <!-- <div class="card-body"> -->
-      <div class="col-md-6">
-      <div class="mb-3 d-flex flex-column flex-md-row gap-2">       
-          <input type="text" class="form-control" placeholder="Search medical records..." (input)="onSearch($any($event.target).value)" [value]="search()">
-          <input type="date" class="form-control" [value]="dateFilter" (change)="onDateFilterChange($any($event.target).value)">
-          <button class="btn btn-outline-secondary w-100" (click)="clearFilters()">
-            Clear
-          </button>
-</div>
+  <div class="row mb-3">
+    <div class="col-12 col-lg-9 col-xl-8">
+      <div class="d-flex flex-column flex-sm-row gap-2 align-items-stretch align-items-sm-center">
+        <input #searchInput type="text" class="form-control flex-grow-1" placeholder="Search medical records..." (input)="onSearch($any($event.target).value)" [value]="search()">
+        <input type="date" class="form-control" style="width: auto; min-width: 170px;" [value]="dateFilter" (change)="onDateFilterChange($any($event.target).value)">
+        <button class="btn btn-outline-secondary" type="button" (click)="clearFilters(); searchInput.value = ''">
+          Clear
+        </button>
       </div>
+    </div>
+  </div>
   <!-- GRID -->
-  <div class="card">
-    <div class="card-body">
+  <div class="card card-responsive">
+    <div class="card-body p-2 p-md-4">
+      <div class="table-responsive-custom">
       <ag-grid-angular class="ag-theme-alpine" style="width:100%; height:500px" [rowData]="records()"
          [columnDefs]="columnDefs"
         (gridReady)="onGridReady($event)"
         (sortChanged)="onSortChanged($event)">
       </ag-grid-angular>
+      </div>
 
-      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3 pt-2 border-top">
-        <div class="d-flex align-items-center gap-2 text-muted">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center flex-wrap gap-2 mt-3 pt-2 border-top">
+        <div class="d-flex align-items-center gap-2 text-muted flex-wrap">
           <span>Show</span>
-          <select class="form-select form-select-sm" style="width: 57px;" [value]="pageSize()" (change)="onPageSizeChange($any($event.target).value)">
+          <select class="form-select form-select-sm" style="width: 70px;" [value]="pageSize()" (change)="onPageSizeChange($any($event.target).value)">
             @for (size of pageSizeOptions; track size) {
               <option [value]="size">{{ size }}</option>
             }
@@ -46,12 +48,12 @@
           <span>records</span>
         </div>
 
-        <div class="text-muted">
+        <div class="text-muted text-sm-center order-first order-md-0">
           Showing {{ startRecord() }} to {{ endRecord() }} of {{ totalRecords() }} records
         </div>
 
-        <nav aria-label="Medical records pagination">
-          <ul class="pagination pagination-sm mb-0">
+        <nav aria-label="Medical records pagination" class="w-100 w-md-auto">
+          <ul class="pagination pagination-sm mb-0 flex-wrap">
             <li class="page-item" [class.disabled]="pageNumber() == 1">
               <button class="page-link" (click)="firstPage()">First</button>
             </li>

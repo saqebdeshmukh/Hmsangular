@@ -42,6 +42,21 @@ export class PrescriptionService {
       })
     );
   }
+
+  updateInternalPrescriptionStatus(prescriptionId: string) {
+  return this.http.patch<any>(
+    `${this.apiUrl}/prescription/UpdateInternalPrescriptionStatus/${prescriptionId}`,
+    null
+  ).pipe(
+    map(res => {
+      if (!res.isSuccess) {
+        this.toastr.warning(res.message, "Warning");
+      }
+      return res;
+    })
+  );
+}
+
   getPrescriptionById(id: string | null) {
     return this.http.get<any>(`${this.apiUrl}/prescription/getPrescriptionById/${id}`).pipe(
       map(res => {
@@ -110,6 +125,14 @@ export class PrescriptionService {
         );
     }
     return this.http.get<any>(`${this.apiUrl}/Prescription/externalPrescriptions`).pipe(
+      map(res => {
+        if (!res.isSuccess) this.toastr.warning(res.message, "Warning");
+        return res;
+      })
+    );
+  }
+  getAddQuickPrescription(type: string | null) {
+    return this.http.get<any>(`${this.apiUrl}/prescription/getAddQuickPrescription/${type}`).pipe(
       map(res => {
         if (!res.isSuccess) this.toastr.warning(res.message, "Warning");
         return res;

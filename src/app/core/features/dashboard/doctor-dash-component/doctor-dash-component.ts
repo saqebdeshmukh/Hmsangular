@@ -18,8 +18,10 @@ export class DoctorDashComponent {
   dashboardService = inject(DashboardService);
   router = inject(Router);
  AppointmentStatus = AppointmentStatus;
+
   ngOnInit(): void {
     this.loadDashboard();
+    
   }
 
   statsConfig = [
@@ -63,6 +65,7 @@ export class DoctorDashComponent {
     });
   }
 
+  
   onStatCardClick(tab: string) {
     this.router.navigate(['/appointments'], { queryParams: { tab } });
   }

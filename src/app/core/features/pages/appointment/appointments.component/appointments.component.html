@@ -13,19 +13,23 @@
       <i class="bi bi-calendar3 me-2"></i>Calendar View
     </a>
   </div>
-  <div class="col-md-6">
-    <div class="mb-3 d-flex flex-column flex-md-row gap-2">
-      <input #searchInput type="search" class="form-control" placeholder="Search appointments" (input)="onSearch($any($event.target).value)" [value]="search()" />
-      <select class="form-select" style="max-width: 220px;" (change)="onFilterChange($any($event.target).value)" [value]="statusFilter()">
-        <option value="">All Appointments</option>
-        <option value="Scheduled">Scheduled</option>
-        <option value="Completed">Completed</option>
-        <option value="Canceled">Canceled</option>
-      </select>
-      <button class="btn btn-outline-secondary" type="button" (click)="onSearch(''); onFilterChange(''); searchInput.value = ''">Clear</button>
+
+  <div class="row mb-3">
+    <div class="col-12 col-md-6">
+      <div class="d-flex flex-column flex-sm-row gap-2">
+        <input #searchInput type="search" class="form-control" placeholder="Search appointments" (input)="onSearch($any($event.target).value)" [value]="search()" />
+        <select class="form-select" style="min-width: auto; max-width: 100%; width: 220px;" (change)="onFilterChange($any($event.target).value)" [value]="statusFilter()">
+          <option value="">All Appointments</option>
+          <option value="Scheduled">Scheduled</option>
+          <option value="Completed">Completed</option>
+          <option value="Canceled">Canceled</option>
+        </select>
+        <button class="btn btn-outline-secondary" type="button" (click)="onSearch(''); onFilterChange(''); searchInput.value = ''">Clear</button>
+      </div>
     </div>
-    </div>
-    <div class="card">
+  </div>
+
+  <div class="card card-responsive">
 <div class="card-body">   
       <ag-grid-angular
         class="ag-theme-alpine"

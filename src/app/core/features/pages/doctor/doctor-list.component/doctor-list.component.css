@@ -1,0 +1,34 @@
+.doctor-grid-container {
+  width: 100%;
+}
+
+.doctor-grid {
+  width: 100%;
+  height: 500px;
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+
+  .doctor-grid {
+    height: 450px;
+  }
+
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+
+  .doctor-grid {
+    height: 450px;
+  }
+
+  .card-body {
+    padding: 0.5rem !important;
+  }
+
+  .card-header h5 {
+    font-size: 1rem;
+  }
+
+}

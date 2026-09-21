@@ -20,7 +20,7 @@ export class DoctorService {
       })
     );;
   }
-  updateDoctor(id: number, data: any) {
+  updateDoctor(data: any, id: string| null) {
     return this.http.put<any>(`${this.apiUrl}/doctor/updateDoctor/${id}`, data).pipe(
       map(res => {
         if (!res.isSuccess) this.toastr.warning(res.message,"Warning");

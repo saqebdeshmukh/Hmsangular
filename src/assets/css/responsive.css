@@ -1,0 +1,626 @@
+/* =========================================
+   RESPONSIVE UTILITIES & BREAKPOINT-SPECIFIC STYLES
+   Mobile-First Approach
+   ========================================= */
+
+/* === MOBILE-FIRST BREAKPOINTS === */
+/* 
+   xs: 0px and up (default, mobile)
+   sm: 576px and up (landscape phones)
+   md: 768px and up (tablets)
+   lg: 992px and up (desktops)
+   xl: 1200px and up (large desktops)
+   xxl: 1400px and up (extra large screens)
+*/
+
+/* === RESPONSIVE CONTAINER PADDING === */
+.responsive-container {
+  padding: 1rem;
+}
+
+@media (min-width: 576px) {
+  .responsive-container {
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .responsive-container {
+    padding: 2rem;
+  }
+}
+
+/* === RESPONSIVE TEXT UTILITIES === */
+.text-responsive-sm {
+  font-size: 0.875rem; /* 14px */
+}
+
+.text-responsive-base {
+  font-size: 1rem; /* 16px */
+}
+
+.text-responsive-lg {
+  font-size: 1.125rem; /* 18px */
+}
+
+@media (min-width: 768px) {
+  .text-responsive-sm {
+    font-size: 0.95rem;
+  }
+
+  .text-responsive-base {
+    font-size: 1.05rem;
+  }
+
+  .text-responsive-lg {
+    font-size: 1.25rem;
+  }
+}
+
+/* === RESPONSIVE SPACING UTILITIES === */
+.px-responsive {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.py-responsive {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+@media (min-width: 576px) {
+  .px-responsive {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .py-responsive {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .px-responsive {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .py-responsive {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+}
+
+/* === RESPONSIVE MARGIN UTILITIES === */
+.mx-responsive {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.my-responsive {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+@media (min-width: 576px) {
+  .mx-responsive {
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+
+  .my-responsive {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .mx-responsive {
+    margin-left: 1.5rem;
+    margin-right: 1.5rem;
+  }
+
+  .my-responsive {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* === RESPONSIVE GRID COLUMN WIDTHS === */
+.col-responsive-auto {
+  flex: 0 0 100%;
+  max-width: 100%;
+}
+
+@media (min-width: 576px) {
+  .col-responsive-auto {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 100%;
+  }
+}
+
+/* === RESPONSIVE CARD STYLING === */
+.card-responsive {
+  margin-bottom: 1.5rem;
+}
+
+.card-responsive .card-body {
+  padding: 1rem;
+}
+
+@media (min-width: 576px) {
+  .card-responsive .card-body {
+    padding: 1.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .card-responsive .card-body {
+    padding: 1.5rem;
+  }
+}
+
+/* === RESPONSIVE FORM STYLING === */
+.form-group-responsive {
+  margin-bottom: 1rem;
+}
+
+.form-control-responsive {
+  font-size: 1rem;
+  padding: 0.6rem 0.75rem;
+  height: auto;
+}
+
+@media (min-width: 576px) {
+  .form-control-responsive {
+    padding: 0.65rem 0.85rem;
+  }
+}
+
+/* === RESPONSIVE TABLE STYLING === */
+.table-responsive-custom {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 1rem;
+}
+
+.table-responsive-custom table {
+  font-size: 0.875rem;
+  margin-bottom: 0;
+}
+
+@media (min-width: 768px) {
+  .table-responsive-custom table {
+    font-size: 0.95rem;
+  }
+}
+
+.table thead th {
+  font-weight: 600;
+  border-bottom: 2px solid var(--border-color, #e2e8f0);
+  padding: 0.75rem 0.5rem;
+}
+
+.table tbody td {
+  padding: 0.65rem 0.5rem;
+  vertical-align: middle;
+}
+
+@media (min-width: 768px) {
+  .table thead th,
+  .table tbody td {
+    padding: 0.85rem 0.75rem;
+  }
+}
+
+/* === RESPONSIVE FLEX UTILITIES === */
+.flex-responsive {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .flex-responsive {
+    flex-direction: row;
+  }
+}
+
+.flex-responsive-between {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .flex-responsive-between {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+/* === RESPONSIVE BUTTON STYLING === */
+.btn-responsive {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+@media (min-width: 576px) {
+  .btn-responsive {
+    width: auto;
+    margin-bottom: 0;
+    margin-right: 0.5rem;
+  }
+}
+
+.btn-group-responsive {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (min-width: 576px) {
+  .btn-group-responsive {
+    flex-direction: row;
+    gap: 0;
+  }
+
+  .btn-group-responsive .btn {
+    flex: 1;
+  }
+}
+
+/* === RESPONSIVE GRID LAYOUTS === */
+.grid-cols-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 576px) {
+  .grid-cols-auto {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+.grid-cols-2-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 576px) {
+  .grid-cols-2-auto {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+}
+
+/* === RESPONSIVE HIDDEN UTILITIES === */
+.hidden-xs {
+  display: none;
+}
+
+@media (min-width: 576px) {
+  .hidden-xs {
+    display: block;
+  }
+}
+
+.hidden-sm {
+  display: block;
+}
+
+@media (min-width: 576px) {
+  .hidden-sm {
+    display: none;
+  }
+}
+
+.hidden-md-down {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .hidden-md-down {
+    display: block;
+  }
+}
+
+/* === RESPONSIVE DISPLAY UTILITIES === */
+.d-block-responsive {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .d-block-responsive {
+    display: block;
+  }
+}
+
+/* === RESPONSIVE NAVIGATION/MENU === */
+.responsive-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .responsive-menu {
+    flex-direction: row;
+    gap: 1rem;
+  }
+}
+
+/* === RESPONSIVE MODAL/DIALOG === */
+.modal-responsive {
+  --bs-modal-margin: 0.5rem;
+}
+
+@media (min-width: 576px) {
+  .modal-responsive {
+    --bs-modal-margin: 1.75rem;
+  }
+}
+
+/* === RESPONSIVE INPUT & SELECT === */
+input.form-control,
+select.form-control,
+textarea.form-control {
+  font-size: 1rem;
+  line-height: 1.5;
+  min-height: 2.5rem;
+}
+
+@media (min-width: 768px) {
+  input.form-control,
+  select.form-control,
+  textarea.form-control {
+    min-height: 2.75rem;
+  }
+}
+
+/* === RESPONSIVE HEADING === */
+h1, .h1 {
+  font-size: 1.75rem;
+  line-height: 2.25rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  h1, .h1 {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+}
+
+h2, .h2 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+  h2, .h2 {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+}
+
+h3, .h3 {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  h3, .h3 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+}
+
+h4, .h4 {
+  font-size: 1.1rem;
+  line-height: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  h4, .h4 {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+}
+
+h5, .h5 {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+h6, .h6 {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+/* === RESPONSIVE SIDEBAR LAYOUT === */
+.sidebar-responsive {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 992px) {
+  .sidebar-responsive {
+    flex-direction: row;
+  }
+
+  .sidebar-responsive .main-content {
+    flex: 1;
+  }
+
+  .sidebar-responsive .sidebar {
+    flex: 0 0 300px;
+  }
+}
+
+/* === RESPONSIVE IMAGE === */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* === RESPONSIVE BADGE === */
+.badge-responsive {
+  display: inline-block;
+  font-size: 0.75rem;
+  padding: 0.35rem 0.65rem;
+}
+
+@media (min-width: 768px) {
+  .badge-responsive {
+    font-size: 0.825rem;
+    padding: 0.4rem 0.7rem;
+  }
+}
+
+/* === RESPONSIVE AVATAR === */
+.avatar-responsive {
+  width: 2.5rem;
+  height: 2.5rem;
+  object-fit: cover;
+}
+
+@media (min-width: 768px) {
+  .avatar-responsive {
+    width: 3rem;
+    height: 3rem;
+  }
+}
+
+/* === RESPONSIVE DROPDOWN === */
+.dropdown-menu-responsive {
+  min-width: 100%;
+  left: 0 !important;
+  right: 0 !important;
+}
+
+@media (min-width: 576px) {
+  .dropdown-menu-responsive {
+    min-width: 200px;
+    left: 0 !important;
+  }
+}
+
+/* === RESPONSIVE TABS === */
+.nav-tabs-responsive {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.nav-tabs-responsive .nav-link {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* === RESPONSIVE ALERT === */
+.alert-responsive {
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 576px) {
+  .alert-responsive {
+    padding: 1rem;
+    font-size: 0.95rem;
+  }
+}
+
+/* === UTILITY CLASSES FOR TOUCH TARGETS === */
+.btn, [class*="btn-"], .btn-group > .btn {
+  min-height: 44px; /* Minimum touch target size */
+  min-width: 44px;
+}
+
+/* === RESPONSIVE VIDEO/IFRAME WRAPPER === */
+.embed-responsive-wrapper {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
+  overflow: hidden;
+}
+
+.embed-responsive-wrapper iframe,
+.embed-responsive-wrapper video,
+.embed-responsive-wrapper object,
+.embed-responsive-wrapper embed {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* === PRINT-SPECIFIC RESPONSIVE === */
+@media print {
+  .no-print {
+    display: none;
+  }
+
+  .print-full-width {
+    width: 100%;
+  }
+
+  table {
+    font-size: 0.875rem;
+  }
+
+  .page-break {
+    page-break-after: always;
+  }
+}
+
+/* === LANDSCAPE MODE ADJUSTMENTS === */
+@media (max-height: 500px) and (orientation: landscape) {
+  .modal-body {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  h1, .h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* === EXTRA SMALL DEVICES (< 320px) === */
+@media (max-width: 319px) {
+  body {
+    font-size: 0.85rem;
+  }
+
+  h1, .h1 {
+    font-size: 1.25rem;
+  }
+
+  .btn {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.75rem;
+  }
+
+  .px-responsive,
+  .py-responsive {
+    padding: 0.5rem;
+  }
+}

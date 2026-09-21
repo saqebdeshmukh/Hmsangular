@@ -28,12 +28,14 @@ export class DoctorFormComponent {
     specialization: ['', Validators.required],
     consultationFee: [0, [Validators.required, Validators.min(0)]],
 
-    phone: [''],
-    email: ['', Validators.email]
+    phoneNumber: [''],
+    email: ['', Validators.email],
+    address : [''],
+    regNo: [''],
   });
 
   specializations = [
-    'General Medicine','Cardiology','Dermatology','Endocrinology',
+    'General Practice','Cardiology','Dermatology','Endocrinology',
     'Gastroenterology','Gynecology','Nephrology','Neurology',
     'Oncology','Ophthalmology','Orthopedics','Pediatrics',
     'Psychiatry','Pulmonology','Radiology','Rheumatology',

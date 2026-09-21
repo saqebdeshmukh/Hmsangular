@@ -1,212 +1,595 @@
-<div class="row justify-content-center">
-    <div class="col-lg-10">
-        <div class="card shadow-sm">
+<div class="row justify-content-center g-2 g-sm-3 g-lg-4">
+  <div class="col-12 col-lg-9">
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-success text-white">
+        <h4 class="mb-0">
+          <i class="bi bi-file-medical me-2"></i>
+          {{ isEdit ? 'Edit Medical Record' : 'Create Medical Record' }}
+        </h4>
+      </div>
 
-            <div class="card-header bg-success text-white">
-                <h4 class="mb-0">
-                    <i class="bi bi-file-medical me-2"></i>
-                    {{ isEdit ? 'Edit Medical Record' : 'Create Medical Record' }}
-                </h4>
+      <div class="card-body p-4">
+        <div class="patient-summary card mb-4 shadow-sm">
+          <div class="card-body d-flex align-items-center align-items-sm-start flex-column flex-sm-row gap-3">
+            <div class="flex-grow-1 w-100">
+              <h5 class="mb-1">{{ appointment?.patientName || initialData?.patientName }}</h5>
+              <div class="patient-badges mb-2">
+                <span class="badge bg-info me-1">{{ appointment?.patientGender || initialData?.gender || 'Unknown' }}</span>
+              </div>
+
+              <div class="d-flex flex-wrap gap-3">
+                <div>
+                  <small class="text-muted">Phone : </small>
+                  <span class="info-value">{{ appointment?.patientPhone || initialData?.patientPhone || 'N/A' }}</span>
+                </div>
+              </div>
             </div>
 
-            <div class="card-body p-4">
-
-                <div class="patient-summary card mb-4 shadow-sm">
-                    <div class="card-body d-flex align-items-center gap-3">
-                        <div class="flex-grow-1">
-                            <h5 class="mb-1">{{ appointment?.patientName || initialData?.patientName }}</h5>
-                            <div class="patient-badges mb-2">
-                                <span class="badge bg-info me-1">{{ appointment?.patientGender
-                                    || initialData?.gender
-                                    || 'Unknown' }}</span>
-                            </div>
-
-                            <div class="d-flex flex-wrap gap-3">
-                                <div>
-                                    <small class="text-muted">Phone : </small>
-                                    <span class="info-value">{{ appointment?.patientPhone || initialData?.patientPhone || 'N/A'
-                                        }}</span>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <div class="text-end patient-actions">
-                            <div class="mb-2"><strong>{{ appointment?.appointmentDate || initialData?.appointmentDate | date:'medium' | date:'medium' }}</strong></div>
-                            @if (role() !== 'Patient') {
-                            <a class="btn btn-outline-primary btn-sm"
-                                [routerLink]="['/patientdetails', appointment?.patientId || initialData?.patientId ]">
-                                <i class="bi bi-eye me-1"></i>View Profile
-                            </a>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mb-4">
-                    <div class="col-md-12">
-                        <div class="card border-success shadow-sm">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start mb-3">
-                                    <div>
-                                        <h6 class="card-title text-success mb-1">
-                                            <i class="bi bi-heart-pulse me-2"></i>Genetic History
-                                        </h6>
-                                        <p class="text-muted small mb-0">Inherited conditions and family history</p>
-                                    </div>
-                                    <span class="badge bg-success">Genetics</span>
-                                </div>
-
-                               
-
-                                <div>
-                                    <p class="text-muted small mb-2">Genetic Diseases</p>
-                                    <div class="genetic-disease-grid">
-                                        <div class="row">
-                                            @for (gd of appointment?.geneticDiseases || initialData?.geneticDiseases
-                                            || [];
-                                            track gd.diseaseName || gd.DiseaseName) {
-                                            <div class="col-md-4">
-                                                <div class="genetic-disease-card">
-                                                    <div
-                                                        class="d-flex align-items-center justify-content-between gap-2 mb-2">
-                                                        <span class="genetic-disease-name"
-                                                            [style.color]="gd.ColorCode || gd.colorCode || '#0d6efd'">
-                                                            {{ gd.diseaseName || gd.DiseaseName || gd.name || gd.Name ||
-                                                            'Unknown' }}
-                                                        </span>
-                                                    </div>
-                                                    <p class="mb-0 text-muted small">
-                                                        <strong>Medicines:</strong>
-                                                        {{ gd.Medicines || gd.medicines || 'Not specified' }}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            }
-                                            @if (!(appointment?.geneticDiseases || appointment?.geneticDiseases ||
-                                            []).length) {
-                                            <span class="text-muted">No genetic diseases listed</span>
-                                            }
-                                        </div>
-                                    </div>
-                                </div>
-                                @if (appointment?.geneticFrom || initialData?.geneticFrom) {
-                                <div class="family-history mt-3">
-                                    <div class="history-row">
-                                        <div class="history-block">
-                                            <span class="history-label">Parents</span>
-                                            <span class="history-value">{{ familyHistory.parents || 'Not provided'
-                                                }}</span>
-                                        </div>
-                                        <div class="history-block">
-                                            <span class="history-label">Grand Parents</span>
-                                            <span class="history-value">{{ familyHistory.grandparents || 'Not provided'
-                                                }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <h5 class="text-muted mb-3 border-bottom pb-2">
-                    <i class="bi bi-clipboard2-pulse me-2"></i>Medical Examination
-                </h5>
-                <form [formGroup]="form" (ngSubmit)="submit()">
-
-                    <!-- VISIT DATE -->
-                    <div class="mb-3">
-                        <label class="form-label">Visit Date *</label>
-                        <input type="datetime-local" formControlName="visitDate" class="form-control">
-
-                        @if (f.visitDate.touched && f.visitDate.invalid) {
-                        <small class="text-danger">Visit date required</small>
-                        }
-                    </div>
-
-                    <!-- SYMPTOMS -->
-                    <div class="mb-3">
-                        <label class="form-label"><i class="bi bi-activity me-1"></i>Symptoms *</label>
-                        <textarea formControlName="symptoms" class="form-control"
-                            placeholder="Fever, headache, fatigue, etc."></textarea>
-
-                        @if (f.symptoms.touched && f.symptoms.invalid) {
-                        <small class="text-danger">Required</small>
-                        }
-                    </div>
-
-                    <!-- DIAGNOSIS -->
-                    <div class="mb-3">
-                        <label class="form-label"><i class="bi bi-stethoscope me-1"></i>Diagnosis *</label>
-                        <textarea formControlName="diagnosis" class="form-control"
-                            placeholder="Enter the diagnosis based on examination"></textarea>
-
-                        @if (f.diagnosis.touched && f.diagnosis.invalid) {
-                        <small class="text-danger">Required</small>
-                        }
-                    </div>
-
-                    <!-- TREATMENT -->
-                    <div class="mb-3">
-                        <label class="form-label"><i class="bi bi-capsule me-1"></i>Instructions</label>
-                        <textarea formControlName="treatment" class="form-control"
-                            placeholder="Describe the treatment plan and recommendations"></textarea>
-
-                    </div>
-                    <div class="row mb-3">
-
-                        <div class="col-md-3">
-                            <label class="form-label">Weight</label>
-                            <input formControlName="weight" class="form-control" placeholder="Weight (e.g. 70kg)">
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label">Height</label>
-                            <input formControlName="height" class="form-control" placeholder="Height (e.g. 175cm)">
-                        </div>
-
-                    </div>
-                    <div class="row mb-3">
-                        <div class="col-md-3">
-                            <label class="form-label">Blood Pressure</label>
-                            <input formControlName="bloodPressure" class="form-control" placeholder="BP (e.g. 120/80)">
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label">Sugar (Before Meal)</label>
-                            <input formControlName="sugarBeforeMeal" class="form-control"
-                                placeholder="Sugar (e.g. 90 mg/dL)">
-                        </div>
-                        <div class="col-md-3">
-                            <label class="form-label">Sugar (After Meal)</label>
-                            <input formControlName="sugarAfterMeal" class="form-control"
-                                placeholder="Sugar (e.g. 120 mg/dL)">
-                        </div>
-                    </div>
-                    <!-- NOTES -->
-                    <div class="mb-4">
-                        <label class="form-label"><i class="bi bi-pencil me-1"></i>Notes</label>
-                        <textarea formControlName="notes" class="form-control"
-                            placeholder="Any additional notes or follow-up instructions"></textarea>
-                    </div>
-
-                    <div class="d-flex justify-content-between">
-                        <button type="button" class="btn btn-outline-secondary" routerLink="/appointments">
-                            Back
-                        </button>
-
-                        <button type="submit" class="btn btn-success">
-                            {{ isEdit ? 'Update Record And Continue' : 'Create Record And Continue' }}
-                        </button>
-                        <button type="button" class="btn btn-info" (click)="saveAndComplete()">
-                            Save & Complete
-                        </button>
-                    </div>
-
-                </form>
+            <div class="patient-actions ms-auto text-end">
+              <div class="mb-2"><strong>{{ appointment?.appointmentDate || initialData?.appointmentDate | date:'medium' }}</strong></div>
+              @if (role() !== 'Patient') {
+              <a class="btn btn-outline-primary" [routerLink]="['/patientdetails', appointment?.patientId || initialData?.patientId ]">
+                <i class="bi bi-eye me-1"></i>View Profile
+              </a>
+              }
             </div>
+          </div>
         </div>
+
+        <div class="row mb-4 g-3">
+          <div class="col-12">
+            <div class="card border-success shadow-sm">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
+                  <div>
+                    <h6 class="card-title text-success mb-1">
+                      <i class="bi bi-heart-pulse me-2"></i>Genetic History
+                    </h6>
+                    <p class="text-muted small mb-0">Inherited conditions and family history</p>
+                  </div>
+                  <span class="badge bg-success">Genetics</span>
+                </div>
+
+                <div>
+                  <p class="text-muted small mb-2">Genetic Diseases</p>
+                  <div class="genetic-disease-grid">
+                    <div class="row g-2">
+                      @for (gd of appointment?.geneticDiseases || initialData?.geneticDiseases || []; track gd.diseaseName || gd.DiseaseName) {
+                      <div class="col-12 col-sm-6 col-lg-4">
+                        <div class="genetic-disease-card">
+                          <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+                            <span class="genetic-disease-name" [style.color]="gd.ColorCode || gd.colorCode || '#0d6efd'">
+                              {{ gd.diseaseName || gd.DiseaseName || gd.name || gd.Name || 'Unknown' }}
+                            </span>
+                          </div>
+                          <p class="mb-0 text-muted small">
+                            <strong>Medicines:</strong>
+                            {{ gd.Medicines || gd.medicines || 'Not specified' }}
+                          </p>
+                        </div>
+                      </div>
+                      }
+                      @if (!(appointment?.geneticDiseases || initialData?.geneticDiseases || []).length) {
+                      <span class="text-muted">No genetic diseases listed</span>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                @if (appointment?.geneticFrom || initialData?.geneticFrom) {
+                <div class="family-history mt-3">
+                  <div class="history-row">
+                    <div class="history-block">
+                      <span class="history-label">Parents</span>
+                      <span class="history-value">{{ familyHistory.parents || 'Not provided' }}</span>
+                    </div>
+                    <div class="history-block">
+                      <span class="history-label">Grand Parents</span>
+                      <span class="history-value">{{ familyHistory.grandparents || 'Not provided' }}</span>
+                    </div>
+                  </div>
+                </div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <form [formGroup]="form" (ngSubmit)="submit()">
+          <h5 class="text-muted mb-3 border-bottom pb-2">
+            <i class="bi bi-clipboard2-pulse me-2"></i>Medical Examination
+          </h5>
+
+          <div class="mb-3">
+            <label class="form-label">Visit Date *</label>
+            <input type="datetime-local" formControlName="visitDate" class="form-control">
+            @if (f.visitDate.touched && f.visitDate.invalid) {
+            <small class="text-danger">Visit date required</small>
+            }
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label"><i class="bi bi-activity me-1"></i>Symptoms *</label>
+            <textarea formControlName="symptoms" class="form-control" placeholder="Fever, headache, fatigue, etc."></textarea>
+            @if (f.symptoms.touched && f.symptoms.invalid) {
+            <small class="text-danger">Required</small>
+            }
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label"><i class="bi bi-stethoscope me-1"></i>Diagnosis *</label>
+            <textarea formControlName="diagnosis" class="form-control" placeholder="Enter the diagnosis based on examination"></textarea>
+            @if (f.diagnosis.touched && f.diagnosis.invalid) {
+            <small class="text-danger">Required</small>
+            }
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label"><i class="bi bi-capsule me-1"></i>Treatment</label>
+            <textarea formControlName="treatment" class="form-control" placeholder="Describe the treatment plan and recommendations"></textarea>
+          </div>
+
+          <div class="row mb-3 g-3">
+            <div class="col-12 col-sm-6">
+              <label class="form-label">Weight</label>
+              <input formControlName="weight" class="form-control" placeholder="Weight (e.g. 70kg)">
+            </div>
+            <div class="col-12 col-sm-6">
+              <label class="form-label">Height</label>
+              <input formControlName="height" class="form-control" placeholder="Height (e.g. 175cm)">
+            </div>
+          </div>
+
+          <div class="row mb-3 g-3">
+            <div class="col-12 col-sm-6 col-lg-4">
+              <label class="form-label">Blood Pressure</label>
+              <input formControlName="bloodPressure" class="form-control" placeholder="BP (e.g. 120/80)">
+            </div>
+            <div class="col-12 col-sm-6 col-lg-4">
+              <label class="form-label">Sugar (Before Meal)</label>
+              <input formControlName="sugarBeforeMeal" class="form-control" placeholder="Sugar (e.g. 90 mg/dL)">
+            </div>
+            <div class="col-12 col-sm-6 col-lg-4">
+              <label class="form-label">Sugar (After Meal)</label>
+              <input formControlName="sugarAfterMeal" class="form-control" placeholder="Sugar (e.g. 120 mg/dL)">
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label"><i class="bi bi-pencil me-1"></i>Notes</label>
+            <textarea formControlName="notes" class="form-control" placeholder="Any additional notes or follow-up instructions"></textarea>
+          </div>
+        </form>
+      </div>
     </div>
+
+    <div class="card shadow-sm">
+      <div class="card-header bg-info text-white">
+        <h5 class="mb-0"><i class="bi bi-capsule me-2"></i>Prescription</h5>
+      </div>
+
+      <div class="card-body p-4" [formGroup]="prescriptionForm">
+        <div class="mb-3">
+          <label class="form-label d-block mb-2">Prescription Type</label>
+          <div class="d-flex gap-2 flex-wrap">
+            <button type="button" class="btn btn-outline-primary" [class.active]="prescriptionForm.get('type')?.value === 'Internal'" (click)="setPrescriptionTab('Internal')">
+              Internal
+            </button>
+            <button type="button" class="btn btn-outline-primary" [class.active]="prescriptionForm.get('type')?.value === 'MedicalStore'" (click)="setPrescriptionTab('MedicalStore')">
+              Medical Store
+            </button>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Instructions</label>
+          <textarea formControlName="instructions" class="form-control" placeholder="Instructions"></textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Next Appointment</label>
+          <input type="datetime-local" formControlName="appointmentDate" class="form-control">
+        </div>
+
+        @if (prescriptionForm.get('type')?.value === 'Internal') {
+        <div formArrayName="internalItems">
+          @for (item of activePrescriptionItems.controls; track item; let i = $index) {
+          <div [formGroupName]="i" class="row mb-3 align-items-end g-2">
+            <div class="col-12 col-sm-6 col-lg-3 position-relative">
+              <label class="form-label">Medicine Name</label>
+              <input formControlName="medicineName" class="form-control" placeholder="Medicine" autocomplete="off"
+                [class.is-invalid]="item.get('medicineName')?.invalid && item.get('medicineName')?.touched"
+                (keydown)="onMedicineKeydown($event, i)">
+              @if (item.get('medicineName')?.invalid && item.get('medicineName')?.touched) {
+              <div class="invalid-feedback">Medicine name is required.</div>
+              }
+              @if (suggestions[i]?.length) {
+              <div class="list-group position-absolute w-100 shadow-sm" style="z-index: 1050; max-height: 200px; overflow: auto;">
+                @for (medicine of suggestions[i]; track medicine.id || medicine.name || medicine.Name || medicine.medicineName || medicine.MedicineName) {
+                <button type="button" class="list-group-item list-group-item-action"
+                  [class.active]="focusedSuggestion[i] === $index" (mousedown)="selectMedicine(i, medicine)">
+                  {{ medicine.name || medicine.Name || medicine.medicineName || medicine.MedicineName }}
+                </button>
+                }
+              </div>
+              }
+            </div>
+            <div class="col-12 col-sm-6 col-lg-2">
+              <label class="form-label">Dosage</label>
+              <input formControlName="dosage" class="form-control" placeholder="Dosage"
+                [class.is-invalid]="item.get('dosage')?.invalid && item.get('dosage')?.touched">
+              @if (item.get('dosage')?.invalid && item.get('dosage')?.touched) {
+              <div class="invalid-feedback">Dosage is required.</div>
+              }
+            </div>
+            <div class="col-6 col-sm-6 col-lg-2">
+              <label class="form-label">Frequency</label>
+              <select formControlName="frequency" class="form-select">
+                <option [value]="1">1</option>
+                <option [value]="2">2</option>
+                <option [value]="3">3</option>
+                <option [value]="4">4</option>
+              </select>
+            </div>
+            <div class="col-6 col-sm-6 col-lg-2">
+              <label class="form-label">Duration</label>
+              <input formControlName="duration" class="form-control" placeholder="Days"
+                [class.is-invalid]="item.get('duration')?.invalid && item.get('duration')?.touched">
+              @if (item.get('duration')?.invalid && item.get('duration')?.touched) {
+              <div class="invalid-feedback">Duration is required.</div>
+              }
+            </div>
+            <div class="col-12 col-sm-6 col-lg-2">
+              <label class="form-label">Meal Timing</label>
+              <select formControlName="mealTiming" class="form-select">
+                <option>After Meal</option>
+                <option>Before Meal</option>
+                <option>Anytime</option>
+              </select>
+            </div>
+            <div class="col-12 col-sm-auto d-flex align-items-end justify-content-center justify-content-sm-end">
+              <button type="button" class="btn btn-danger" (click)="removePrescriptionItem(i)">Remove</button>
+            </div>
+          </div>
+          }
+        </div>
+        } @else {
+        <div formArrayName="externalItems">
+          @for (item of activePrescriptionItems.controls; track item; let i = $index) {
+          <div [formGroupName]="i" class="row mb-3 align-items-end g-2">
+            <div class="col-12 col-sm-6 col-lg-3 position-relative">
+                <label class="form-label">
+                  Medicine Name
+                </label>
+                <input
+  formControlName="medicineName"
+  class="form-control"
+  placeholder="Medicine"
+  autocomplete="off"
+  [class.is-invalid]="item.get('medicineName')?.invalid && item.get('medicineName')?.touched"
+  (keydown)="onMedicineKeydown($event, i)">
+                @if (item.get('medicineName')?.invalid && item.get('medicineName')?.touched) {
+                <div class="invalid-feedback">Medicine name is required.</div>
+                }
+                @if (suggestions[i]?.length) {
+  <div class="list-group position-absolute w-100 shadow-sm"
+       style="z-index: 1050; max-height: 200px; overflow: auto;">
+
+    @for (medicine of suggestions[i]; track medicine.id || medicine.name || medicine.Name || medicine.medicineName || medicine.MedicineName) {
+      <button
+        type="button"
+        class="list-group-item list-group-item-action"
+        (mousedown)="selectMedicine(i, medicine)">
+
+        {{ medicine.name || medicine.Name || medicine.medicineName || medicine.MedicineName }}
+
+      </button>
+    }
+
+  </div>
+}
+              </div>
+            <div class="col-12 col-sm-6 col-lg-2">
+              <label class="form-label">Dosage</label>
+              <input formControlName="dosage" class="form-control" placeholder="Dosage"
+                [class.is-invalid]="item.get('dosage')?.invalid && item.get('dosage')?.touched">
+              @if (item.get('dosage')?.invalid && item.get('dosage')?.touched) {
+              <div class="invalid-feedback">Dosage is required.</div>
+              }
+            </div>
+            <div class="col-6 col-sm-6 col-lg-2">
+              <label class="form-label">Frequency</label>
+              <select formControlName="frequency" class="form-select">
+                <option [value]="1">1</option>
+                <option [value]="2">2</option>
+                <option [value]="3">3</option>
+                <option [value]="4">4</option>
+              </select>
+            </div>
+            <div class="col-6 col-sm-6 col-lg-2">
+              <label class="form-label">Duration</label>
+              <input formControlName="duration" class="form-control" placeholder="Days"
+                [class.is-invalid]="item.get('duration')?.invalid && item.get('duration')?.touched">
+              @if (item.get('duration')?.invalid && item.get('duration')?.touched) {
+              <div class="invalid-feedback">Duration is required.</div>
+              }
+            </div>
+            <div class="col-12 col-sm-6 col-lg-2">
+              <label class="form-label">Meal Timing</label>
+              <select formControlName="mealTiming" class="form-select">
+                <option>After Meal</option>
+                <option>Before Meal</option>
+                <option>Anytime</option>
+              </select>
+            </div>
+            <div class="col-12 col-sm-auto d-flex align-items-end justify-content-center justify-content-sm-end">
+              <button type="button" class="btn btn-danger" (click)="removePrescriptionItem(i)">Remove</button>
+            </div>
+          </div>
+          }
+        </div>
+        }
+
+        <button type="button" class="btn btn-outline-primary mb-3" (click)="addPrescriptionItem()">Add Medicine</button>
+
+        @if (loadingQuickAddMedicines) {
+        <div class="text-muted small mb-3">Loading quick-add medicines...</div>
+        } @else if (quickAddMedicines.length) {
+        <div class="mb-3">
+          <small class="text-muted d-block mb-2">
+            Quick Add: {{ prescriptionForm.get('type')?.value === 'MedicalStore' ? 'Medical Store' : 'Internal' }}
+          </small>
+          <div class="d-flex flex-wrap gap-2">
+            @for (medicine of quickAddMedicines; track medicine.medicineName) {
+            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="quickAddMedicine(medicine)">
+              {{ medicine.medicineName }}
+            </button>
+            }
+          </div>
+        </div>
+        } @else if (quickAddError) {
+        <div class="text-muted small mb-3">{{ quickAddError }}</div>
+        }
+        
+        <div class="mt-4 pt-3 border-top d-flex justify-content-between gap-2 flex-wrap">
+          <button type="button" class="btn btn-outline-secondary" routerLink="/appointments">
+            Back
+          </button>
+          <div class="d-flex gap-2 flex-wrap">
+            <!-- <button type="button" class="btn btn-success" (click)="submit()">
+              {{ isEdit ? 'Update Record And Continue' : 'Create Record And Continue' }}
+            </button> -->
+            <button type="button" class="btn btn-info" (click)="saveAndComplete()">
+              Save & Complete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-3">
+    <div class="card shadow-sm medical-history-card">
+      <div class="card-header bg-secondary text-white">
+        <h5 class="mb-0"><i class="bi bi-file-earmark-text me-2"></i>History</h5>
+      </div>
+      <div class="card-body border-bottom">
+        <label for="allergy-input" class="form-label">Allergies</label>
+        <div class="input-group">
+          <input id="allergy-input" type="text" class="form-control" [formControl]="allergyControl"
+            placeholder="Add an allergy" (keydown.enter)="$event.preventDefault(); addAllergy()">
+          <button type="button" class="btn btn-outline-primary" (click)="addAllergy()"
+            [disabled]="allergyActionInProgress() || !allergyControl.value.trim()">
+            <i class="bi bi-plus"></i>
+          </button>
+        </div>
+       @if (allergies.length) {
+  <div class="d-flex flex-wrap gap-1 mt-2 align-items-center" aria-label="Patient allergies">
+
+    @for (allergy of allergies; track allergy.id || $index) {
+      <span
+        class="badge bg-light text-danger border border-danger-subtle rounded-pill
+               d-inline-flex align-items-center gap-1 py-1 px-2.5 shadow-sm allergy-tag">
+
+        <i class="bi bi-exclamation-triangle-fill"></i>
+
+        <span class="fw-semibold">
+          {{ allergy.allergyName }}
+        </span>
+
+        <button
+          type="button"
+          class="btn-close allergy-close ms-1"
+          [attr.aria-label]="'Remove ' + allergy.allergyName"
+          (click)="removeAllergy(allergy)"
+          [disabled]="allergyActionInProgress()">
+        </button>
+
+      </span>
+    }
+
+  </div>
+} @else {
+  <div class="text-muted small mt-3">
+    <i class="bi bi-info-circle me-1"></i>
+    No allergies recorded
+  </div>
+}
+      </div>
+      <div class="accordion" id="medicalHistoryAccordion">
+        @for (record of medicalHistory; track record.medicalRecordId; let i = $index) {
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse-' + i" aria-expanded="false" [attr.aria-controls]="'collapse-' + i">
+              {{ record.visitDate | date:'medium' }}
+            </button>
+          </h2>
+          <div [id]="'collapse-' + i" class="accordion-collapse collapse">
+            <div class="accordion-body">
+              <div class="mb-2">
+                <small class="text-muted d-block">Diagnosis</small>
+                <strong>{{ record.diagnosis || 'Not entered' }}</strong>
+              </div>
+              <div class="mb-2">
+                <small class="text-muted d-block">Treatment</small>
+                <strong>{{ record.treatment || 'Not entered' }}</strong>
+              </div>
+              <div class="row g-2 mb-3 pt-2 border-top">
+                <div class="col-6">
+                  <small class="text-muted d-block">Weight</small>
+                  <span class="fw-semibold text-dark">{{ record.weight ? record.weight + ' kg' : 'N/A' }}</span>
+                </div>
+                <div class="col-6">
+                  <small class="text-muted d-block">BP</small>
+                  <span class="fw-semibold text-dark">{{ record.bloodPressure || 'N/A' }}</span>
+                </div>
+                <div class="col-6">
+                  <small class="text-muted d-block">Sugar (Before)</small>
+                  <span class="fw-semibold text-dark">{{ record.sugarBeforeMeal ? record.sugarBeforeMeal + ' mg/dL' : (record.sugar || 'N/A') }}</span>
+                </div>
+                <div class="col-6">
+                  <small class="text-muted d-block">Sugar (After)</small>
+                  <span class="fw-semibold text-dark">{{ record.sugarAfterMeal ? record.sugarAfterMeal + ' mg/dL' : 'N/A' }}</span>
+                </div>
+              </div>
+              <div class="prescription-history">
+
+  <div class="prescription-history-heading">
+    <div>
+      <small class="text-muted d-block">Prescriptions</small>
+      <strong>Medication plan</strong>
+    </div>
+    <span class="badge text-bg-light">Both types</span>
+  </div>
+
+  <!-- INTERNAL PRESCRIPTION -->
+  <section class="prescription-history-section internal-history"
+           aria-labelledby="internal-history-title">
+
+    <div class="prescription-history-section-title">
+      <span class="prescription-type-icon">
+        <i class="bi bi-hospital" aria-hidden="true"></i>
+      </span>
+
+      <span id="internal-history-title">
+        Internal prescription
+      </span>
+
+      <span class="prescription-count">
+        {{ getHistoryPrescriptionItemCount(record, 'Internal') }}
+      </span>
+    </div>
+
+    @if (hasHistoryPrescription(record, 'Internal')) {
+
+      <div class="history-medicine-list">
+
+        @for (
+          prescription of record.prescriptions;
+          track prescription.id
+        ) {
+
+          @if (prescription.type === 'Internal') {
+
+            @for (
+              item of prescription.prescriptionItemRequests;
+              track item.id
+            ) {
+
+              <div class="history-medicine-item">
+                <strong>{{ item.medicineName }}</strong>
+                <span>{{ item.dosage || 'Dosage not entered' }}</span>
+                <small>{{ item.frequency }}x daily - {{ item.duration || 'Duration not entered' }}</small>
+              </div>
+
+            }
+
+          }
+
+        }
+
+      </div>
+
+    } @else {
+
+      <span class="text-muted">
+        No internal medicines added
+      </span>
+
+    }
+
+  </section>
+
+
+  <!-- MEDICAL STORE PRESCRIPTION -->
+  <section class="prescription-history-section store-history"
+           aria-labelledby="store-history-title">
+
+    <div class="prescription-history-section-title">
+
+      <span class="prescription-type-icon">
+        <i class="bi bi-shop" aria-hidden="true"></i>
+      </span>
+
+      <span id="store-history-title">
+        Medical store prescription
+      </span>
+
+      <span class="prescription-count">
+       {{ getHistoryPrescriptionItemCount(record, 'MedicalStore') }}
+      </span>
+
+    </div>
+
+    @if (hasHistoryPrescription(record, 'MedicalStore')) {
+
+      <div class="history-medicine-list">
+
+        @for (
+          prescription of record.prescriptions;
+          track prescription.id
+        ) {
+
+          @if (prescription.type === 'MedicalStore') {
+
+            @for (
+              item of prescription.prescriptionItemRequests;
+              track item.id
+            ) {
+
+              <div class="history-medicine-item">
+                <strong>{{ item.medicineName }}</strong>
+                <span>{{ item.dosage || 'Dosage not entered' }}</span>
+                <small>{{ item.frequency }}x daily - {{ item.duration || 'Duration not entered' }}</small>
+              </div>
+
+            }
+
+          }
+
+        }
+
+      </div>
+
+    } @else {
+
+      <span class="text-muted">
+        No medical store medicines added
+      </span>
+
+    }
+
+  </section>
+
+</div>
+              <button class="btn btn-sm btn-outline-primary" type="button" (click)="DuplicateRecord(record.medicalRecordId)" >
+            Duplicate Record
+          </button>
+            </div>            
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
 </div>

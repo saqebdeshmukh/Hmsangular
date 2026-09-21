@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../environment/environment';
 import { map } from 'rxjs';
 import { ToastService } from './toast.service';
@@ -40,6 +40,16 @@ getMedicalRecords(request: any = {}) {
       })
     );
   }
+
+  getMedicalHistory(patientId: string | null) {
+    return this.http.get<any>(`${this.apiUrl}/medicalrecord/getMedicalHistory/${patientId}`).pipe(
+      map(res => {
+        if (!res.isSuccess) this.toastr.warning(res.message,"Warning");
+        return res;
+      })
+    );
+  }
+
   getMedicalRecordByIdForPres(id: string | null) {
     return this.http.get<any>(`${this.apiUrl}/medicalrecord/getMedicalRecordByIdForPres/${id}`).pipe(
       map(res => {
@@ -66,6 +76,52 @@ getMedicalRecords(request: any = {}) {
   }
   getHealthReport(patientId: string | null,request: any = {}) {
     return this.http.post<any>(`${this.apiUrl}/medicalrecord/getHealthReport/${patientId}`,request).pipe(
+      map(res => {
+        if (!res.isSuccess) this.toastr.warning(res.message,"Warning");
+        return res;
+      })
+    );
+  }
+  duplicateRecord(medicalRecordId: string | null, appointmentId: string | null) {
+    return this.http.get<any>(`${this.apiUrl}/medicalrecord/duplicateRecord/${medicalRecordId}/${appointmentId}`).pipe(
+      map(res => {
+        if (!res.isSuccess) this.toastr.warning(res.message,"Warning");
+        return res;
+      })
+    );
+  }
+  addAllergy(data: { patientId: string | number; allergyName: string }) {
+    return this.http.post<any>(`${this.apiUrl}/medicalrecord/CreatePatientAllergy`, data).pipe(
+      map(res => {
+        if (!res.isSuccess) this.toastr.warning(res.message,"Warning");
+        return res;
+      })
+    );
+  }
+
+  removeAllergy(data: { allergyId: number; patientId: string }) {
+  const params = new HttpParams()
+    .set('allergyId', data.allergyId.toString())
+    .set('patientId', data.patientId);
+
+  return this.http.delete<any>(
+    `${this.apiUrl}/medicalrecord/RemovePatientAllergy`,
+    { params }
+  ).pipe(
+    map(res => {
+      if (!res.isSuccess) {
+        this.toastr.warning(
+          res.message || 'Patient allergy not found',
+          'Warning'
+        );
+      }
+
+      return res;
+    })
+  );
+}
+  getAllergiesByPatientId(patientId: string | null) {
+    return this.http.get<any>(`${this.apiUrl}/medicalrecord/getAllergiesByPatientId/${patientId}`).pipe(
       map(res => {
         if (!res.isSuccess) this.toastr.warning(res.message,"Warning");
         return res;

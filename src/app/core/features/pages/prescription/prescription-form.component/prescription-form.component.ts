@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, inject, OnDestroy, ChangeDetectorRef, computed } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, inject, OnDestroy, ChangeDetectorRef, computed } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -11,7 +11,7 @@ import {
 } from '@angular/forms';
 import { PrescriptionService } from '../../../../services/prescription.service';
 import { of, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap, catchError, map } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, switchMap, catchError, map, finalize, timeout } from 'rxjs/operators';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../../services/auth.services';
 
@@ -22,7 +22,7 @@ import { AuthService } from '../../../../services/auth.services';
   templateUrl: './prescription-form.component.html',
   styleUrl: './prescription-form.component.css',
 })
-export class PrescriptionFormComponent implements OnInit, OnChanges, OnDestroy {
+export class PrescriptionFormComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
 
   private fb = inject(FormBuilder);
   private prescriptionService = inject(PrescriptionService);
@@ -40,6 +40,8 @@ export class PrescriptionFormComponent implements OnInit, OnChanges, OnDestroy {
 
   errorMessage = '';
   selectedTab: 'MedicalStore' | 'Internal' = 'Internal';
+  quickAddMedicines: any[] = [];
+  loadingQuickAddMedicines = false;
   
   private typeSub?: Subscription;
 
@@ -74,18 +76,19 @@ ngOnInit(): void {
     this.selectedTab = value === 'Internal' ? 'Internal' : 'MedicalStore';
     this.ensureOneRowPerTab();
     this.updateItemValidators();
+    this.getQuickAddMedicine();
   });
 }
 
-get isInternalPrescription(): boolean {
-  return this.initialData?.type === 'Internal';
+ngAfterViewInit(): void {
+  this.getQuickAddMedicine();
 }
 
 get isExternalPrescription(): boolean {
   return this.initialData?.type === 'MedicalStore';
 }
 
-  updateItemValidators() {
+updateItemValidators() {
     const isInternal = this.form.get('type')?.value === 'Internal';
     this.items.controls.forEach((group: any) => {
       const dosageControl = group.get('dosage');
@@ -151,9 +154,6 @@ get isExternalPrescription(): boolean {
     if (changes['initialData']?.currentValue) {
       const data = changes['initialData'].currentValue;
 
-      console.log('Incoming edit data:', data);
-
-      // ✅ Patch basic fields
       const typeValue = data.type === 'MedicalStore' ? 'MedicalStore' : 'Internal';
       this.selectedTab = typeValue;
 
@@ -167,7 +167,6 @@ get isExternalPrescription(): boolean {
         appointmentDate: data.appointmentDate ? this.formatToInputDate(data.appointmentDate) : this.minDate
       });
 
-      // 🔥 IMPORTANT: clear old rows
       (this.form.get('internalItems') as FormArray).clear();
       (this.form.get('externalItems') as FormArray).clear();
 
@@ -215,16 +214,6 @@ get isExternalPrescription(): boolean {
     if (isNaN(d.getTime())) return this.minDate;
     d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
     return d.toISOString().slice(0, 10);
-  }
-
-  private minDateValidator(minDate: string) {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const v = control.value;
-      if (!v) return null;
-      // control value expected as yyyy-mm-dd
-      if (v >= minDate) return null;
-      return { minDate: { requiredMin: minDate, actual: v } };
-    };
   }
 
 get familyHistory() {
@@ -278,6 +267,40 @@ private parseFamilyHistory(record: any) {
     this.form.patchValue({ type: tab });
     this.ensureOneRowPerTab();
     this.updateItemValidators();
+  }
+
+getQuickAddMedicine(type?: 'Internal' | 'MedicalStore') {
+    this.errorMessage = '';
+    this.loadingQuickAddMedicines = true;
+    const requestType = type || this.selectedTab;
+
+    this.prescriptionService.getAddQuickPrescription(requestType).pipe(
+      timeout(10000),
+      finalize(() => {
+        this.loadingQuickAddMedicines = false;
+        this.cdr.detectChanges();
+      })
+    ).subscribe({
+      next: (res) => {
+        this.quickAddMedicines = (res.data || []).map((med: any) => this.normalizeQuickPrescriptionMedicine(med));
+        if (!this.quickAddMedicines.length) {
+          this.errorMessage = res.message || 'No quick add medicines found.';
+        }
+      },
+      error: () => {
+        this.errorMessage = 'Unable to load quick-add medicines.';
+      }
+    });
+  }
+
+  private normalizeQuickPrescriptionMedicine(med: any) {
+    return {
+      medicineName: med.medicineName || med.MedicineName || med.Name || med.name || '',
+      dosage: med.dosage || med.Dosage || '',
+      frequency: Number(med.frequency ?? med.Frequency) || 3,
+      duration: med.duration || med.Duration || '',
+      mealTiming: med.mealTiming || med.MealTiming || 'After Meal'
+    };
   }
 
   ensureOneRowPerTab() {
