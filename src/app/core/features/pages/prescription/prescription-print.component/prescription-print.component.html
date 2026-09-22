@@ -4,14 +4,15 @@
     <table class="header-table">
         <tr>
             <td>
-                <div class="clinic-title">Metro Health Clinic</div>
-                <div class="info-text">123 Wellness Blvd, Medical District</div>
-                <div class="info-text">Phone: (555) 019-2834 | email@metrohealth.com</div>
+                <div class="clinic-title">{{ prescription()?.clinicName }}</div>
+                <div class="info-text">{{ prescription()?.clinicAddress }}</div>
+                <div class="info-text">Phone: {{ prescription()?.doctorPhoneNo }} | {{ prescription()?.doctorEmail }}
+                </div>
             </td>
             <td style="text-align: right;">
-                <div class="doctor-title">Dr. Jane Doe, MD</div>
-                <div class="info-text">Internal Medicine</div>
-                <div class="info-text">Reg No: MD-9876543</div>
+                <div class="doctor-title">{{ prescription()?.doctorName }}</div>
+                <div class="info-text"><strong>({{ prescription()?.doctorDegree }})</strong></div>
+                <div class="info-text">Reg No: {{ prescription()?.regNo }}</div>
             </td>
         </tr>
     </table>
@@ -25,16 +26,16 @@
             </td>
             <td>
                 <span class="label">Age / Sex</span>
-                {{ prescription()?.patientAge }} Y / {{ prescription()?.patientSex }}
+                {{ prescription()?.patientAge }} Y / {{ prescription()?.patientGender }}
             </td>
             <td>
                 <span class="label">Date</span>
                 {{ prescription()?.prescriptionDate | date:'MMMM dd, yyyy' }}
             </td>
-            <td>
+            <!-- <td>
                 <span class="label">Prescription ID</span>
                 {{ prescription()?.prescriptionId }}
-            </td>
+            </td> -->
         </tr>
     </table>
 
@@ -47,28 +48,28 @@
                 <table class="vital-row">
                     <tr>
                         <td class="vital-label">Weight:</td>
-                        <td class="vital-value">78 kg</td>
+                        <td class="vital-value">{{ prescription()?.weight??'N/A' }} kg</td>
                     </tr>
                     <tr>
                         <td class="vital-label">BP:</td>
-                        <td class="vital-value">120/80 mmHg</td>
+                        <td class="vital-value">{{ prescription()?.bP??'N/A' }} mmHg</td>
                     </tr>
                     <tr>
-                        <td class="vital-label">Pulse:</td>
-                        <td class="vital-value">72 bpm</td>
+                        <td class="vital-label">Sugar (Before meal):</td>
+                        <td class="vital-value">{{ prescription()?.sugarBeforeMeal??'N/A' }} mg/dL</td>
                     </tr>
                     <tr>
-                        <td class="vital-label">Temp:</td>
-                        <td class="vital-value">98.6 °F</td>
+                        <td class="vital-label">Sugar (After meal):</td>
+                        <td class="vital-value">{{ prescription()?.sugarAfterMeal ?? 'N/A' }} mg/dL</td>
                     </tr>
                 </table>
 
-                <div class="section-heading">Symptoms</div>
+                <!-- <div class="section-heading">Symptoms</div>
                 <ul class="bullet-list">
                     <li>Persistent dry cough</li>
                     <li>Mild congestion</li>
                     <li>Fatigue for 3 days</li>
-                </ul>
+                </ul> -->
             </td>
 
             <!-- Rx Treatment Segment Right -->
@@ -110,10 +111,10 @@
     <!-- Validation & Signature Footer -->
     <table class="footer-table">
         <tr>
-
             <td>
                 @if(prescription()?.nextAppointment) {
-                <strong>Follow-up Visit:</strong> {{ prescription()?.nextAppointment | date:'MMM dd, yyyy' }} or as needed.
+                <strong>Follow-up Visit:</strong> {{ prescription()?.nextAppointment | date:'MMM dd, yyyy' }} or as
+                needed.
                 }
             </td>
             <td style="text-align: right; width: 200px;">
