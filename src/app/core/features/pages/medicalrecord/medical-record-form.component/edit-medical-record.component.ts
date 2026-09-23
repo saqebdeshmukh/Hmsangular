@@ -47,7 +47,7 @@ medicalHistory = signal<any[]>([]);
   }
 
   getMedicalHistory(patientId: string | null) {
- this.service.getMedicalHistory(patientId).subscribe({
+  this.service.getMedicalHistory(patientId).subscribe({
     next: (response) => {
       if (response?.isSuccess) {
         this.medicalHistory.set(response.data || []);

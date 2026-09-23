@@ -24,11 +24,13 @@ export class DoctorFormComponent {
 
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
+    clinicName: ['', Validators.required],
 
     specialization: ['', Validators.required],
     consultationFee: [0, [Validators.required, Validators.min(0)]],
 
     phoneNumber: [''],
+    doctorDegree: [''],
     email: ['', Validators.email],
     address : [''],
     regNo: [''],

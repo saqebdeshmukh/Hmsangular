@@ -435,23 +435,72 @@
                 <strong>{{ record.treatment || 'Not entered' }}</strong>
               </div>
               <div class="row g-2 mb-3 pt-2 border-top">
-                <div class="col-6">
-                  <small class="text-muted d-block">Weight</small>
-                  <span class="fw-semibold text-dark">{{ record.weight ? record.weight + ' kg' : 'N/A' }}</span>
-                </div>
-                <div class="col-6">
-                  <small class="text-muted d-block">BP</small>
-                  <span class="fw-semibold text-dark">{{ record.bloodPressure || 'N/A' }}</span>
-                </div>
-                <div class="col-6">
-                  <small class="text-muted d-block">Sugar (Before)</small>
-                  <span class="fw-semibold text-dark">{{ record.sugarBeforeMeal ? record.sugarBeforeMeal + ' mg/dL' : (record.sugar || 'N/A') }}</span>
-                </div>
-                <div class="col-6">
-                  <small class="text-muted d-block">Sugar (After)</small>
-                  <span class="fw-semibold text-dark">{{ record.sugarAfterMeal ? record.sugarAfterMeal + ' mg/dL' : 'N/A' }}</span>
-                </div>
-              </div>
+
+  <div class="col-6">
+    <small class="text-muted d-block">Weight</small>
+
+    <span class="fw-semibold text-dark">
+      @if (record.healthReport?.weight) {
+        {{ record.healthReport.weight }} kg
+      } @else {
+        N/A
+      }
+    </span>
+  </div>
+
+
+  <div class="col-6">
+    <small class="text-muted d-block">Height</small>
+
+    <span class="fw-semibold text-dark">
+      @if (record.healthReport?.height) {
+        {{ record.healthReport.height }} cm
+      } @else {
+        N/A
+      }
+    </span>
+  </div>
+
+
+  <div class="col-6">
+    <small class="text-muted d-block">BP</small>
+
+    <span class="fw-semibold text-dark">
+      {{ record.healthReport?.bloodPressure || 'N/A' }}
+    </span>
+  </div>
+
+
+  <div class="col-6">
+    <small class="text-muted d-block">
+      Sugar (Before)
+    </small>
+
+    <span class="fw-semibold text-dark">
+      @if (record.healthReport?.sugarBeforeMeal) {
+        {{ record.healthReport.sugarBeforeMeal }} mg/dL
+      } @else {
+        N/A
+      }
+    </span>
+  </div>
+
+
+  <div class="col-6">
+    <small class="text-muted d-block">
+      Sugar (After)
+    </small>
+
+    <span class="fw-semibold text-dark">
+      @if (record.healthReport?.sugarAfterMeal) {
+        {{ record.healthReport.sugarAfterMeal }} mg/dL
+      } @else {
+        N/A
+      }
+    </span>
+  </div>
+
+</div>
               <div class="prescription-history">
 
   <div class="prescription-history-heading">

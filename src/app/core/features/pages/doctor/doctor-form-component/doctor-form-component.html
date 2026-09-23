@@ -23,7 +23,7 @@
                     <div class="row g-2 g-md-3 mb-3">
 
                         <div class="col-12 col-md-6">
-                            <label>Email *</label>
+                            <label class="form-label">Email *</label>
                             <input formControlName="userEmail" class="form-control">
 
                             @if (f.userEmail.touched && f.userEmail.invalid) {
@@ -33,7 +33,7 @@
 
                         @if (!isEdit) {
                         <div class="col-12 col-md-6">
-                            <label>Password *</label>
+                            <label class="form-label">Password *</label>
                             <input type="password" formControlName="userPassword" class="form-control">
 
                             @if (f.userPassword.touched && f.userPassword.invalid) {
@@ -54,6 +54,7 @@
                     <div class="row g-2 g-md-3 mb-3">
 
                         <div class="col-12 col-md-6">
+                            <label class="form-label">First Name *</label>
                             <input formControlName="firstName" class="form-control" placeholder="First Name">
 
                             @if (f.firstName.touched && f.firstName.invalid) {
@@ -62,6 +63,7 @@
                         </div>
 
                         <div class="col-12 col-md-6">
+                            <label class="form-label">Last Name *</label>
                             <input formControlName="lastName" class="form-control" placeholder="Last Name">
 
                             @if (f.lastName.touched && f.lastName.invalid) {
@@ -70,7 +72,12 @@
                         </div>
 
                     </div>
-
+                    <div class="row g-2 g-md-3 mb-3">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Degree</label>
+                            <input formControlName="doctorDegree" class="form-control" placeholder="Degree">
+                        </div>
+                    </div>
                     <hr>
 
                     <!-- PROFESSIONAL -->
@@ -79,8 +86,17 @@
                     </h5>
 
                     <div class="row g-2 g-md-3 mb-3">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label">Clinic Name *</label>
+                            <input formControlName="clinicName" class="form-control" placeholder="Clinic Name">
+
+                            @if (f.clinicName.touched && f.clinicName.invalid) {
+                            <small class="text-danger">Clinic name required</small>
+                            }
+                        </div>
 
                         <div class="col-12 col-md-6">
+                            <label class="form-label">Specialization</label>
                             <select formControlName="specialization" class="form-select">
                                 <option value="">Select Specialization</option>
 
@@ -94,7 +110,12 @@
                             }
                         </div>
 
+
+
+                    </div>
+                    <div class="row g-2 g-md-3 mb-3">
                         <div class="col-12 col-md-6">
+                            <label class="form-label">Consultation Fee</label>
                             <div class="input-group">
                                 <span class="input-group-text">$</span>
                                 <input type="number" formControlName="consultationFee" class="form-control">
@@ -104,10 +125,8 @@
                             <small class="text-danger">Valid fee required</small>
                             }
                         </div>
-
-                    </div>
-                    <div class="row g-2 g-md-3 mb-3">
                         <div class="col-12 col-md-6">
+                            <label class="form-label">Registration Number</label>
                             <input type="text" formControlName="regNo" class="form-control"
                                 placeholder="Registration Number">
                         </div>
@@ -120,12 +139,13 @@
                     </h5>
 
                     <div class="row g-2 g-md-3 mb-4">
-
                         <div class="col-12 col-md-6">
+                            <label class="form-label">Phone Number</label>
                             <input formControlName="phoneNumber" class="form-control" placeholder="Phone">
                         </div>
 
                         <div class="col-12 col-md-6">
+                            <label class="form-label">Professional Email</label>
                             <input formControlName="email" class="form-control" placeholder="Professional Email">
 
                             @if (f.email.touched && f.email.invalid) {
@@ -136,6 +156,7 @@
                     </div>
                     <div class="row g-2 g-md-3 mb-4">
                         <div class="col-12 col-md-10">
+                            <label class="form-label">Address</label>
                             <textarea formControlName="address" class="form-control" placeholder="Address"></textarea>
                         </div>
                     </div>

@@ -45,20 +45,19 @@ appointmentId = signal<any | null>(null);
   }
 
   getMedicalHistory(patientId: string | null) {
-    if (!patientId) {
-      this.medicalHistory.set([]);
-      return;
-    }
-
-    this.service.getMedicalHistory(patientId).subscribe({
-      next: response => {
-        this.medicalHistory.set(response?.isSuccess ? response.data || [] : []);
-      },
-      error: () => {
+  this.service.getMedicalHistory(patientId).subscribe({
+    next: (response) => {
+      if (response?.isSuccess) {
+        this.medicalHistory.set(response.data || []);
+      } else {
         this.medicalHistory.set([]);
       }
-    });
-  }
+    },
+    error: () => {
+      this.medicalHistory.set([]);
+    }
+  });
+}
 
   private buildPrescriptionPayload(data: any) {
     if (!data) {
