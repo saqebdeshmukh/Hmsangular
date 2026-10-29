@@ -64,6 +64,16 @@ jobs:
           </configuration>
           '@ | Set-Content "dist/healthcareui/browser/web.config" -Encoding utf8
 
+      - name: Verify Web Deploy server
+        shell: pwsh
+        env:
+          DEPLOY_SERVER: ${{ secrets.ANGULAR_SERVER_COMPUTER_NAME }}
+        run: |
+          Write-Host "Configured server: [$env:DEPLOY_SERVER]"
+          if ($env:DEPLOY_SERVER -ne "https://site7635.siteasp.net:8172") {
+            throw "The server secret does not match the expected hostname."
+          }
+
       - name: Deploy to MonsterASP.NET via Web Deploy
         uses: rasmusbuchholdt/simply-web-deploy@2.1.0
         with:
