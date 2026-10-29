@@ -1,0 +1,76 @@
+
+name: Hmsangular - CI/CD
+
+on:
+  push:
+    branches:
+      - Uat
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hmsangular-production
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Angular production app
+        run: npm run build -- --configuration production
+
+      - name: Verify production output
+        shell: pwsh
+        run: |
+          if (!(Test-Path "dist/healthcareui/browser/index.html")) {
+            throw "Angular production output was not found."
+          }
+
+      - name: Add IIS SPA routing fallback
+        shell: pwsh
+        run: |
+          @'
+          <?xml version="1.0" encoding="utf-8"?>
+          <configuration>
+            <system.webServer>
+              <rewrite>
+                <rules>
+                  <rule name="Angular Routes" stopProcessing="true">
+                    <match url=".*" />
+                    <conditions logicalGrouping="MatchAll">
+                      <add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" />
+                      <add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" />
+                    </conditions>
+                    <action type="Rewrite" url="./index.html" />
+                  </rule>
+                </rules>
+              </rewrite>
+            </system.webServer>
+          </configuration>
+          '@ | Set-Content "dist/healthcareui/browser/web.config" -Encoding utf8
+
+      - name: Deploy to MonsterASP.NET via Web Deploy
+        uses: rasmusbuchholdt/simply-web-deploy@2.1.0
+        with:
+          website-name: ${{ secrets.ANGULAR_WEBSITE_NAME }}
+          server-computer-name: ${{ secrets.ANGULAR_SERVER_COMPUTER_NAME }}
+          server-username: ${{ secrets.ANGULAR_SERVER_USERNAME }}
+          server-password: ${{ secrets.ANGULAR_SERVER_PASSWORD }}
+          source-path: '\dist\healthcareui\browser\'
+          target-path: ''
+          target-delete: false
