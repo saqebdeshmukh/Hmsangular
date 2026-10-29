@@ -65,19 +65,29 @@ jobs:
           '@ | Set-Content "dist/healthcareui/browser/web.config" -Encoding utf8
 
       
-      - name: Verify Web Deploy server
+      - name: Test MonsterASP.NET connectivity
         shell: pwsh
-        env:
-          DEPLOY_SERVER: ${{ secrets.ANGULAR_SERVER_COMPUTER_NAME }}
         run: |
-          $expected = "https://site7635.siteasp.net:8172"
-          if ([string]::IsNullOrWhiteSpace($env:DEPLOY_SERVER)) {
-            throw "Server secret is empty or unavailable."
+          $hostName = "site7635.siteasp.net"
+
+          Write-Host "Checking DNS resolution..."
+          try {
+            Resolve-DnsName $hostName -ErrorAction Stop |
+              Select-Object Name, Type, IPAddress |
+              Format-Table
           }
-          if ($env:DEPLOY_SERVER.Trim() -ne $expected) {
-            throw "Server secret does not match the expected value."
+          catch {
+            throw "DNS resolution failed for $hostName. $($_.Exception.Message)"
           }
-          Write-Host "Server secret matches the expected hostname."
+
+          Write-Host "Checking Web Deploy port 8172..."
+          $connection = Test-NetConnection $hostName -Port 8172 -WarningAction SilentlyContinue
+
+          if (-not $connection.TcpTestSucceeded) {
+            throw "Cannot connect to $hostName on port 8172."
+          }
+
+          Write-Host "DNS and TCP port 8172 are reachable."
 
 
       - name: Deploy to MonsterASP.NET via Web Deploy
